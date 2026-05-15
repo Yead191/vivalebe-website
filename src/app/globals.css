@@ -156,4 +156,12 @@
   .flex-center {
     @apply flex justify-center items-center
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }

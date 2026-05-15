@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Video, Sparkles, Heart } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type {
@@ -95,24 +96,33 @@ export function HomeTabs({
 
   return (
     <Tabs defaultValue="videos" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 rounded-none border-b border-border bg-transparent p-0">
+      <TabsList className="grid h-14 w-full grid-cols-3 gap-1 rounded-[20px] bg-muted/40 p-1.5">
         <TabsTrigger
           value="videos"
-          className="rounded-none border-b-2 border-transparent bg-transparent py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground data-[state=active]:border-brand data-[state=active]:text-foreground data-[state=active]:shadow-none"
+          className="group flex items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
         >
-          {dict.myHome.tabVideos}
+          <Video className="h-4 w-4 shrink-0 transition-transform duration-300 group-data-[state=active]:scale-110" />
+          <span className="text-[11px] font-bold uppercase tracking-wider sm:text-xs">
+            {dict.myHome.tabVideos}
+          </span>
         </TabsTrigger>
         <TabsTrigger
           value="moments"
-          className="rounded-none border-b-2 border-transparent bg-transparent py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground data-[state=active]:border-brand data-[state=active]:text-foreground data-[state=active]:shadow-none"
+          className="group flex items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
         >
-          {dict.myHome.tabMoments}
+          <Sparkles className="h-4 w-4 shrink-0 transition-transform duration-300 group-data-[state=active]:scale-110" />
+          <span className="text-[11px] font-bold uppercase tracking-wider sm:text-xs">
+            {dict.myHome.tabMoments}
+          </span>
         </TabsTrigger>
         <TabsTrigger
           value="connections"
-          className="rounded-none border-b-2 border-transparent bg-transparent py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground data-[state=active]:border-brand data-[state=active]:text-foreground data-[state=active]:shadow-none"
+          className="group flex items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
         >
-          {dict.myHome.tabConnections}
+          <Heart className="h-4 w-4 shrink-0 transition-transform duration-300 group-data-[state=active]:scale-110" />
+          <span className="text-[11px] font-bold uppercase tracking-wider sm:text-xs">
+            {dict.myHome.tabConnections}
+          </span>
         </TabsTrigger>
       </TabsList>
 
