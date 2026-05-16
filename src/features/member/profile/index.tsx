@@ -5,6 +5,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
 import { ProfileSidebar } from "./ProfileSidebar";
 import { ProfileMain } from "./ProfileMain";
+import BackButton from "@/components/shared/BackButton";
 
 interface Props {
   lang: Locale;
@@ -15,13 +16,7 @@ interface Props {
 export function ProfileFeature({ lang, dict, user }: Props) {
   return (
     <div className="container py-5">
-      <Link
-        href={`/${lang}/discover`}
-        className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-foreground hover:text-brand transition-colors"
-      >
-        <ArrowLeft className="size-4" />
-        {dict.profile.back}
-      </Link>
+      <BackButton />
       <div className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)]">
         <div>
           <div className="lg:sticky lg:top-20">

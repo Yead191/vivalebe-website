@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { MoreHorizontal, Pencil, Send } from "lucide-react";
 import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import { cn } from "@/lib/utils";
@@ -10,6 +9,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
 import { photoUrl } from "@/lib/image";
+import { PhotoViewerOverlay } from "./modals/PhotoViewerOverlay";
 
 interface Props {
   lang: Locale;
@@ -21,6 +21,7 @@ export function ProfileMain({ lang, dict, user }: Props) {
   const [activeTab, setActiveTab] = useState<"public" | "private">("public");
   const [expanded, setExpanded] = useState(false);
   const [message, setMessage] = useState("");
+  const [selectedPhotoIdx, setSelectedPhotoIdx] = useState<number | null>(null);
 
   const publicPhotos = user.photos.slice(0, 3);
   const remainingPublic = Math.max(0, user.photos.length - publicPhotos.length);
@@ -72,10 +73,11 @@ export function ProfileMain({ lang, dict, user }: Props) {
             {dict.profile.public.replace("{count}", String(user.photos.length))}
           </button>
           <button
+            disabled
             type="button"
             onClick={() => setActiveTab("private")}
             className={cn(
-              "underline-offset-4",
+              "underline-offset-4 disabled:opacity-50 disabled:cursor-not-allowed",
               activeTab === "private"
                 ? "font-semibold text-foreground underline"
                 : "text-muted-foreground hover:text-foreground"
@@ -92,24 +94,24 @@ export function ProfileMain({ lang, dict, user }: Props) {
             return (
               <div
                 key={seed}
-                className="relative aspect-square overflow-hidden rounded-md bg-muted"
+                className="group relative aspect-square overflow-hidden rounded-md bg-muted cursor-pointer"
+                onClick={() => setSelectedPhotoIdx(i)}
               >
                 <Image
                   src={photoUrl(seed, 400, 400)}
                   alt={`${user.displayName} ${i + 1}`}
                   width={400}
                   height={400}
-                  className="size-full object-cover"
+                  className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
                   unoptimized
                 />
                 {showOverlay ? (
-                  <Link
-                    href={`/${lang}/profile/${user.username}/photos`}
-                    className="absolute inset-0 flex items-center justify-center bg-black/55 text-2xl font-semibold text-white"
-                  >
-                    {remainingPublic}
-                  </Link>
-                ) : null}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-2xl font-bold text-white group-hover:bg-black/30 transition-colors">
+                    +{remainingPublic}
+                  </div>
+                ) : (
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                )}
               </div>
             );
           })}
@@ -135,7 +137,7 @@ export function ProfileMain({ lang, dict, user }: Props) {
           e.preventDefault();
           setMessage("");
         }}
-        className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2"
+        className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 transition-shadow focus-within:shadow-sm"
       >
         <Pencil className="size-4 shrink-0 text-muted-foreground" />
         <input
@@ -149,7 +151,7 @@ export function ProfileMain({ lang, dict, user }: Props) {
           type="submit"
           disabled={!message.trim()}
           aria-label="Send"
-          className="rounded-full p-1.5 text-brand hover:bg-brand-soft disabled:opacity-40 disabled:hover:bg-transparent"
+          className="rounded-full p-1.5 text-brand hover:bg-brand-soft disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
         >
           <Send className="size-4" />
         </button>
@@ -190,9 +192,18 @@ export function ProfileMain({ lang, dict, user }: Props) {
         <textarea
           placeholder="…"
           rows={3}
-          className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-brand"
+          className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-brand transition-colors"
         />
       </section>
+
+      {/* Full-Screen Photo Viewer */}
+      {selectedPhotoIdx !== null && (
+        <PhotoViewerOverlay
+          user={user}
+          initialIndex={selectedPhotoIdx}
+          onClose={() => setSelectedPhotoIdx(null)}
+        />
+      )}
     </div>
   );
 }
