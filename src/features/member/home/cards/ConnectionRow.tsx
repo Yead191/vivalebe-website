@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Lock } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { ConnectionEvent, User } from "@/lib/types";
@@ -21,10 +21,7 @@ export function ConnectionRow({ lang, dict, event, user }: ConnectionRowProps) {
         ? dict.myHome.linkLikesYou
         : dict.myHome.linkWinkedAtYou;
   return (
-    <Link
-      href={`/${lang}/profile/${user.username}`}
-      className="flex items-center gap-3 rounded-md px-2 py-2 hover:bg-muted/50 transition-colors"
-    >
+    <div className="flex items-center gap-3 rounded-md px-2 py-2 bg-muted/50 opacity-75 cursor-not-allowed">
       <Image
         src={avatarUrl(user.avatarSeed, 80)}
         alt={user.displayName}
@@ -33,8 +30,11 @@ export function ConnectionRow({ lang, dict, event, user }: ConnectionRowProps) {
         className="size-10 rounded-full object-cover"
         unoptimized
       />
+
       <span className="flex-1 text-sm text-foreground">{verb}</span>
-      <ChevronRight className="size-4 text-muted-foreground" />
-    </Link>
+
+      {/* Lock Icon */}
+      <Lock className="size-4 text-muted-foreground" />
+    </div>
   );
 }

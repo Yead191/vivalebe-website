@@ -31,11 +31,11 @@ export function ProfileHoverCard({ user, lang, dict }: Props) {
         <button
           type="button"
           onClick={goToProfile}
-          className="block aspect-[4/5] w-full overflow-hidden rounded-lg bg-muted ring-1 ring-border focus-visible:ring-2 focus-visible:ring-brand outline-none"
+          className="block aspect-4/5 w-full overflow-hidden rounded-lg bg-muted ring-1 ring-border focus-visible:ring-2 focus-visible:ring-brand outline-none"
           aria-label={user.displayName}
         >
           <Image
-            src={photoUrl(user.coverSeed, 240, 300)}
+            src={user.coverSeed}
             alt={user.displayName}
             width={240}
             height={300}

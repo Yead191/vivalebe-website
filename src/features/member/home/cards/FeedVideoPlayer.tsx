@@ -13,8 +13,11 @@ interface FeedVideoPlayerProps {
 export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isInView, setIsInView] = useState(false);
-  const isPlayingRef = useRef(false);
+  // Mount-once latch: render <video> the first time it's broadly visible,
+  // then keep it in the DOM. Tearing down a <video> on scroll forces the
+  // decoder + metadata fetch to restart and is the main source of jank.
+  const [hasMounted, setHasMounted] = useState(false);
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -22,36 +25,35 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          // Lazy mount/unmount: only render <video> when broad visibility > 0.1
-          if (entry.isIntersecting) {
-            setIsInView(true);
-          } else {
-            setIsInView(false);
-          }
+        const entry = entries[entries.length - 1];
+        if (!entry) return;
 
-          // Playback control: play only when highly visible (> 0.6)
-          const video = videoRef.current;
-          if (entry.intersectionRatio > 0.6) {
+        if (entry.isIntersecting && !hasMountedRef.current) {
+          hasMountedRef.current = true;
+          setHasMounted(true);
+        }
+
+        const video = videoRef.current;
+        if (entry.intersectionRatio > 0.6) {
+          if (videoState.get().activeVideoId !== id) {
             videoState.set({ activeVideoId: id });
-            if (video && video.paused) {
-              video.play().catch(() => { });
-              isPlayingRef.current = true;
-            }
-          } else {
-            // Pause when visibility drops below 0.6
-            if (video && !video.paused) {
-              video.pause();
-              isPlayingRef.current = false;
-            }
-            // Clear global active ID if this was the one
-            if (videoState.get().activeVideoId === id && entry.intersectionRatio < 0.1) {
-              videoState.set({ activeVideoId: null });
-            }
           }
-        });
+          if (video && video.paused) {
+            video.play().catch(() => {});
+          }
+        } else {
+          if (video && !video.paused) {
+            video.pause();
+          }
+          if (
+            entry.intersectionRatio < 0.1 &&
+            videoState.get().activeVideoId === id
+          ) {
+            videoState.set({ activeVideoId: null });
+          }
+        }
       },
-      { threshold: [0.1, 0.6] }
+      { threshold: [0, 0.1, 0.6] }
     );
 
     observer.observe(container);
@@ -60,14 +62,11 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
       const video = videoRef.current;
       if (!video) return;
 
-      // Sync audio settings directly via DOM to avoid re-renders
       if (video.muted !== state.isMuted) video.muted = state.isMuted;
       if (video.volume !== state.volume) video.volume = state.volume;
 
-      // Single playback enforcement: pause if another video becomes active
       if (state.activeVideoId !== id && !video.paused) {
         video.pause();
-        isPlayingRef.current = false;
       }
     });
 
@@ -76,23 +75,6 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
       unsubscribe();
     };
   }, [id]);
-
-  // const togglePlay = () => {
-  //   const video = videoRef.current;
-  //   if (!video) return;
-
-  //   if (!video.paused) {
-  //     video.pause();
-  //     isPlayingRef.current = false;
-  //     if (videoState.get().activeVideoId === id) {
-  //       videoState.set({ activeVideoId: null });
-  //     }
-  //   } else {
-  //     videoState.set({ activeVideoId: id });
-  //     video.play().catch(() => {});
-  //     isPlayingRef.current = true;
-  //   }
-  // };
 
   const handleVolumeChange = () => {
     const video = videoRef.current;
@@ -110,11 +92,10 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
   return (
     <div
       ref={containerRef}
-      className="relative size-full cursor-pointer bg-black group"
-      // onClick={togglePlay}
+      className="relative size-full bg-black"
       onContextMenu={(e) => e.preventDefault()}
     >
-      {isInView ? (
+      {hasMounted ? (
         <video
           ref={videoRef}
           src={src}
