@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight,
-  Heart, MessageSquare, Send, MoreHorizontal
+  Heart, MessageSquare, Send
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { photoUrl } from "@/lib/image";
@@ -19,33 +19,70 @@ interface PhotoViewerOverlayProps {
   onClose: () => void;
 }
 
-const MOCK_COMMENTS = [
-  {
-    id: 1,
-    user: "BREATHLESS",
-    text: "That's not what I expected 150#'s to look like....lol. Impressed. It looks good on you.",
-    time: "2h",
-    avatar: "https://github.com/shadcn.png"
-  },
-  {
-    id: 2,
-    user: "MARCO",
-    text: "Great photo! The colors are amazing.",
-    time: "1h",
-    avatar: ""
-  },
-];
+interface Comment {
+  id: string;
+  user: string;
+  text: string;
+  time: string;
+  avatar: string;
+}
+
+interface SocialData {
+  liked: boolean;
+  likeCount: number;
+  comments: Comment[];
+}
+
+// Initial mock data generator
+const generateInitialData = (photoCount: number): Record<number, SocialData> => {
+  const data: Record<number, SocialData> = {};
+  const mockNames = ["BREATHLESS", "MARCO", "SOPHIA", "LUCAS", "ELENA"];
+  const mockTexts = [
+    "That's not what I expected 150#'s to look like....lol. Impressed. It looks good on you.",
+    "Great photo! The colors are amazing.",
+    "Wow, looking good!",
+    "Is this from your last trip?",
+    "Stunning! Simply stunning."
+  ];
+
+  for (let i = 0; i < photoCount; i++) {
+    // Generate 1-3 random comments for each photo to show diversity
+    const commentCount = 1 + Math.floor(Math.random() * 3);
+    const comments: Comment[] = [];
+    for (let j = 0; j < commentCount; j++) {
+      comments.push({
+        id: `c-${i}-${j}`,
+        user: mockNames[(i + j) % mockNames.length],
+        text: mockTexts[(i + j) % mockTexts.length],
+        time: `${j + 1}h`,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${mockNames[(i + j) % mockNames.length]}`
+      });
+    }
+
+    data[i] = {
+      liked: false,
+      likeCount: 5 + Math.floor(Math.random() * 20),
+      comments
+    };
+  }
+  return data;
+};
 
 export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerOverlayProps) {
   const [index, setIndex] = useState(initialIndex);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [comment, setComment] = useState("");
+  const [newComment, setNewComment] = useState("");
+
+  // Per-photo social state
+  const [socialStore, setSocialStore] = useState<Record<number, SocialData>>(() => 
+    generateInitialData(user.photos.length)
+  );
 
   const photos = user.photos;
   const currentPhoto = photos[index];
+  const currentSocial = socialStore[index] || { liked: false, likeCount: 0, comments: [] };
 
   useEffect(() => {
     setMounted(true);
@@ -75,6 +112,39 @@ export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerO
 
   const toggleZoom = () => setZoomLevel((z) => (z === 1 ? 2.5 : 1));
 
+  const toggleLike = () => {
+    setSocialStore(prev => ({
+      ...prev,
+      [index]: {
+        ...prev[index],
+        liked: !prev[index].liked,
+        likeCount: prev[index].liked ? prev[index].likeCount - 1 : prev[index].likeCount + 1
+      }
+    }));
+  };
+
+  const handleAddComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    const comment: Comment = {
+      id: Date.now().toString(),
+      user: "ME",
+      text: newComment,
+      time: "Just now",
+      avatar: "" // Use default fallback
+    };
+
+    setSocialStore(prev => ({
+      ...prev,
+      [index]: {
+        ...prev[index],
+        comments: [comment, ...prev[index].comments]
+      }
+    }));
+    setNewComment("");
+  };
+
   if (!mounted) return null;
 
   return createPortal(
@@ -83,15 +153,15 @@ export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerO
       <div className="relative flex flex-1 flex-col bg-[#050505] overflow-hidden">
         {/* Top bar controls */}
         <div className="absolute right-6 top-6 z-10 flex items-center gap-4 text-white/80">
-          <button
+          <button 
             onClick={toggleZoom}
-            className="hover:text-white transition-colors"
+            className="hover:text-white transition-colors cursor-pointer"
           >
             {zoomLevel > 1 ? <ZoomOut className="size-5" /> : <ZoomIn className="size-5" />}
           </button>
-          <button
+          <button 
             onClick={onClose}
-            className="md:hidden hover:text-white transition-colors"
+            className="md:hidden hover:text-white transition-colors cursor-pointer"
           >
             <X className="size-6" />
           </button>
@@ -102,13 +172,13 @@ export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerO
           <>
             <button
               onClick={prev}
-              className="absolute left-6 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white/70 hover:bg-black/40 hover:text-white transition-all"
+              className="absolute left-6 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white/70 hover:bg-black/40 hover:text-white transition-all cursor-pointer"
             >
               <ChevronLeft className="size-8" />
             </button>
             <button
               onClick={next}
-              className="absolute right-6 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white/70 hover:bg-black/40 hover:text-white transition-all"
+              className="absolute right-6 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white/70 hover:bg-black/40 hover:text-white transition-all cursor-pointer"
             >
               <ChevronRight className="size-8" />
             </button>
@@ -122,7 +192,7 @@ export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerO
         )}
           onClick={(e) => { if (e.target === e.currentTarget) toggleZoom(); }}
         >
-          <div
+          <div 
             className="relative transition-all duration-300 ease-out"
             style={{
               width: zoomLevel > 1 ? '250%' : '100%',
@@ -144,9 +214,9 @@ export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerO
 
         {/* Footer controls */}
         <div className="absolute bottom-6 left-6 z-10 flex items-center gap-4">
-          <button
+          <button 
             onClick={() => setIsReportModalOpen(true)}
-            className="text-xs font-medium text-white/60 hover:text-white transition-colors"
+            className="text-xs font-medium text-white/60 hover:text-white transition-colors cursor-pointer"
           >
             Report
           </button>
@@ -172,9 +242,9 @@ export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerO
               </p>
             </div>
           </div>
-          <button
+          <button 
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-900 transition-colors"
+            className="text-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
           >
             <X className="size-6" />
           </button>
@@ -183,23 +253,26 @@ export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerO
         {/* Interaction Stats */}
         <div className="px-4 py-3 flex items-center gap-6 border-b border-gray-50">
           <div className="flex items-center gap-1.5 text-gray-600">
-            <button
-              onClick={() => setLiked(!liked)}
-              className="group flex items-center gap-1.5"
+            <button 
+              onClick={toggleLike}
+              className="group flex items-center gap-1.5 cursor-pointer"
             >
-              <Heart className={cn("size-5 transition-colors", liked ? "fill-brand text-brand" : "group-hover:text-gray-900")} />
-              <span className="text-xs font-bold">{liked ? 6 : 5}</span>
+              <Heart className={cn("size-5 transition-colors", currentSocial.liked ? "fill-brand text-brand" : "group-hover:text-gray-900")} />
+              <span className="text-xs font-bold">{currentSocial.likeCount}</span>
             </button>
           </div>
           <div className="flex items-center gap-1.5 text-gray-600">
             <MessageSquare className="size-5" />
-            <span className="text-xs font-bold">{MOCK_COMMENTS.length}</span>
+            <span className="text-xs font-bold">{currentSocial.comments.length}</span>
           </div>
         </div>
 
         {/* Comments Section */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-hide">
-          {MOCK_COMMENTS.map((c) => (
+        <div 
+          key={`comments-${index}`} // Force re-render of list when index changes for animation
+          className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-hide"
+        >
+          {currentSocial.comments.map((c) => (
             <div key={c.id} className="flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <Avatar className="size-8 shrink-0">
                 <AvatarImage src={c.avatar} />
@@ -216,37 +289,43 @@ export function PhotoViewerOverlay({ user, initialIndex, onClose }: PhotoViewerO
               </div>
             </div>
           ))}
+          {currentSocial.comments.length === 0 && (
+            <div className="h-full flex items-center justify-center text-muted-foreground text-xs italic">
+              No comments yet. Be the first!
+            </div>
+          )}
         </div>
 
         {/* Input Bar */}
         <div className="p-4 border-t border-gray-100 bg-gray-50/50">
-          <div className="relative flex items-center gap-3">
+          <form onSubmit={handleAddComment} className="relative flex items-center gap-3">
             <Avatar className="size-8">
               <AvatarImage src="" />
               <AvatarFallback>ME</AvatarFallback>
             </Avatar>
             <div className="flex-1 relative">
-              <input
+              <input 
                 type="text"
                 placeholder="ADD A PUBLIC COMMENT..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
                 className="w-full bg-transparent border-none py-2 pr-10 text-[11px] font-bold tracking-wider uppercase placeholder:text-gray-400 focus:outline-none"
               />
-              <button
-                disabled={!comment.trim()}
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand transition-colors disabled:opacity-0"
+              <button 
+                type="submit"
+                disabled={!newComment.trim()}
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand transition-colors disabled:opacity-0 cursor-pointer"
               >
                 <Send className="size-4" />
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
 
-      <ReportContentModal
-        open={isReportModalOpen}
-        onOpenChange={setIsReportModalOpen}
+      <ReportContentModal 
+        open={isReportModalOpen} 
+        onOpenChange={setIsReportModalOpen} 
       />
     </div>,
     document.body

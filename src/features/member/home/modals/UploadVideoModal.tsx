@@ -91,12 +91,7 @@ export function UploadVideoModal({ dict, trigger }: UploadVideoModalProps) {
             ))}
           </ol>
         </div>
-        <DialogClose
-          aria-label="Close"
-          className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted"
-        >
-          <X className="size-4" />
-        </DialogClose>
+
       </DialogContent>
     </Dialog>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Heart, RotateCcw, X } from "lucide-react";
@@ -38,6 +38,10 @@ export function FlameCard({
   onUndo,
 }: FlameCardProps) {
   const [photoIdx, setPhotoIdx] = useState(0);
+
+  useEffect(() => {
+    setPhotoIdx(0);
+  }, [user.id]);
   const photos = user.photos.length > 0 ? user.photos : [user.coverSeed];
   const photoCount = photos.length;
   const currentSeed = photos[photoIdx] ?? user.coverSeed;
