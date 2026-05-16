@@ -68,10 +68,10 @@ export function FlameCard({
               <Image
                 src={photoUrl(currentSeed, 720, 720)}
                 alt={user.displayName}
-                width={1020}
-                height={1020}
+                width={600}
+                height={620}
                 className="object-cover"
-                loading="lazy"
+
 
               />
             </Link>

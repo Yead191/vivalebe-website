@@ -39,7 +39,7 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
             videoState.set({ activeVideoId: id });
           }
           if (video && video.paused) {
-            video.play().catch(() => {});
+            video.play().catch(() => { });
           }
         } else {
           if (video && !video.paused) {
@@ -107,7 +107,7 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
           controls
           controlsList="nodownload"
           onVolumeChange={handleVolumeChange}
-          className="size-full object-cover"
+          className="size-full object-cover [&:fullscreen]:object-contain"
         />
       ) : (
         <Image

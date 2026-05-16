@@ -50,7 +50,7 @@ export function ProfileSidebar({ dict, user }: Props) {
           alt={user.displayName}
           width={480}
           height={600}
-          className="aspect-[4/5] w-full object-cover"
+          className="aspect-4/5 w-full object-cover"
           unoptimized
         />
       </div>

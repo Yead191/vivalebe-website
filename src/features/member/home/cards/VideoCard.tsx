@@ -41,7 +41,7 @@ export const VideoCard = memo(function VideoCard({
         {video.video ? (
           <FeedVideoPlayer
             id={video.id}
-            src={video.video}
+            src={video?.video}
             poster={photoUrl(video.imageSeed, 800, 1000)}
           />
         ) : (
