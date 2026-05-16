@@ -11,6 +11,7 @@ export interface User {
   city: string;
   state: string;
   country: string;
+  image?: string
   avatarSeed: string;
   coverSeed: string;
   verified: boolean;

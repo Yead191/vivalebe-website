@@ -87,7 +87,7 @@ export function MomentCard({
             {moment.imageSeeds.map((seed, i) => (
               <div
                 key={seed + i}
-                className="overflow-hidden rounded-md bg-muted aspect-square cursor-pointer hover:opacity-90 transition-opacity"
+                className="overflow-hidden rounded-md bg-muted aspect-5/3 cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => setSelectedImage(seed)}
               >
                 <Image
