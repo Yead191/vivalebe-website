@@ -33,19 +33,21 @@ export default async function LocaleRootLayout({
       lang={lang}
       className={`${inter.variable} ${museoModerno.variable} h-full antialiased`}
     >
-      <Toaster
-        position="top-right"
-        offset={20}
-        closeButton
-        duration={3500}
-        toastOptions={{
-          classNames: {
-            toast: '!shadow-medium !border-line',
-            title: 'font-semibold',
-          },
-        }}
-      />
-      <body className="min-h-full flex flex-col">{children}</body>
+
+      <body className="min-h-full flex flex-col">
+        <Toaster
+          position="top-right"
+          offset={20}
+          closeButton
+          duration={3500}
+          toastOptions={{
+            classNames: {
+              toast: '!shadow-medium !border-line',
+              title: 'font-semibold',
+            },
+          }}
+        />
+        {children}</body>
     </html>
   );
 }

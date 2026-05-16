@@ -1,3 +1,4 @@
+import { memo } from "react";
 import Image from "next/image";
 import { FeedVideoPlayer } from "./FeedVideoPlayer";
 import type { Locale } from "@/i18n/config";
@@ -19,7 +20,7 @@ interface VideoCardProps {
   currentUserAvatarSeed: string;
 }
 
-export function VideoCard({
+export const VideoCard = memo(function VideoCard({
   lang,
   dict,
   video,
@@ -39,6 +40,7 @@ export function VideoCard({
       <div className="mt-3 aspect-8/6 bg-muted overflow-hidden">
         {video.video ? (
           <FeedVideoPlayer
+            id={video.id}
             src={video.video}
             poster={photoUrl(video.imageSeed, 800, 1000)}
           />
@@ -65,4 +67,4 @@ export function VideoCard({
       />
     </article>
   );
-}
+});

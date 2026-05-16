@@ -1,11 +1,13 @@
 type VideoState = {
   isMuted: boolean;
   volume: number;
+  activeVideoId: string | null;
 };
 
 let globalState: VideoState = {
   isMuted: true,
   volume: 1,
+  activeVideoId: null,
 };
 
 const listeners = new Set<(state: VideoState) => void>();
