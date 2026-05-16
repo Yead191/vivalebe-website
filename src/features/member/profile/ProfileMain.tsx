@@ -17,7 +17,7 @@ interface Props {
   user: User;
 }
 
-export function ProfileMain({ lang, dict, user }: Props) {
+export function ProfileMain({ dict, user }: Props) {
   const [activeTab, setActiveTab] = useState<"public" | "private">("public");
   const [expanded, setExpanded] = useState(false);
   const [message, setMessage] = useState("");

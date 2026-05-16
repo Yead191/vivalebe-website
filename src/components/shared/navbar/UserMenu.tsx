@@ -47,7 +47,7 @@ export function UserMenu({
         <ChevronDown className="size-3.5" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
-        <DropdownMenuItem onClick={() => router.push(`/${lang}/profile/${username}`)}>
+        <DropdownMenuItem onClick={() => router.push(`/${lang}/my-profile`)}>
           {displayName}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
