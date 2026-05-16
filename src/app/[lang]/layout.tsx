@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Montserrat, MuseoModerno } from "next/font/google";
+import { Inter, MuseoModerno } from "next/font/google";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import "../globals.css";
+import { Toaster } from "sonner";
 
-const montserrat = Montserrat({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-montserrat",
+  variable: "--font-inter",
 });
 
 const museoModerno = MuseoModerno({
@@ -30,8 +31,20 @@ export default async function LocaleRootLayout({
   return (
     <html
       lang={lang}
-      className={`${montserrat.variable} ${museoModerno.variable} h-full antialiased`}
+      className={`${inter.variable} ${museoModerno.variable} h-full antialiased`}
     >
+      <Toaster
+        position="top-right"
+        offset={20}
+        closeButton
+        duration={3500}
+        toastOptions={{
+          classNames: {
+            toast: '!shadow-medium !border-line',
+            title: 'font-semibold',
+          },
+        }}
+      />
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

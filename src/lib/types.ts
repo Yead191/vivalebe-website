@@ -35,6 +35,7 @@ export interface VideoPost {
   imageSeed: string;
   caption?: string;
   createdAt: string;
+  video: string;
   comments: Comment[];
 }
 

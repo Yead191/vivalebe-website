@@ -72,9 +72,9 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
           <Image
             src="/logo.png"
             alt="Viva Leve"
-            width={160}
-            height={48}
-            className="h-9 w-auto object-contain"
+            width={320}
+            height={180}
+            className="h-12 w-auto object-contain"
             priority
           />
         </Link>

@@ -100,7 +100,8 @@
     "modalNote4": "Posts go through a quick review (usually within 24 hours) before they appear in feeds.",
     "actionLike": "Like",
     "actionMessage": "Send Message",
-    "willingToFly": "Willing to fly to meet"
+    "willingToFly": "Willing to fly to meet",
+    "changeProfilePicture": "Change profile picture"
   },
   "discover": {
     "breadcrumb": "DISCOVER",

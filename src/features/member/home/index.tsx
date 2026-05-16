@@ -57,7 +57,7 @@ export function HomeFeature({ lang, dict }: HomeFeatureProps) {
 
   return (
     <div className="container py-6">
-      <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)_16rem] xl:grid-cols-[18rem_minmax(0,1fr)_18rem]">
+      <div className="grid gap-6 lg:gap-10 lg:grid-cols-[16rem_minmax(0,1fr)_16rem] xl:grid-cols-[11rem_minmax(0,1fr)_12rem]">
         <div className="hidden lg:block">
           <div className="sticky top-22">
             <LeftSidebar lang={lang} dict={dict} me={me} viewedCount={viewedCount} />

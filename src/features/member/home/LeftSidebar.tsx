@@ -1,5 +1,10 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Camera } from "lucide-react";
+import { toast } from "sonner";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
@@ -30,24 +35,46 @@ interface LeftSidebarProps {
   me: User;
   viewedCount: number;
 }
-
 export function LeftSidebar({ lang, dict, me, viewedCount }: LeftSidebarProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      toast.success("chnaged profile picture");
+      // Future: Implement actual upload logic here
+    }
+  };
+
   return (
     <aside className="space-y-5">
       <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <Link
-          href={`/${lang}/profile/${me.username}`}
-          className="block aspect-[4/5] w-full overflow-hidden bg-muted"
+        <div
+          className="relative aspect-4/5 w-full overflow-hidden bg-muted cursor-pointer group"
+          onClick={() => fileInputRef.current?.click()}
         >
           <Image
             src={avatarUrl(me.avatarSeed, 480)}
             alt={me.displayName}
             width={480}
             height={600}
-            className="size-full object-cover transition-transform hover:scale-105"
+            className="size-full object-cover transition-transform group-hover:scale-105"
             unoptimized
           />
-        </Link>
+          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Camera className="size-8 text-white mb-2" />
+            <span className="text-white text-xs font-medium px-4 text-center">
+              {dict.myHome.changeProfilePicture}
+            </span>
+          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+        </div>
       </div>
 
       <div className="px-1 text-sm">

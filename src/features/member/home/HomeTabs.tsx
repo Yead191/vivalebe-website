@@ -132,7 +132,7 @@ export function HomeTabs({
           <SortDropdown value={videoSort} onChange={setVideoSort} dict={dict} />
         </div>
         <div className="space-y-4">
-          {sortedVideos.map((v) => {
+          {sortedVideos?.map((v) => {
             const author = authors[v.authorId];
             const meta = videoMeta[v.id] ?? {
               likeCount: 0,
