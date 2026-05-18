@@ -158,6 +158,22 @@
     "backToBlogs": "Voltar aos blogs",
     "share": "Compartilhar",
     "report": "Denunciar",
-    "notFound": "Publicação não encontrada."
+    "notFound": "Publicação não encontrada.",
+    "modalTitle": "PUBLICAR UM BLOG",
+    "modalFieldTitle": "Título",
+    "modalFieldTitlePlaceholder": "Escreva um título chamativo para o seu blog.",
+    "modalFieldDescription": "Descrição",
+    "modalFieldDescriptionPlaceholder": "O que você está pensando?",
+    "modalFieldYoutubeUrl": "URL do Vídeo do YouTube (opcional)",
+    "modalFieldYoutubeUrlPlaceholder": "ex: https://www.youtube.com/watch?v=xxxxxxx",
+    "modalFieldPhoto": "Enviar uma foto (opcional)",
+    "modalCancel": "CANCELAR",
+    "modalPostBlog": "PUBLICAR",
+    "modalPosting": "PUBLICANDO...",
+    "modalGuidelinesTitle": "Para manter nossa comunidade respeitosa e segura, evite o seguinte em seus blogs:",
+    "modalGuideline1": "Conteúdo ofensivo, profano, vulgar, abusivo ou pornográfico.",
+    "modalGuideline2": "Promoções comerciais, incluindo links externos.",
+    "modalGuideline3": "Dados de contato pessoais como e-mail, telefone ou endereço.",
+    "modalGuideline4": "Código HTML ou conteúdo copiado diretamente de outros sites."
   }
 }

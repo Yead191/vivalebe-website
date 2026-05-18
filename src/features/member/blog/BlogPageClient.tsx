@@ -8,6 +8,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { BlogPost, Comment, User } from "@/lib/types";
 import { BlogCard } from "./components/BlogCard";
 import { BlogSidebar, type BlogTab } from "./components/BlogSidebar";
+import { PostBlogModal } from "./components/PostBlogModal";
 
 type SortMode = "newest" | "popular";
 
@@ -41,6 +42,7 @@ export function BlogPageClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [activeTab, setActiveTab] = useState<BlogTab>("all");
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 
   const visibleBlogs = useMemo(() => {
     let list = [...blogs];
@@ -110,7 +112,8 @@ export function BlogPageClient({
             </p>
             <button
               type="button"
-              className="mt-4 inline-flex items-center gap-2 rounded border border-brand px-4 py-1.5 text-sm font-medium text-brand hover:bg-brand hover:text-white transition-colors"
+              onClick={() => setIsPostModalOpen(true)}
+              className="mt-4 inline-flex items-center gap-2 rounded bg-brand px-4 py-1.5 text-sm font-medium text-white hover:bg-brand/90 transition-colors"
             >
               <PenLine className="size-3.5" />
               {dict.blog.postBlog}
@@ -186,6 +189,12 @@ export function BlogPageClient({
           </div>
         </div>
       </div>
+
+      <PostBlogModal
+        open={isPostModalOpen}
+        onOpenChange={setIsPostModalOpen}
+        dict={dict}
+      />
     </div>
   );
 }

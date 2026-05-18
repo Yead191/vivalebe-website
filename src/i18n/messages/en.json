@@ -158,6 +158,22 @@
     "backToBlogs": "Back to blogs",
     "share": "Share",
     "report": "Report",
-    "notFound": "Blog post not found."
+    "notFound": "Blog post not found.",
+    "modalTitle": "ADD A BLOG",
+    "modalFieldTitle": "Title",
+    "modalFieldTitlePlaceholder": "Write an eye-catching title for your blog post.",
+    "modalFieldDescription": "Description",
+    "modalFieldDescriptionPlaceholder": "What are your thoughts?",
+    "modalFieldYoutubeUrl": "YouTube Video URL (optional)",
+    "modalFieldYoutubeUrlPlaceholder": "e.g.https://www.youtube.com/watch?v=xxxxxxx",
+    "modalFieldPhoto": "Upload a photo (optional)",
+    "modalCancel": "CANCEL",
+    "modalPostBlog": "POST BLOG",
+    "modalPosting": "POSTING...",
+    "modalGuidelinesTitle": "To keep our community respectful and safe, please avoid the following in your blog posts:",
+    "modalGuideline1": "Offensive, profane, vulgar, abusive, or pornographic content.",
+    "modalGuideline2": "Commercial promotions, including web links.",
+    "modalGuideline3": "Personal contact details such as email, phone numbers, or addresses.",
+    "modalGuideline4": "HTML code or content copied directly from other websites."
   }
 }
