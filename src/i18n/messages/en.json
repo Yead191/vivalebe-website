@@ -140,6 +140,19 @@
     "title": "Flame",
     "comingSoon": "Coming soon"
   },
+  "myList": {
+    "sortBy": "Sort by:",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "sendPrivateMessage": "Send a private message",
+    "empty": "No users in this category yet.",
+    "report": "Report",
+    "block": "Block",
+    "hide": "Hide",
+    "wink": "Wink",
+    "like": "Like",
+    "message": "Message"
+  },
   "blog": {
     "title": "MEMBER'S BLOG'S",
     "description": "Blogs let you express your thoughts, personal experiences, and interests while connecting with other members. They act as a natural conversation starter, making it easier to engage and build meaningful connections with others.",
