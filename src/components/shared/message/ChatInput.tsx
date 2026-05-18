@@ -37,43 +37,32 @@ export function ChatInput({ chatId, activeUser, profile }: { chatId: string; act
     if (!text.trim() && files.length === 0) return;
 
     setIsSending(true);
-    const formData = new FormData();
-    formData.append("text", text);
-    formData.append("chatId", chatId);
-    formData.append("type", "text");
-
-    files.forEach(file => {
-      formData.append("image", file);
-    });
 
     try {
-      const res = await myFetch("/message", {
-        method: "POST",
-        body: formData,
+      // Simulate network latency
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const newMessage = {
+        _id: "mock_msg_" + Date.now(),
+        sender: profile?._id || "user_me",
+        text: text,
+        createdAt: new Date().toISOString(),
+        image: files.length > 0 ? URL.createObjectURL(files[0]) : undefined,
+        docs: files.length > 1 ? files.map(f => URL.createObjectURL(f)) : undefined
+      };
+
+      // Dispatch event to ChatMessages component
+      const event = new CustomEvent("newChatMessage", { 
+        detail: { chatId, message: newMessage } 
       });
-      // console.log(res)
-      if (res?.success) {
-        setText("");
-        setFiles([]);
-        revalidateTags(["message",])
-        router.refresh();
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 100);
-      }
-      else if (res?.message === "You don't have enough credit to send messages" ||
-        res?.message === "blocked by user") {
-        toast.error(res.message);
+      window.dispatchEvent(event);
 
-        setTimeout(() => {
-          window.location.reload();
-        }, 300);
-
-        return;
-      }
-      else {
-        toast.error(res?.message || "Failed to send message");
-      }
+      setText("");
+      setFiles([]);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      
     } catch (error) {
       toast.error("Something went wrong");
       console.error(error);
@@ -115,21 +104,21 @@ export function ChatInput({ chatId, activeUser, profile }: { chatId: string; act
 
   if (hasNoCredit && !isBlocked && profile?.role === "FAN") {
     return (
-      <div className="px-5 py-4 border-t border-white/8 bg-[#0d0e14] relative z-20">
-        <div className="bg-[#1a1b26] border border-indigo-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_0_20px_rgba(79,70,229,0.1)]">
+      <div className="px-5 py-4 border-t border-gray-200 bg-white relative z-20">
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-[#429CA8]/10 flex items-center justify-center text-[#429CA8] shrink-0">
               <CreditCard size={24} />
             </div>
             <div>
-              <p className="text-white font-semibold text-[15px]">Out of messages</p>
-              <p className="text-gray-400 text-xs">You don't have enough credit to send messages. <span className="text-indigo-400 font-medium">5 Credits / 20 messages</span></p>
+              <p className="text-gray-900 font-semibold text-[15px]">Out of messages</p>
+              <p className="text-gray-500 text-xs">You don't have enough credit to send messages. <span className="text-[#429CA8] font-medium">5 Credits / 20 messages</span></p>
             </div>
           </div>
           <button
             onClick={handlePurchase}
             disabled={isPurchasing}
-            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-nowrap"
+            className="w-full sm:w-auto bg-[#429CA8] hover:bg-[#347A83] text-white font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-nowrap"
           >
             {isPurchasing ? (
               <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
@@ -143,12 +132,12 @@ export function ChatInput({ chatId, activeUser, profile }: { chatId: string; act
   }
 
   return (
-    <div className="px-5 py-4 border-t border-white/8 bg-[#0d0e14] relative z-20">
+    <div className="px-5 py-4 border-t border-gray-200 bg-white relative z-20">
       {/* File Previews */}
       {files.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3 bg-[#1a1b26] p-3 rounded-2xl border border-white/8">
+        <div className="flex flex-wrap gap-2 mb-3 bg-gray-50 p-3 rounded-2xl border border-gray-200">
           {files.map((file, i) => (
-            <div key={i} className="relative w-16 h-16 rounded-xl overflow-hidden border border-white/10 group">
+            <div key={i} className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200 group">
               <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
               <button
                 onClick={() => removeFile(i)}
@@ -160,7 +149,7 @@ export function ChatInput({ chatId, activeUser, profile }: { chatId: string; act
           ))}
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-16 h-16 rounded-xl border border-dashed border-white/20 flex items-center justify-center text-white/20 hover:text-white/40 hover:border-white/40 transition-all"
+            className="w-16 h-16 rounded-xl border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-all"
           >
             <Plus size={20} />
           </button>
@@ -168,16 +157,16 @@ export function ChatInput({ chatId, activeUser, profile }: { chatId: string; act
       )}
 
       {/* Main Bar */}
-      <div className={`flex items-center gap-3 border rounded-2xl px-4 py-2.5 shadow-lg transition-all group
+      <div className={`flex items-center gap-3 border rounded-2xl px-4 py-2.5 shadow-sm transition-all group
   ${isBlocked
-          ? "bg-[#14151e] border-white/6 opacity-50 cursor-not-allowed"
-          : "bg-[#1a1b26] border-white/10 focus-within:border-indigo-500/40"}`}>
+          ? "bg-gray-100 border-gray-200 opacity-50 cursor-not-allowed"
+          : "bg-gray-50 border-gray-200 focus-within:border-[#429CA8]/40"}`}>
 
         <Popover>
           <PopoverTrigger asChild>
             <button
               disabled={isBlocked}
-              className="text-gray-500 hover:text-indigo-400 transition-colors shrink-0 disabled:pointer-events-none disabled:text-gray-700"
+              className="text-gray-400 hover:text-[#429CA8] transition-colors shrink-0 disabled:pointer-events-none disabled:text-gray-300"
             >
               <Smile size={20} />
             </button>
@@ -206,21 +195,21 @@ export function ChatInput({ chatId, activeUser, profile }: { chatId: string; act
                 : "Type a message..."
           }
           disabled={isSending || isBlocked}
-          className="flex-1 bg-transparent text-white text-[14px] placeholder-gray-600 focus:outline-none min-w-0 font-normal disabled:cursor-not-allowed"
+          className="flex-1 bg-transparent text-gray-900 text-[14px] placeholder-gray-400 focus:outline-none min-w-0 font-normal disabled:cursor-not-allowed"
         />
 
-        <div className="flex items-center gap-2 border-l border-white/10 pl-3">
+        <div className="flex items-center gap-2 border-l border-gray-200 pl-3">
           {activeUser?.remaningMessage !== undefined && profile?.role === "FAN" && (
             <Tooltip>
               <TooltipTrigger asChild disabled={isSending || isBlocked}>
-                <div className="flex items-center justify-center min-w-[20px] h-6 px-1.5 rounded-md bg-white/5 border border-white/10 cursor-help hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all group/credit">
-                  <span className="text-[10px] font-bold text-gray-400 group-hover/credit:text-indigo-400 transition-colors">
+                <div className="flex items-center justify-center min-w-[20px] h-6 px-1.5 rounded-md bg-white border border-gray-200 cursor-help hover:border-[#429CA8]/30 hover:bg-[#429CA8]/5 transition-all group/credit">
+                  <span className="text-[10px] font-bold text-gray-500 group-hover/credit:text-[#429CA8] transition-colors">
                     {activeUser.remaningMessage}
                   </span>
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="top" className="bg-[#1a1b26] border-white/10 text-gray-300">
-                <p className="text-xs font-medium">Remaining messages: <span className="text-white">{activeUser.remaningMessage}</span></p>
+              <TooltipContent side="top" className="bg-white border-gray-200 text-gray-700 shadow-sm">
+                <p className="text-xs font-medium">Remaining messages: <span className="text-gray-900">{activeUser.remaningMessage}</span></p>
               </TooltipContent>
             </Tooltip>
           )}
@@ -236,7 +225,7 @@ export function ChatInput({ chatId, activeUser, profile }: { chatId: string; act
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isBlocked}
-            className="text-gray-500 hover:text-indigo-400 transition-colors shrink-0 disabled:pointer-events-none disabled:text-gray-700"
+            className="text-gray-400 hover:text-[#429CA8] transition-colors shrink-0 disabled:pointer-events-none disabled:text-gray-300"
           >
             <Paperclip size={18} />
           </button>
@@ -246,8 +235,8 @@ export function ChatInput({ chatId, activeUser, profile }: { chatId: string; act
             disabled={isSending || (!text.trim() && files.length === 0) || isBlocked}
             className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0
         ${isSending || (!text.trim() && files.length === 0) || isBlocked
-                ? "bg-[#252636] text-gray-700 cursor-not-allowed"
-                : "bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 active:scale-95"}`}
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-[#429CA8] text-white hover:bg-[#347A83] shadow-sm active:scale-95"}`}
           >
             {isSending ? (
               <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />

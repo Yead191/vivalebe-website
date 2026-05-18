@@ -138,3 +138,14 @@ export interface ConnectionEvent {
 }
 
 export type FeedSort = "newest" | "popular";
+
+export interface BlogPost {
+  id: string;
+  authorId: string;
+  title: string;
+  content: string;
+  imageSeeds: string[];
+  createdAt: string;
+  tags: string[];
+  comments: Comment[];
+}

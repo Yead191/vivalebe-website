@@ -4,17 +4,19 @@ import { refresh } from "next/cache";
 import { CURRENT_USER_ID } from "@/lib/mock/current-user";
 import { videos } from "@/lib/mock/videos";
 import { moments } from "@/lib/mock/moments";
+import { mockBlogs } from "@/constants/mockBlogData";
 import {
   toggleLikeInStore,
   addCommentToStore,
   getComments,
 } from "@/lib/mock/store";
 
-type Kind = "video" | "moment";
+type Kind = "video" | "moment" | "blog";
 
 function seedComments(kind: Kind, id: string) {
   if (kind === "video") return videos.find((v) => v.id === id)?.comments ?? [];
-  return moments.find((m) => m.id === id)?.comments ?? [];
+  if (kind === "moment") return moments.find((m) => m.id === id)?.comments ?? [];
+  return mockBlogs.find((b) => b.id === id)?.comments ?? [];
 }
 
 export async function toggleLikeAction(kind: Kind, id: string) {

@@ -139,5 +139,25 @@
   "flame": {
     "title": "Flame",
     "comingSoon": "Coming soon"
+  },
+  "blog": {
+    "title": "MEMBER'S BLOG'S",
+    "description": "Blogs let you express your thoughts, personal experiences, and interests while connecting with other members. They act as a natural conversation starter, making it easier to engage and build meaningful connections with others.",
+    "postBlog": "Post a blog",
+    "totalBlogs": "Total blogs:",
+    "show": "Show:",
+    "newest": "Newest",
+    "popular": "Popular",
+    "searchPlaceholder": "Search by name and title",
+    "myBlogs": "My Blogs",
+    "myLikedBlogs": "My Liked Blogs",
+    "myCommentedBlogs": "My Commented on Blogs",
+    "recentlyPosted": "RECENTLY POSTED",
+    "readMore": "Read more",
+    "commentPlaceholder": "Write a comment...",
+    "backToBlogs": "Back to blogs",
+    "share": "Share",
+    "report": "Report",
+    "notFound": "Blog post not found."
   }
 }

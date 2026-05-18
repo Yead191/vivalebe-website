@@ -1,7 +1,7 @@
 import "server-only";
 import type { Comment } from "@/lib/types";
 
-type Kind = "video" | "moment";
+type Kind = "video" | "moment" | "blog";
 
 interface Likes {
   count: number;
@@ -19,6 +19,14 @@ const initialLikes: Record<string, number> = {
   "moment:m_3": 9,
   "moment:m_4": 1,
   "moment:m_5": 11,
+  "blog:blog_1": 23,
+  "blog:blog_2": 8,
+  "blog:blog_3": 31,
+  "blog:blog_4": 45,
+  "blog:blog_5": 67,
+  "blog:blog_6": 19,
+  "blog:blog_7": 28,
+  "blog:blog_8": 14,
 };
 
 const likeStore: Map<string, Likes> = new Map(

@@ -27,8 +27,8 @@ export const memberNav: MemberNavItem[] = [
     href: "/flame",
     children: [
       { labelKey: "communityFlame", href: "/flame" },
-      { labelKey: "communityBlog", href: "/community/blog" },
-      { labelKey: "communityEvents", href: "/community/events" },
+      { labelKey: "communityBlog", href: "/blog" },
+      { labelKey: "communityEvents", href: "/events" },
     ],
   },
   {

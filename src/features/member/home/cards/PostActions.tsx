@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import type { Comment } from "@/lib/types";
 
 interface PostActionsProps {
-  kind: "video" | "moment";
+  kind: "video" | "moment" | "blog";
   postId: string;
   initialLikeCount: number;
   initialLiked: boolean;

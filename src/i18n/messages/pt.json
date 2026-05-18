@@ -139,5 +139,25 @@
   "flame": {
     "title": "Flame",
     "comingSoon": "Em breve"
+  },
+  "blog": {
+    "title": "BLOG DOS MEMBROS",
+    "description": "Os blogs permitem que você expresse seus pensamentos, experiências pessoais e interesses enquanto se conecta com outros membros. Eles funcionam como um iniciador de conversa natural, facilitando o engajamento e a construção de conexões significativas.",
+    "postBlog": "Publicar um blog",
+    "totalBlogs": "Total de blogs:",
+    "show": "Mostrar:",
+    "newest": "Mais Recentes",
+    "popular": "Populares",
+    "searchPlaceholder": "Buscar por nome e título",
+    "myBlogs": "Meus Blogs",
+    "myLikedBlogs": "Blogs Curtidos",
+    "myCommentedBlogs": "Blogs Comentados",
+    "recentlyPosted": "PUBLICADOS RECENTEMENTE",
+    "readMore": "Ler mais",
+    "commentPlaceholder": "Escreva um comentário...",
+    "backToBlogs": "Voltar aos blogs",
+    "share": "Compartilhar",
+    "report": "Denunciar",
+    "notFound": "Publicação não encontrada."
   }
 }

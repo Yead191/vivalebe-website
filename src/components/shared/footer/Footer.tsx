@@ -1,8 +1,10 @@
+"use client"
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { LocaleLink } from "@/components/shared/locale-link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { usePathname } from "next/navigation";
 
 interface FooterColumn {
   headingKey: keyof Dictionary["footer"];
@@ -44,8 +46,12 @@ interface FooterProps {
   dict: Dictionary;
 }
 
-export function Footer({ lang, dict }: FooterProps) {
+export async function Footer({ lang, dict }: FooterProps) {
   const year = new Date().getFullYear();
+  const pathname = usePathname();
+  if (pathname?.includes('/chat')) {
+    return null;
+  }
   return (
     <footer className="bg-brand text-brand-foreground mt-auto">
       <div className="container py-12 grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
