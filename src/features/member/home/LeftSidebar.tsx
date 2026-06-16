@@ -17,14 +17,14 @@ interface SidebarLink {
 
 const connectionLinks: SidebarLink[] = [
   { labelKey: "linkChats", href: "/chat" },
-  { labelKey: "linkLikesYou", href: "/my-list/likes-you" },
-  { labelKey: "linkWinkedAtYou", href: "/my-list/winked-at-you" },
-  { labelKey: "linkViewedYou", href: "/my-list/viewed-you" },
+  { labelKey: "linkLikesYou", href: "/my-list?tab=likes-you" },
+  { labelKey: "linkWinkedAtYou", href: "/my-list?tab=winked-at-you" },
+  { labelKey: "linkViewedYou", href: "/my-list?tab=viewed-you" },
 ];
 
 const specialLinks: SidebarLink[] = [
   { labelKey: "linkFlame", href: "/flame" },
-  { labelKey: "linkMemberBlog", href: "/community/blog" },
+  { labelKey: "linkMemberBlog", href: "/blog" },
   { labelKey: "linkSuccessStories", href: "/community/success-stories" },
   { labelKey: "linkDiseaseQA", href: "/community/qa" },
 ];

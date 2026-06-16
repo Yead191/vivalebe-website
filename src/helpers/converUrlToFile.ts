@@ -11,10 +11,7 @@ export async function createImageItemFromUrl(
     id: string,
     url: string
 ): Promise<ImageItem> {
-    // console.log(url);
-
     const response = await fetch(getImageUrl(url));
-
 
     if (!response.ok) {
         throw new Error("Failed to fetch image");

@@ -12,7 +12,7 @@ interface RightSidebarProps {
 
 export function RightSidebar({ lang, dict, suggestions }: RightSidebarProps) {
   return (
-    <aside className="space-y-3 max-h-[calc(100vh-90px)] overflow-auto scrollbar-hide">
+    <aside className="space-y-3 max-h-[calc(100vh-90px)] overflow-auto scrollbar-hide pb-8">
       <div className="flex items-center justify-between px-1">
         <h3 className="text-xs font-semibold tracking-wider text-foreground">
           {dict.myHome.youMightLike}
