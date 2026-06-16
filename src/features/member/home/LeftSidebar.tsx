@@ -25,7 +25,7 @@ const connectionLinks: SidebarLink[] = [
 const specialLinks: SidebarLink[] = [
   { labelKey: "linkFlame", href: "/flame" },
   { labelKey: "linkMemberBlog", href: "/blog" },
-  { labelKey: "linkSuccessStories", href: "/community/success-stories" },
+  { labelKey: "linkSuccessStories", href: "/success-stories" },
   { labelKey: "linkDiseaseQA", href: "/community/qa" },
 ];
 

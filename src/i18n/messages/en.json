@@ -188,5 +188,32 @@
     "modalGuideline2": "Commercial promotions, including web links.",
     "modalGuideline3": "Personal contact details such as email, phone numbers, or addresses.",
     "modalGuideline4": "HTML code or content copied directly from other websites."
+  },
+  "successStories": {
+    "title": "Success Stories",
+    "introTitle": "Celebrate the real journeys that started here.",
+    "introDescription": "Browse member milestones, like the stories you love, leave a comment, report unsafe content, and open any profile to see the person behind the post.",
+    "createStory": "Share your story",
+    "shareDialogTitle": "Share your success story",
+    "shareDialogDescription": "A polished creator flow for members to draft and publish a meaningful relationship milestone.",
+    "guidelinesTitle": "Guidelines",
+    "guideline1": "Add photos or videos that support the story.",
+    "guideline2": "Keep contact details private.",
+    "guideline3": "Original content only. No watermarks.",
+    "backToStories": "Back to stories",
+    "openDetails": "Open details",
+    "report": "Report",
+    "like": "Like",
+    "comment": "Comment",
+    "reply": "Reply",
+    "share": "Share",
+    "stories": "stories",
+    "likes": "likes",
+    "comments": "comments",
+    "commentsTitle": "Comments",
+    "commentPlaceholder": "Write a thoughtful comment...",
+    "commentHint": "Be kind, specific, and genuine.",
+    "postComment": "Post comment",
+    "storyNotFound": "Success story not found."
   }
 }

@@ -53,12 +53,12 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
   return (
     <>
       <article className="overflow-hidden border border-border bg-card">
-        <div className="grid grid-cols-[260px_minmax(0,1fr)] sm:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="grid grid-cols-[260px_minmax(0,1fr)] sm:grid-cols-[480px_minmax(0,1fr)]">
           {/* Left: Photo */}
           <Link
             href={`/${lang}/profile/${user.username}`}
-            className="relative block overflow-hidden bg-muted"
-            style={{ minHeight: 280 }}
+            className="relative block overflow-hidden bg-muted min-h-70 lg:min-h-92 2xl:min-h-120 "
+
           >
             <Image
               src={photo}
@@ -112,7 +112,7 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
                   <MoreHorizontal className="size-4" />
                 </button>
                 {menuOpen ? (
-                  <div className="absolute right-0 top-7 z-20 min-w-[130px] rounded border border-border bg-popover shadow-md text-sm">
+                  <div className="absolute right-0 top-7 z-20 min-w-32.5 rounded border border-border bg-popover shadow-md text-sm">
                     <button
                       type="button"
                       className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"

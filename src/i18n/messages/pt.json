@@ -188,5 +188,32 @@
     "modalGuideline2": "Promoções comerciais, incluindo links externos.",
     "modalGuideline3": "Dados de contato pessoais como e-mail, telefone ou endereço.",
     "modalGuideline4": "Código HTML ou conteúdo copiado diretamente de outros sites."
+  },
+  "successStories": {
+    "title": "Histórias de Sucesso",
+    "introTitle": "Celebre as jornadas reais que começaram aqui.",
+    "introDescription": "Explore marcos dos membros, curta as histórias que você ama, deixe um comentário, denuncie conteúdo inseguro e abra qualquer perfil para ver a pessoa por trás da publicação.",
+    "createStory": "Compartilhe sua história",
+    "shareDialogTitle": "Compartilhe sua história de sucesso",
+    "shareDialogDescription": "Um fluxo refinado para membros criarem e publicarem um marco importante do relacionamento.",
+    "guidelinesTitle": "Diretrizes",
+    "guideline1": "Adicione fotos ou vídeos que apoiem a história.",
+    "guideline2": "Mantenha os dados de contato privados.",
+    "guideline3": "Apenas conteúdo original. Sem marcas d'água.",
+    "backToStories": "Voltar às histórias",
+    "openDetails": "Abrir detalhes",
+    "report": "Denunciar",
+    "like": "Curtir",
+    "comment": "Comentar",
+    "reply": "Responder",
+    "share": "Compartilhar",
+    "stories": "histórias",
+    "likes": "curtidas",
+    "comments": "comentários",
+    "commentsTitle": "Comentários",
+    "commentPlaceholder": "Escreva um comentário atencioso...",
+    "commentHint": "Seja gentil, específico e genuíno.",
+    "postComment": "Publicar comentário",
+    "storyNotFound": "História de sucesso não encontrada."
   }
 }
