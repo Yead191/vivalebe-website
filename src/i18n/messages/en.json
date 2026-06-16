@@ -134,7 +134,16 @@
     "navPersonalBlogs": "PERSONAL BLOGS",
     "navAddPrivateNote": "ADD A PRIVATE NOTE",
     "relationshipStatus": "Relationship Status",
-    "religion": "Religion"
+    "religion": "Religion",
+    "notFoundTitle": "This user was not found",
+    "notFoundDescription": "We could not find a profile for @{username}. The member may have changed their username or the profile may no longer be active.",
+    "notFoundTipsTitle": "What you can do",
+    "notFoundTipsBody": "Go back to discover other members, browse success stories, or return home and continue exploring.",
+    "notFoundHelpTitle": "Need help?",
+    "notFoundHelpBody": "If you think this is an error, please try another username or refresh the page.",
+    "notFoundBrowse": "Browse members",
+    "notFoundHome": "Go home",
+    "notFoundBadge": "Premium profile view"
   },
   "flame": {
     "title": "Flame",

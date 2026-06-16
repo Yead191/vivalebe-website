@@ -37,7 +37,7 @@ export const VideoCard = memo(function VideoCard({
       {video.caption ? (
         <p className="px-4 pt-2 text-sm text-foreground">{video.caption}</p>
       ) : null}
-      <div className="mt-3 aspect-8/6 2xl:aspect-5/5 bg-muted overflow-hidden">
+      <div className="mt-3 aspect-8/6 2xl:aspect-6/5 bg-muted overflow-hidden">
         {video.video ? (
           <FeedVideoPlayer
             id={video.id}

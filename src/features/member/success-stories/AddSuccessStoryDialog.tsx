@@ -84,14 +84,14 @@ export function AddSuccessStoryDialog({
           Add success story
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] min-w-xl overflow-hidden p-0">
+      <DialogContent className="max-h-[90vh] min-w-xl overflow-hidden p-0 ">
         <div className="max-h-[90vh] overflow-y-auto p-6">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4">
+          <div className="grid gap-4 pt-4">
             <div className="grid gap-4">
               <Input
                 placeholder="Story title"

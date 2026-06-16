@@ -134,7 +134,16 @@
     "navPersonalBlogs": "BLOGS PESSOAIS",
     "navAddPrivateNote": "ADICIONAR NOTA PRIVADA",
     "relationshipStatus": "Estado Civil",
-    "religion": "Religião"
+    "religion": "Religião",
+    "notFoundTitle": "Este utilizador não foi encontrado",
+    "notFoundDescription": "Não foi possível encontrar um perfil para @{username}. O membro pode ter alterado o seu nome de utilizador ou o perfil poderá já não estar ativo.",
+    "notFoundTipsTitle": "O que pode fazer",
+    "notFoundTipsBody": "Volte atrás para descobrir outros membros, explorar histórias de sucesso ou regressar à página inicial e continuar a explorar.",
+    "notFoundHelpTitle": "Precisa de ajuda?",
+    "notFoundHelpBody": "Se pensa que isto é um erro, tente outro nome de utilizador ou atualize a página.",
+    "notFoundBrowse": "Explorar membros",
+    "notFoundHome": "Ir para a página inicial",
+    "notFoundBadge": "Visualização de perfil Premium"
   },
   "flame": {
     "title": "Flame",

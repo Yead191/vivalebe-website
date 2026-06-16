@@ -62,21 +62,22 @@ export function FlameCard({
   return (
     <TooltipProvider>
       <article className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="grid gap-0 md:grid-cols-[minmax(0,520px)_minmax(0,1fr)]">
-          <div className="group relative aspect-square w-full bg-muted">
+        <div className="grid gap-0 md:grid-cols-[minmax(0,520px)_minmax(0,1fr)] min-h-[calc(100vh-160px)]">
+
+          {/* Left Side: Image container */}
+          <div className="group relative aspect-square w-full bg-muted md:aspect-auto md:h-full">
             <Link
               href={profileHref}
-              className="block size-full"
+              className="relative block h-full w-full"
               aria-label={`Open ${user.displayName}'s profile`}
             >
               <Image
-                src={photoUrl(currentSeed, 720, 720)}
+                src={photoUrl(currentSeed, 800, 920)}
                 alt={user.displayName}
-                width={600}
-                height={620}
+                fill
+                sizes="(max-width: 768px) 100vw, 520px"
                 className="object-cover"
-
-
+                priority
               />
             </Link>
 
@@ -159,36 +160,39 @@ export function FlameCard({
             </div>
           </div>
 
-          <div className="flex flex-col gap-5 p-6">
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
+          {/* Right Side */}
+          <div className="flex flex-col gap-8 p-8 justify-start">
+
+            {/* Header info */}
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <Link
                   href={profileHref}
-                  className="text-lg font-bold tracking-wide hover:text-brand transition-colors"
+                  className="text-2xl font-extrabold tracking-wide hover:text-brand transition-colors"
                 >
                   {user.displayName}, {user.age}
                 </Link>
                 {user.premium ? (
-                  <span className="rounded-sm border border-border px-1.5 text-[10px] font-semibold tracking-wider text-foreground">
+                  <span className="rounded-sm border border-border px-1.5 py-0.5 text-[10px] font-semibold tracking-wider text-foreground">
                     PREMIUM
                   </span>
                 ) : null}
                 {user.verified ? <VerifiedBadge /> : null}
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 {user.city}
                 {user.state ? `, ${user.state}` : ""}, {user.country}
               </p>
               {user.willingToFly ? (
-                <p className="text-sm font-medium text-brand">Willing to fly to meet</p>
+                <p className="text-base font-semibold text-brand">Willing to fly to meet</p>
               ) : null}
             </div>
 
-            <div className="space-y-2">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold uppercase tracking-widest text-foreground/80">
                 More About Me
               </h4>
-              <dl className="space-y-1 text-sm">
+              <dl className="space-y-2 text-base">
                 <Row label="Relationship status" value={user.relationshipStatus} />
                 <Row label="Height" value={user.height} />
                 <Row label="Body type" value={user.bodyType} />
@@ -196,23 +200,25 @@ export function FlameCard({
               </dl>
             </div>
 
-            <div className="space-y-1">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
+            <div className="space-y-2">
+              <h4 className="text-sm font-bold uppercase tracking-widest text-foreground/80">
                 Profile Headline
               </h4>
-              <p className="text-sm text-foreground">{user.headline}</p>
+              <p className="text-base leading-relaxed text-foreground">{user.headline}</p>
             </div>
           </div>
+
         </div>
       </article>
     </TooltipProvider>
   );
 }
 
+// CHANGED: Row component updated to render crisp text-base elements dynamically
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-foreground">
-      <span className="font-semibold">{label}:</span> {value}
+      <span className="font-semibold text-foreground/90">{label}:</span> {value}
     </div>
   );
 }

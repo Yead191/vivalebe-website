@@ -12,6 +12,7 @@ interface Props {
 }
 
 export function ProfileFeature({ lang, dict, user }: Props) {
+  // console.log(user)
   return (
     <div className="container py-5">
       <div className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)]">

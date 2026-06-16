@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Heart, MessageCircle, MoreHorizontal, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 import { avatarUrl } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -12,9 +13,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { SuccessStory } from "./types";
-import { brandButtonClass, brandSoftClass, countMedia, StoryMediaStrip, StoryReactions } from "./shared";
+import { brandButtonClass, countMedia, StoryMediaStrip, StoryReactions } from "./shared";
 import { StoryComments } from "./StoryComments";
-import Image from "next/image";
 
 const relationMap: Record<SuccessStory["relationshipStatus"], { label: string; className: string }> = {
   DATING: { label: "Dating", className: "bg-sky-500/10 text-sky-700 ring-sky-500/20" },
@@ -46,6 +46,8 @@ export function StoryCard({
   onComment: (id: string, text: string) => void;
 }) {
   const [comment, setComment] = useState("");
+  const [liked, setLiked] = useState(false);
+  const commentInputId = `story-comment-${story.id}`;
   const mediaCount = countMedia(story);
   const storyHref = `/${lang}/success-stories/details/${story.id}`;
   const meta = relationMap[story.relationshipStatus];
@@ -119,27 +121,48 @@ export function StoryCard({
       <div className="p-5 sm:p-6">
         <StoryMediaStrip media={story.media} storyHref={storyHref} />
 
-        <div className="mt-5 flex items-center justify-between gap-3">
-          <StoryReactions likes={story.likesCount} comments={story.commentsCount} />
-          <Button variant="outline" size="sm" asChild className="rounded-full border-[#429CA8]/20 text-[#2b7e87]">
-            <Link href={storyHref}>Open story</Link>
+        <div className="mt-5 flex gap-3 items-center">
+          <Button
+            type="button"
+            variant="outline"
+            className={cn(
+              " justify-start gap-2 rounded-[1.25rem] border-[#429CA8]/18 px-4 py-6",
+              liked ? "bg-[#429CA8] text-[#429CA8]! hover:bg-[#388994]" : "text-slate-900"
+            )}
+            onClick={() => {
+              setLiked((prev) => !prev);
+              onLike(story.id);
+            }}
+          >
+            <Heart className={cn("size-4", liked && "fill-current")} />
+            <span>{story.likesCount}</span>
           </Button>
-        </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <Button onClick={() => onLike(story.id)} className={brandButtonClass}>
-            <Heart className="size-4" />
-            Like
+          <Button
+            type="button"
+            variant="outline"
+            className=" justify-start gap-2 rounded-[1.25rem] border-[#429CA8]/18 px-4 py-6 text-slate-900"
+            onClick={() => {
+              const input = document.getElementById(commentInputId) as HTMLTextAreaElement | null;
+              input?.focus();
+              input?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }}
+          >
+            <MessageCircle className="size-4" />
+            <span>{story.commentsCount}</span>
           </Button>
-          <Button variant="outline" className={brandSoftClass} asChild>
-            <Link href={storyHref}>
-              <MessageCircle className="size-4" />
-              Comment
-            </Link>
-          </Button>
-          <Button variant="ghost" className="rounded-full">
+
+          <Button
+            variant="ghost"
+            className="rounded-full sm:col-span-2"
+            onClick={() =>
+              toast.message(dict.successStories.share, {
+                description: "Sharing can be wired to your real flow next.",
+              })
+            }
+          >
             <Share2 className="size-4" />
-            Share
+            {dict.successStories.share}
           </Button>
         </div>
 
@@ -161,6 +184,7 @@ export function StoryCard({
           />
           <div className="min-w-0 flex-1">
             <textarea
+              id={commentInputId}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder={dict.successStories.commentPlaceholder}
@@ -169,7 +193,7 @@ export function StoryCard({
             <div className="mt-3 flex items-center justify-between gap-3">
               <p className="text-xs text-muted-foreground">{dict.successStories.commentHint}</p>
               <Button type="submit" className={brandButtonClass}>
-                Post
+                {dict.successStories.comment}
               </Button>
             </div>
           </div>
