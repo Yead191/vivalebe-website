@@ -3,15 +3,18 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Heart, MessageCircle, Flag, Share2 } from "lucide-react";
+import { ArrowLeft, Flag, Heart, MessageCircle, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { avatarUrl } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Locale } from "@/i18n/config";
 import type { Comment } from "@/lib/types";
 import type { SuccessStory } from "./types";
+import { brandButtonClass, brandSoftClass } from "./shared";
+import { StoryComments } from "./StoryComments";
+import { StoryMediaStrip } from "./shared";
 
 export function SuccessStoryDetailsClient({
   lang,
@@ -26,9 +29,16 @@ export function SuccessStoryDetailsClient({
 }) {
   const [story, setStory] = useState(initialStory);
   const [comment, setComment] = useState("");
+  const [liked, setLiked] = useState(false);
 
   const handleLike = () => {
-    setStory((prev) => ({ ...prev, likesCount: prev.likesCount + 1 }));
+    setLiked((prev) => {
+      setStory((current) => ({
+        ...current,
+        likesCount: Math.max(current.likesCount + (prev ? -1 : 1), 0),
+      }));
+      return !prev;
+    });
   };
 
   const handleComment = (text: string) => {
@@ -57,66 +67,62 @@ export function SuccessStoryDetailsClient({
             {dict.successStories.backToStories}
           </Link>
         </Button>
-        <Button variant="outline" size="sm" className="rounded-full" onClick={() => toast.message("Report sent", { description: "Thanks for helping keep the feed safe." })}>
+        <Button
+          variant="outline"
+          size="sm"
+          className={brandSoftClass}
+          onClick={() => toast.message("Report sent", { description: "Thanks for helping keep the feed safe." })}
+        >
           <Flag className="size-4" />
           {dict.successStories.report}
         </Button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <article className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/90 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-          <div className="relative h-[24rem] bg-slate-950">
-            {story.media[0] ? (
-              <Image src={story.media[0].url} alt={story.media[0].alt} fill className="object-cover" unoptimized />
-            ) : null}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">{story.relationshipStatus}</p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">{story.title}</h1>
-            </div>
-          </div>
-
-          <div className="p-6">
+        <article className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+          <div className="p-6 pb-0">
             <div className="flex items-center gap-3">
-              <Image src={avatarUrl(story.user.profileImage, 96)} alt={story.user.name} width={52} height={52} className="size-13 rounded-full object-cover" unoptimized />
+              <Image
+                src={avatarUrl(story.user.profileImage, 96)}
+                alt={story.user.name}
+                width={54}
+                height={54}
+                className="size-13 rounded-full object-cover ring-2 ring-white"
+                unoptimized
+              />
               <div>
-                <Link href={`/${lang}/profile/${story.user.username}`} className="font-semibold hover:text-brand">
+                <Link href={`/${lang}/profile/${story.user.username}`} className="font-semibold text-slate-900 hover:text-[#429CA8]">
                   {story.user.name}
                 </Link>
                 <p className="text-sm text-muted-foreground">@{story.user.username}</p>
               </div>
             </div>
 
-            <p className="mt-5 text-base leading-8 text-foreground/90">{story.story}</p>
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#2b7e87]">{story.relationshipStatus}</p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">{story.title}</h1>
+              <p className="mt-4 text-base leading-8 text-slate-600">{story.story}</p>
+            </div>
 
             <div className="mt-6 flex items-center gap-2">
-              <Button onClick={handleLike} className="rounded-full">
+              <Button onClick={handleLike} className={brandButtonClass}>
                 <Heart className="size-4" />
-                {dict.successStories.like} {story.likesCount}
+                {liked ? "Liked" : dict.successStories.like}
+                <span className="ml-1">{story.likesCount}</span>
               </Button>
-              <Button variant="secondary" className="rounded-full">
+              <Button variant="outline" className={brandSoftClass}>
                 <Share2 className="size-4" />
                 {dict.successStories.share}
               </Button>
             </div>
+          </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {story.media.map((item) => (
-                <div key={item.id} className="overflow-hidden rounded-2xl border border-border">
-                  {item.type === "image" ? (
-                    <Image src={item.url} alt={item.alt} width={800} height={600} className="h-56 w-full object-cover" unoptimized />
-                  ) : (
-                    <div className="flex h-56 items-center justify-center bg-slate-950 text-white">
-                      <MessageCircle className="size-8" />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+          <div className="p-6">
+            <StoryMediaStrip media={story.media} />
           </div>
         </article>
 
-        <aside className="space-y-4 rounded-[2rem] border border-white/70 bg-white/90 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+        <aside className="space-y-4 rounded-[2rem] border border-white/70 bg-white/95 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">
             {dict.successStories.commentsTitle}
           </p>
@@ -126,36 +132,33 @@ export function SuccessStoryDetailsClient({
               if (!comment.trim()) return;
               handleComment(comment.trim());
             }}
-            className="space-y-3 rounded-2xl border border-border bg-muted/40 p-4"
+            className="space-y-3 rounded-[1.5rem] border border-[#429CA8]/12 bg-[#429CA8]/6 p-4"
           >
+            <div className="flex items-start gap-3">
+              <Image
+                src={avatarUrl(currentUser.avatarSeed, 96)}
+                alt=""
+                width={42}
+                height={42}
+                className="size-10 rounded-full object-cover ring-2 ring-white"
+                unoptimized
+              />
               <Textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder={dict.successStories.commentPlaceholder}
-              className="min-h-32 resize-none rounded-2xl bg-background"
-            />
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder={dict.successStories.commentPlaceholder}
+                className="min-h-28 resize-none rounded-2xl border-[#429CA8]/15 bg-white"
+              />
+            </div>
             <div className="flex justify-end">
-              <Button type="submit" className="rounded-full">
+              <Button type="submit" className={brandButtonClass}>
                 <MessageCircle className="size-4" />
                 {dict.successStories.postComment}
               </Button>
             </div>
           </form>
 
-          <div className="space-y-3">
-            {story.comments.length === 0 ? (
-              <p className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
-                {dict.successStories.commentHint}
-              </p>
-            ) : (
-              story.comments.map((item) => (
-                <div key={item.id} className="rounded-2xl border border-border p-4 text-sm">
-                  <p className="font-medium">{story.user.name}</p>
-                  <p className="mt-1 text-muted-foreground">{item.text}</p>
-                </div>
-              ))
-            )}
-          </div>
+          <StoryComments comments={story.comments} />
         </aside>
       </div>
     </div>

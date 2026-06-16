@@ -31,8 +31,14 @@ export const successStories: SuccessStory[] = [
         alt: "Engagement celebration photo",
       },
       {
+        id: "m3",
+        url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
+        type: "image",
+        alt: "Engagement celebration photo",
+      },
+      {
         id: "m2",
-        url: "https://images.unsplash.com/photo-1523438097201-512ae7d59b7f?auto=format&fit=crop&w=1200&q=80",
+        url: "https://img.magnific.com/free-photo/young-couple-together-walking-autumn-park_1303-26183.jpg",
         type: "image",
         alt: "Couple smiling together",
       },
@@ -41,7 +47,11 @@ export const successStories: SuccessStory[] = [
     commentsCount: 18,
     createdAt: "2026-06-16T10:30:00Z",
     updatedAt: "2026-06-16T10:30:00Z",
-    comments: [],
+    comments: [
+      { id: "s1-c1", authorId: "u_maya", text: "This is so beautifully told. Congratulations.", createdAt: "2026-06-16T12:00:00Z" },
+      { id: "s1-c2", authorId: "u_olivia", text: "The photos feel warm and honest. Love this for you both.", createdAt: "2026-06-16T12:15:00Z" },
+      { id: "s1-c3", authorId: "u_sofia", text: "A gorgeous journey from first message to engagement.", createdAt: "2026-06-16T12:40:00Z" },
+    ],
   },
   {
     id: "6850123456789abcdef12346",
@@ -64,16 +74,26 @@ export const successStories: SuccessStory[] = [
       },
       {
         id: "m4",
-        url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
+        url: "https://res.cloudinary.com/dknmebeee/video/upload/v1781581320/Pov-_You_are_a_big_fan_of_Argentina_off_shoulder_t_shirt_from-__clothing__flair_Qualit_i7jihy.mp4",
         type: "video",
         alt: "Short date video",
+      },
+      {
+        id: "m2",
+        url: "https://img.magnific.com/free-photo/young-couple-together-walking-autumn-park_1303-26183.jpg",
+        type: "image",
+        alt: "Couple smiling together",
       },
     ],
     likesCount: 89,
     commentsCount: 9,
     createdAt: "2026-06-14T18:05:00Z",
     updatedAt: "2026-06-15T09:00:00Z",
-    comments: [],
+    comments: [
+      { id: "s2-c1", authorId: "u_lucas", text: "The coffee-date energy here is unmatched.", createdAt: "2026-06-14T19:00:00Z" },
+      { id: "s2-c2", authorId: "u_camila", text: "That video makes it feel like we are right there with you.", createdAt: "2026-06-14T19:20:00Z" },
+      { id: "s2-c3", authorId: "u_aurora", text: "Simple moments really do become the best memories.", createdAt: "2026-06-14T20:05:00Z" },
+    ],
   },
   {
     id: "6850123456789abcdef12347",
@@ -92,7 +112,11 @@ export const successStories: SuccessStory[] = [
     commentsCount: 6,
     createdAt: "2026-06-10T08:20:00Z",
     updatedAt: "2026-06-11T14:20:00Z",
-    comments: [],
+    comments: [
+      { id: "s3-c1", authorId: "u_pedro", text: "This kind of honesty is what builds something real.", createdAt: "2026-06-10T10:00:00Z" },
+      { id: "s3-c2", authorId: "u_beatriz", text: "Patient conversations are underrated. Beautiful story.", createdAt: "2026-06-10T10:45:00Z" },
+      { id: "s3-c3", authorId: "u_tomas", text: "A thoughtful reminder that trust takes time.", createdAt: "2026-06-10T11:10:00Z" },
+    ],
   },
   {
     id: "6850123456789abcdef12348",
@@ -118,6 +142,10 @@ export const successStories: SuccessStory[] = [
     commentsCount: 25,
     createdAt: "2026-06-08T12:45:00Z",
     updatedAt: "2026-06-16T04:25:00Z",
-    comments: [],
+    comments: [
+      { id: "s4-c1", authorId: "u_helena", text: "Two cities, one future. That line alone is powerful.", createdAt: "2026-06-08T13:15:00Z" },
+      { id: "s4-c2", authorId: "u_rafa", text: "The sunset proposal is cinematic in the best way.", createdAt: "2026-06-08T13:40:00Z" },
+      { id: "s4-c3", authorId: "u_maya", text: "So intentional and tender. Congrats to you both.", createdAt: "2026-06-08T14:05:00Z" },
+    ],
   },
 ];
