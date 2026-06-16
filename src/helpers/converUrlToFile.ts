@@ -1,4 +1,4 @@
-import { getImageUrl } from "@/utils/getImageUrl";
+import { getImageUrl } from "./getImageUrl";
 
 interface ImageItem {
     id: string;
