@@ -18,7 +18,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
 
   return (
     <article className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="grid gap-0 sm:grid-cols-[260px_minmax(0,1fr)]">
+      <div className="grid gap-0 sm:grid-cols-[300px_minmax(0,1fr)] lg:grid-cols-[400px_minmax(0,1fr)] 2xl:grid-cols-[500px_minmax(0,1fr)]">
         <Link
           href={`/${lang}/profile/${user.username}`}
           className="relative block aspect-square w-full overflow-hidden bg-muted sm:aspect-auto"
