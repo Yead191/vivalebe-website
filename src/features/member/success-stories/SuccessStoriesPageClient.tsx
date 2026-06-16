@@ -10,7 +10,7 @@ import { avatarUrl } from "@/lib/image";
 import { AddSuccessStoryDialog } from "./AddSuccessStoryDialog";
 import { StoryCard } from "./StoryCard";
 import { countMedia } from "./shared";
-import { sortOptions } from "./data";
+import { sortOptions } from "../../../lib/mock/success-stories-mock";
 import type { SuccessStory, SuccessStoriesSortKey } from "./types";
 import type { Comment } from "@/lib/types";
 import { toast } from "sonner";
@@ -213,7 +213,6 @@ export function SuccessStoriesPageClient({
               </p>
               <div className="space-y-4 text-sm text-muted-foreground">
                 <p>Stories create trust. Members can show progress, celebrate milestones, and inspire others in the community.</p>
-                <p>Each post now supports richer media previews, mock social proof, and stronger interactive states.</p>
               </div>
               <Button variant="outline" className="w-full rounded-full border-[#429CA8]/20 text-[#2b7e87]" asChild>
                 <Link href={`/${lang}/myHome`}>

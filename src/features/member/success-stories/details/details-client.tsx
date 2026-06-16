@@ -11,10 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Locale } from "@/i18n/config";
 import type { Comment } from "@/lib/types";
-import type { SuccessStory } from "./types";
-import { brandButtonClass, brandSoftClass } from "./shared";
-import { StoryComments } from "./StoryComments";
-import { StoryMediaStrip } from "./shared";
+import type { SuccessStory } from "../types";
+import { brandButtonClass, brandSoftClass } from "../shared";
+import { StoryComments } from "../StoryComments";
+import { StoryMediaStrip } from "../shared";
 
 export function SuccessStoryDetailsClient({
   lang,
@@ -118,7 +118,7 @@ export function SuccessStoryDetailsClient({
           </div>
 
           <div className="p-6">
-            <StoryMediaStrip media={story.media} />
+            <StoryMediaStrip media={story.media} isDetails={true} />
           </div>
         </article>
 

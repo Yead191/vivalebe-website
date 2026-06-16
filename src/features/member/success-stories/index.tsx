@@ -1,7 +1,7 @@
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getCurrentUser } from "@/lib/mock/current-user";
-import { successStories } from "./data";
+import { successStories } from "../../../lib/mock/success-stories-mock";
 import { SuccessStoriesPageClient } from "./SuccessStoriesPageClient";
 
 export default function SuccessStoriesFeature({

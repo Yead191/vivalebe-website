@@ -14,6 +14,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { SuccessStory } from "./types";
 import { brandButtonClass, brandSoftClass, countMedia, StoryMediaStrip, StoryReactions } from "./shared";
 import { StoryComments } from "./StoryComments";
+import Image from "next/image";
 
 const relationMap: Record<SuccessStory["relationshipStatus"], { label: string; className: string }> = {
   DATING: { label: "Dating", className: "bg-sky-500/10 text-sky-700 ring-sky-500/20" },
@@ -116,7 +117,7 @@ export function StoryCard({
       </div>
 
       <div className="p-5 sm:p-6">
-        <StoryMediaStrip media={story.media} />
+        <StoryMediaStrip media={story.media} storyHref={storyHref} />
 
         <div className="mt-5 flex items-center justify-between gap-3">
           <StoryReactions likes={story.likesCount} comments={story.commentsCount} />
@@ -151,9 +152,11 @@ export function StoryCard({
             setComment("");
           }}
         >
-          <img
+          <Image
             src={avatarUrl(currentUser.avatarSeed, 80)}
             alt=""
+            height={80}
+            width={80}
             className="size-9 rounded-full object-cover ring-2 ring-white"
           />
           <div className="min-w-0 flex-1">

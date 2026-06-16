@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import SuccessStoryDetailsFeature from "@/features/member/success-stories/details";
+import SuccessStoryDetailsFeature from "@/features/member/success-stories/details/details";
 
 export default async function SuccessStoryDetailsPage({
     params,

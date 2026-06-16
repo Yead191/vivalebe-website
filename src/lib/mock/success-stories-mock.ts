@@ -1,4 +1,4 @@
-import type { SuccessStory } from "./types";
+import type { SuccessStory } from "../../features/member/success-stories/types";
 
 export const sortOptions = [
   "Newest",
@@ -17,7 +17,7 @@ export const successStories: SuccessStory[] = [
       id: "6850abcdef12345678901234",
       name: "Sarah Johnson",
       username: "sarahjohnson",
-      profileImage: "https://example.com/uploads/users/sarah-johnson.jpg",
+      profileImage: "https://res.cloudinary.com/dknmebeee/image/upload/v1778908239/Screenshot_2026-05-15_154324_xcorgc.png",
     },
     relationshipStatus: "ENGAGED",
     title: "From First Message to Forever",
@@ -31,17 +31,36 @@ export const successStories: SuccessStory[] = [
         alt: "Engagement celebration photo",
       },
       {
+        id: "m9",
+        url: "https://img.magnific.com/free-photo/young-couple-together-walking-autumn-park_1303-26183.jpg",
+        type: "image",
+        alt: "Couple smiling together",
+      },
+      {
+        id: "m3",
+        url: "https://images.pexels.com/photos/31559041/pexels-photo-31559041.jpeg?cs=srgb&dl=pexels-seljansalim-31559041.jpg&fm=jpg",
+        type: "image",
+        alt: "Engagement celebration photo",
+      },
+      {
+        id: "m3",
+        url: "https://img.magnific.com/premium-photo/stylish-couple-walking-hugging-by-sea-lovely-hipster-couple-enjoying-time-together_217236-19621.jpg?semt=ais_hybrid&w=740&q=80",
+        type: "image",
+        alt: "Engagement celebration photo",
+      },
+      {
+        id: "m11",
+        url: "https://i.pinimg.com/736x/19/84/2d/19842db5743a6aa0bd8591b0c4bf2968.jpg",
+        type: "image",
+        alt: "Engagement celebration photo",
+      },
+      {
         id: "m3",
         url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
         type: "image",
         alt: "Engagement celebration photo",
       },
-      {
-        id: "m2",
-        url: "https://img.magnific.com/free-photo/young-couple-together-walking-autumn-park_1303-26183.jpg",
-        type: "image",
-        alt: "Couple smiling together",
-      },
+
     ],
     likesCount: 124,
     commentsCount: 18,
@@ -59,7 +78,7 @@ export const successStories: SuccessStory[] = [
       id: "6850abcdef12345678901235",
       name: "Miguel Santos",
       username: "miguelsantos",
-      profileImage: "https://example.com/uploads/users/miguel-santos.jpg",
+      profileImage: "https://res.cloudinary.com/dknmebeee/image/upload/v1778908239/Screenshot_2026-05-15_154324_xcorgc.png",
     },
     relationshipStatus: "DATING",
     title: "A Coffee Date That Changed Everything",
@@ -101,7 +120,7 @@ export const successStories: SuccessStory[] = [
       id: "6850abcdef12345678901234",
       name: "Sarah Johnson",
       username: "sarahjohnson",
-      profileImage: "https://example.com/uploads/users/sarah-johnson.jpg",
+      profileImage: "https://res.cloudinary.com/dknmebeee/image/upload/v1778908239/Screenshot_2026-05-15_154324_xcorgc.png",
     },
     relationshipStatus: "OTHER",
     title: "Building Trust One Conversation at a Time",
@@ -124,7 +143,7 @@ export const successStories: SuccessStory[] = [
       id: "6850abcdef12345678901236",
       name: "Amina Bello",
       username: "aminabello",
-      profileImage: "https://example.com/uploads/users/amina-bello.jpg",
+      profileImage: "https://res.cloudinary.com/dknmebeee/image/upload/v1778908239/Screenshot_2026-05-15_154324_xcorgc.png",
     },
     relationshipStatus: "ENGAGED",
     title: "Two Cities, One Future",
