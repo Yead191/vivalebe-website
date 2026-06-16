@@ -4,9 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, MessageCircle } from "lucide-react";
-import { toast } from "sonner";
 import { avatarUrl } from "@/lib/image";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -21,6 +19,7 @@ export const brandButtonClass =
 
 export type AnonymousProfile = {
   name: string;
+  username?: string;
   image: string;
 };
 
@@ -139,7 +138,7 @@ export function AddDiseasePostDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-hidden p-0">
+      <DialogContent className="max-h-[90vh] min-w-xl overflow-hidden p-0">
         <div className="max-h-[90vh] overflow-y-auto p-6">
           <DialogHeader>
             <DialogTitle className="text-2xl">{dict.diseaseQa.createPostTitle}</DialogTitle>

@@ -31,8 +31,6 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
         });
     }, [posts, search, filter]);
 
-    const selectedPost = visiblePosts[0] ?? null;
-
     const createPost = (payload: { title: string; body: string; disease: DiseaseCategory; anonymous: boolean }) => {
         const next: DiseasePost = {
             id: `dq_${Date.now()}`,
@@ -70,7 +68,7 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
 
     return (
         <div className="relative isolate overflow-hidden">
-            <div className="absolute inset-x-0 top-0 -z-10 h-112 bg-[radial-gradient(circle_at_20%_20%,rgba(66,156,168,0.18),transparent_32%),radial-gradient(circle_at_80%_0%,rgba(66,156,168,0.14),transparent_28%),linear-gradient(180deg,#fff,#f8fafc_45%,#eef7f8)]" />
+            <div className="absolute inset-x-0 top-0 -z-10 h-120 bg-[radial-gradient(circle_at_20%_20%,rgba(66,156,168,0.18),transparent_32%),radial-gradient(circle_at_80%_0%,rgba(66,156,168,0.14),transparent_28%),linear-gradient(180deg,#fff,#f8fafc_45%,#eef7f8)]" />
             <div className="absolute left-1/2 top-24 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-[#429CA8]/10 blur-3xl" />
 
             <div className="container py-6 sm:py-8">
@@ -88,13 +86,13 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
                     </Button>
                 </div>
 
-                <section className="w-full">
+                <section className="w-full flex flex-col gap-8 ">
                     <div className="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-8">
                         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.35em] text-[#2b7e87]">
                             <Sparkles className="size-4" />
                             {dict.diseaseQa.title}
                         </div>
-                        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+                        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
                             {dict.diseaseQa.heroTitle}
                         </h1>
                         <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">
@@ -104,24 +102,27 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
                             {dict.diseaseQa.disclaimer}
                         </p>
                     </div>
+                    <div className="rounded-[1.5rem] border border-[#429CA8]/12 bg-[#429CA8]/6 p-4 lg:hidden">
+                        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#2b7e87]">{dict.diseaseQa.categoryTitle}</p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                            <button type="button" onClick={() => setFilter("All")} className={`rounded-full px-3 py-1.5 text-xs ${filter === "All" ? "bg-[#429CA8] text-white" : "bg-white text-slate-700"}`}>
+                                {dict.diseaseQa.allFilter}
+                            </button>
+                            {diseaseOptions.map((option) => (
+                                <button key={option} type="button" onClick={() => setFilter(option)} className={`rounded-full px-3 py-1.5 text-xs ${filter === option ? "bg-[#429CA8] text-white" : "bg-white text-slate-700"}`}>
+                                    {option}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </section>
 
-                <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
+                <div className="mt-8 lg:mt-16 grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
                     <div className="space-y-5">
-                        <div className="grid gap-3 rounded-[2rem] border border-white/70 bg-white/95 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.06)] sm:grid-cols-[minmax(0,1fr)_16rem]">
+                        <div className="grid gap-3 rounded-[2rem] border border-white/70 bg-white/95 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
                             <div className="relative">
                                 <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={dict.diseaseQa.searchPlaceholder} className="min-h-11 pl-10" />
-                            </div>
-                            <div className="flex gap-2 overflow-x-auto pb-1">
-                                <button type="button" onClick={() => setFilter("All")} className={`rounded-full px-4 py-2 text-sm ${filter === "All" ? "bg-[#429CA8] text-white" : "bg-muted text-slate-700"}`}>
-                                    {dict.diseaseQa.allFilter}
-                                </button>
-                                {diseaseOptions.map((option) => (
-                                    <button key={option} type="button" onClick={() => setFilter(option)} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm ${filter === option ? "bg-[#429CA8] text-white" : "bg-muted text-slate-700"}`}>
-                                        {option}
-                                    </button>
-                                ))}
                             </div>
                         </div>
 
@@ -131,18 +132,18 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
                     </div>
 
                     <aside className="hidden xl:block">
-                        <div className="sticky top-24 space-y-4 rounded-[2rem] border border-white/70 bg-white/95 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-                            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">{dict.diseaseQa.sidebarTitle}</p>
-                            <p className="text-sm leading-7 text-muted-foreground">{dict.diseaseQa.sidebarBody}</p>
-                            {selectedPost ? (
-                                <div className="space-y-3 rounded-[1.5rem] border border-[#429CA8]/12 bg-[#429CA8]/6 p-4">
-                                    <p className="text-sm font-semibold text-slate-900">{dict.diseaseQa.selectedPost}</p>
-                                    <ReactionStats likes={selectedPost.likesCount} comments={selectedPost.commentsCount} />
-                                    <Button variant="outline" className="w-full rounded-full border-[#429CA8]/20 text-[#2b7e87]" onClick={() => setReportOpen(true)}>
-                                        {dict.diseaseQa.report}
-                                    </Button>
-                                </div>
-                            ) : null}
+                        <div className="rounded-[1.5rem] border border-[#429CA8]/12 bg-[#429CA8]/6 p-4">
+                            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#2b7e87]">{dict.diseaseQa.categoryTitle}</p>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                <button type="button" onClick={() => setFilter("All")} className={`rounded-full px-3 py-1.5 text-xs ${filter === "All" ? "bg-[#429CA8] text-white" : "bg-white text-slate-700"}`}>
+                                    {dict.diseaseQa.allFilter}
+                                </button>
+                                {diseaseOptions.map((option) => (
+                                    <button key={option} type="button" onClick={() => setFilter(option)} className={`rounded-full px-3 py-1.5 text-xs ${filter === option ? "bg-[#429CA8] text-white" : "bg-white text-slate-700"}`}>
+                                        {option}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </aside>
                 </div>
