@@ -26,7 +26,7 @@ const specialLinks: SidebarLink[] = [
   { labelKey: "linkFlame", href: "/flame" },
   { labelKey: "linkMemberBlog", href: "/blog" },
   { labelKey: "linkSuccessStories", href: "/success-stories" },
-  { labelKey: "linkDiseaseQA", href: "/community/qa" },
+  { labelKey: "linkDiseaseQA", href: "/disease-qa" },
 ];
 
 interface LeftSidebarProps {

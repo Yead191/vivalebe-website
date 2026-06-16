@@ -16,6 +16,13 @@ import { Textarea } from "@/components/ui/textarea";
 interface ReportContentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  title?: string;
+  reasonsTitle?: string;
+  detailsTitle?: string;
+  detailsPlaceholder?: string;
+  evidenceTitle?: string;
+  evidenceNote?: string;
+  addLabel?: string;
 }
 
 const REPORT_REASONS = [
@@ -27,7 +34,17 @@ const REPORT_REASONS = [
   "Other",
 ];
 
-export function ReportContentModal({ open, onOpenChange }: ReportContentModalProps) {
+export function ReportContentModal({
+  open,
+  onOpenChange,
+  title = "REPORT THIS PHOTO OR VIDEO",
+  reasonsTitle = "Reasons for reporting*",
+  detailsTitle = "More details (optional)",
+  detailsPlaceholder = "Your report is confidential. Please provide more details to help our review.",
+  evidenceTitle = "Upload evidence (optional)",
+  evidenceNote = "(Upload up to 4 photos or screenshots to help us better understand the issue.)",
+  addLabel = "ADD",
+}: ReportContentModalProps) {
   const [reason, setReason] = useState<string>("");
   const [details, setDetails] = useState("");
 
@@ -36,14 +53,12 @@ export function ReportContentModal({ open, onOpenChange }: ReportContentModalPro
       <DialogContent className="max-w-xl p-0  rounded-none sm:rounded-none border-none max-h-[calc(100vh-10rem)] overflow-auto scrollbar-hide">
         <div className="bg-white p-6 sm:p-10 relative">
           <DialogHeader className="mb-8 items-center">
-            <DialogTitle className="text-xl font-bold tracking-tight">
-              REPORT THIS PHOTO OR VIDEO
-            </DialogTitle>
+            <DialogTitle className="text-xl font-bold tracking-tight">{title}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-8">
             <div className="space-y-4">
-              <h3 className="text-base font-bold">Reasons for reporting*</h3>
+              <h3 className="text-base font-bold">{reasonsTitle}</h3>
               <RadioGroup value={reason} onValueChange={setReason} className="space-y-4">
                 {REPORT_REASONS.map((r) => (
                   <div key={r} className="flex items-center space-x-3">
@@ -57,11 +72,11 @@ export function ReportContentModal({ open, onOpenChange }: ReportContentModalPro
             </div>
 
             <div className="space-y-3">
-              <h3 className="text-base font-bold">More details (optional)</h3>
+              <h3 className="text-base font-bold">{detailsTitle}</h3>
               <div className="relative">
                 <Textarea
-                  placeholder="Your report is confidential. Please provide more details to help our review."
-                  className="min-h-[140px] resize-none border-gray-300 bg-white p-4 text-base focus:border-brand focus:ring-1 focus:ring-brand"
+                  placeholder={detailsPlaceholder}
+                  className="min-h-35 resize-none border-gray-300 bg-white p-4 text-base focus:border-brand focus:ring-1 focus:ring-brand"
                   maxLength={5000}
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
@@ -73,9 +88,9 @@ export function ReportContentModal({ open, onOpenChange }: ReportContentModalPro
             </div>
 
             <div className="space-y-3 pb-4">
-              <h3 className="text-base font-bold">Upload evidence (optional)</h3>
+              <h3 className="text-base font-bold">{evidenceTitle}</h3>
               <p className="text-sm text-muted-foreground">
-                (Upload up to 4 photos or screenshots to help us better understand the issue.)
+                {evidenceNote}
               </p>
               <div className="mt-4">
                 <button
@@ -84,7 +99,7 @@ export function ReportContentModal({ open, onOpenChange }: ReportContentModalPro
                 >
                   <Camera className="size-6 text-muted-foreground" />
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    ADD
+                    {addLabel}
                   </span>
                 </button>
               </div>
