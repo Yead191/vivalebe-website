@@ -11,7 +11,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { ReportContentModal } from "@/features/member/home/modals/ReportContentModal";
 import { diseaseOptions, diseaseQaPosts } from "./data";
 import type { DiseaseCategory, DiseasePost } from "./types";
-import { AddDiseasePostDialog, PostHeader, ReactionStats, brandButtonClass } from "./shared";
+import { AddDiseasePostDialog, PostHeader, brandButtonClass } from "./shared";
 
 export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: Dictionary }) {
     const [posts, setPosts] = useState(diseaseQaPosts);
@@ -156,7 +156,7 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
                     </div>
                 </section>
 
-                <div className="mt-8 lg:mt-16 grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
+                <div className="mt-8 lg:mt-16 grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] relative">
                     <div className="space-y-5">
                         <div className="grid gap-3 rounded-[2rem] border border-white/70 bg-white/95 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
                             <div className="relative">
@@ -166,13 +166,13 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
                         </div>
 
                         {visiblePosts?.map((post) => (
-                            <PostHeader 
-                                key={post.id} 
-                                post={post} 
-                                lang={lang} 
-                                href={`/${lang}/disease-qa/details/${post.id}`} 
-                                dict={dict} 
-                                onOpen={() => { }} 
+                            <PostHeader
+                                key={post.id}
+                                post={post}
+                                lang={lang}
+                                href={`/${lang}/disease-qa/details/${post.id}`}
+                                dict={dict}
+                                onOpen={() => { }}
                                 isLiked={likedPosts.has(post.id)}
                                 onLike={(e) => {
                                     e.preventDefault();
@@ -185,7 +185,7 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
                         ))}
                     </div>
 
-                    <aside className="hidden xl:block">
+                    <aside className="hidden xl:block lg:sticky lg:top-40">
                         <div className="rounded-[1.5rem] border border-[#429CA8]/12 bg-[#429CA8]/6 p-4">
                             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#2b7e87]">{dict.diseaseQa.categoryTitle}</p>
                             <div className="mt-3 flex flex-wrap gap-2">

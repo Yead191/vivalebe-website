@@ -51,9 +51,9 @@ export default function SettingsPageFeature({ lang, dict }: SettingsPageFeatureP
                     {t.title}
                 </h1>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
                     {/* Side Navigation */}
-                    <nav className="lg:col-span-4 bg-white/80  backdrop-blur-md p-4 rounded-2xl border border-neutral-200/60 shadow-sm space-y-1">
+                    <nav className="lg:col-span-4 bg-white/80  backdrop-blur-md p-4 rounded-2xl border border-neutral-200/60 shadow-sm space-y-1 lg:sticky lg:top-20">
                         {menuItems.map((item) => {
                             if (item.type === "heading") {
                                 return (
