@@ -77,27 +77,28 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
           </Link>
 
           {/* Right: Info */}
-          <div className="flex flex-col gap-3 p-4 sm:p-5">
+          <div className="flex flex-col gap-3 lg:gap-5 p-4 sm:p-5 lg:p-6 h-full">
             {/* Name row + menu */}
-            <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-1.5 lg:gap-2">
                   <Link
                     href={`/${lang}/profile/${user.username}`}
-                    className="text-sm font-bold tracking-wide hover:text-brand transition-colors"
+                    className="text-sm lg:text-base font-bold tracking-wide hover:text-brand transition-colors"
                   >
                     {user.displayName}
                   </Link>
                   {user.premium ? (
-                    <span className="rounded-sm border border-border px-1.5 text-[9px] font-semibold tracking-wider text-foreground">
+                    <span className="rounded-sm border border-border px-1.5 py-0.5 text-[9px] lg:text-[10px] font-semibold tracking-wider text-foreground">
                       PREMIUM
                     </span>
                   ) : null}
                   {user.verified ? <VerifiedBadge /> : null}
                 </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">
+                <p className="mt-1 text-xs lg:text-sm leading-relaxed text-muted-foreground">
                   {user.age}, {user.city}
-                  {user.state ? `, ${user.state}` : ""},{" "}
+                  {user.state ? `, ${user.state}` : ""}
+                  {", "}
                   {user.country}
                 </p>
               </div>
@@ -107,37 +108,37 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
                 <button
                   type="button"
                   onClick={() => setMenuOpen((o) => !o)}
-                  className="rounded-full p-1 text-muted-foreground hover:bg-muted transition-colors"
+                  className="rounded-full p-1.5 text-muted-foreground hover:bg-muted transition-colors"
                 >
-                  <MoreHorizontal className="size-4" />
+                  <MoreHorizontal className="size-4 lg:size-5" />
                 </button>
                 {menuOpen ? (
-                  <div className="absolute right-0 top-7 z-20 min-w-32.5 rounded border border-border bg-popover shadow-md text-sm">
+                  <div className="absolute right-0 top-8 z-20 min-w-36 rounded border border-border bg-popover shadow-md text-sm lg:text-base">
                     <button
                       type="button"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
+                      className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left hover:bg-muted transition-colors"
                       onClick={() => {
                         setMenuOpen(false);
                         setReportOpen(true);
                       }}
                     >
-                      <Flag className="size-3.5 text-muted-foreground" />
+                      <Flag className="size-3.5 lg:size-4 text-muted-foreground" />
                       {dict.myList.report}
                     </button>
                     <button
                       type="button"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
+                      className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left hover:bg-muted transition-colors"
                       onClick={() => setMenuOpen(false)}
                     >
-                      <Ban className="size-3.5 text-muted-foreground" />
+                      <Ban className="size-3.5 lg:size-4 text-muted-foreground" />
                       {dict.myList.block}
                     </button>
                     <button
                       type="button"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
+                      className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left hover:bg-muted transition-colors"
                       onClick={() => setMenuOpen(false)}
                     >
-                      <EyeOff className="size-3.5 text-muted-foreground" />
+                      <EyeOff className="size-3.5 lg:size-4 text-muted-foreground" />
                       {dict.myList.hide}
                     </button>
                   </div>
@@ -146,28 +147,28 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
             </div>
 
             {/* Basic information */}
-            <div className="space-y-1">
-              <h4 className="text-[10px] font-bold tracking-widest text-foreground uppercase">
+            <div className="space-y-2">
+              <h4 className="text-[10px] lg:text-xs font-bold tracking-widest text-foreground uppercase">
                 {dict.discover.basicInformation}
               </h4>
-              <div className="space-y-0.5">
+              <div className="space-y-1 lg:space-y-1.5">
                 {user.ethnicity ? (
-                  <p className="text-xs text-brand">
+                  <p className="text-xs lg:text-sm text-brand leading-relaxed">
                     {dict.discover.ethnicity}: {user.ethnicity}
                   </p>
                 ) : null}
                 {user.height ? (
-                  <p className="text-xs text-brand">
+                  <p className="text-xs lg:text-sm text-brand leading-relaxed">
                     {dict.discover.height}: {user.height}
                   </p>
                 ) : null}
                 {user.bodyType ? (
-                  <p className="text-xs text-brand">
+                  <p className="text-xs lg:text-sm text-brand leading-relaxed">
                     {dict.discover.bodyType}: {user.bodyType}
                   </p>
                 ) : null}
                 {user.livingWith ? (
-                  <p className="text-xs text-brand">
+                  <p className="text-xs lg:text-sm text-brand leading-relaxed">
                     {dict.discover.livingWith}: {user.livingWith}
                   </p>
                 ) : null}
@@ -176,18 +177,18 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
 
             {/* Profile headline */}
             {user.headline ? (
-              <div className="space-y-1">
-                <h4 className="text-[10px] font-bold tracking-widest text-foreground uppercase">
+              <div className="space-y-2">
+                <h4 className="text-[10px] lg:text-xs font-bold tracking-widest text-foreground uppercase">
                   {dict.discover.profileHeadline}
                 </h4>
-                <p className="text-xs text-brand leading-relaxed line-clamp-2">
+                <p className="text-xs lg:text-sm text-brand leading-relaxed lg:leading-loose line-clamp-2">
                   {user.headline}
                 </p>
               </div>
             ) : null}
 
             {/* Action buttons */}
-            <div className="mt-auto flex items-center gap-5 pt-2">
+            <div className="mt-auto flex items-center gap-6 lg:gap-8 pt-3 lg:pt-5">
               <button
                 type="button"
                 aria-label={dict.myList.wink}
@@ -197,7 +198,7 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
                   winked ? "text-brand" : "text-muted-foreground hover:text-brand"
                 )}
               >
-                <Smile className="size-5" />
+                <Smile className="size-5 lg:size-6" />
               </button>
               <button
                 type="button"
@@ -205,7 +206,7 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
                 onClick={() => setMessageOpen(true)}
                 className="text-muted-foreground hover:text-brand transition-colors"
               >
-                <MessageCircle className="size-5" />
+                <MessageCircle className="size-5 lg:size-6" />
               </button>
               <button
                 type="button"
@@ -216,9 +217,7 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
                   liked ? "text-brand" : "text-muted-foreground hover:text-brand"
                 )}
               >
-                <Heart
-                  className={cn("size-5", liked ? "fill-brand" : "")}
-                />
+                <Heart className="size-5 lg:size-6" />
               </button>
             </div>
           </div>
