@@ -267,5 +267,84 @@
     "commentHint": "Seja gentil, específico e genuíno.",
     "postComment": "Publicar comentário",
     "storyNotFound": "História de sucesso não encontrada."
+  },
+  "settings": {
+    "title": "Configurações",
+    "sections": {
+      "account": "Configurações da Conta",
+      "customization": "Personalização",
+      "general": "Preferências Gerais"
+    },
+    "tabs": {
+      "privacy": "Privacidade",
+      "notifications": "Notificações",
+      "myAccount": "Minha Conta",
+      "hiddenMembers": "Membros Ocultos",
+      "autoReply": "Mensagem de Resposta Automática",
+      "resetPasses": "Redefinir Passes Flame"
+    },
+    "privacy": {
+      "profileTitle": "Privacidade do Perfil",
+      "activityTitle": "Privacidade da Atividade",
+      "premiumBadge": "Recurso Premium",
+      "showAll": "Mostrar meu perfil para todos os membros",
+      "showLiked": "Mostrar apenas para membros de quem gostei",
+      "showLikedStandard": "Mostrar para membros de quem gostei ou membros além do nível Standard",
+      "hideAll": "Ocultar-me de todos os membros (incluindo minhas fotos)",
+      "hideWomen": "Ocultar-me das Mulheres",
+      "hideMen": "Ocultar-me dos Homens",
+      "hideCouples": "Ocultar-me de Casais",
+      "showSameStd": "Mostrar para membros com a mesma DST",
+      "regionTitle": "Mostrar-me para membros em",
+      "allRegions": "Todas as Regiões",
+      "countryOnly": "Somente Meu País",
+      "anonymous": "Navegar pelos perfis anonimamente",
+      "hideOnline": "Ocultar meu status online no perfil",
+      "hideMoments": "Ocultar minhas atividades em 'Momentos'"
+    },
+    "notifications": {
+      "title": "Notificações no Aplicativo",
+      "viewed": "Quem Visualizou Você",
+      "viewedDesc": "Receba uma notificação quando um membro visualizar seu perfil.",
+      "likes": "Quem Gostou de Você",
+      "likesDesc": "Receba uma notificação quando um membro gostar de você.",
+      "messages": "Quem Enviou uma Mensagem",
+      "messagesDesc": "Receba uma notificação quando um membro enviar uma nova mensagem."
+    },
+    "account": {
+      "name": "Nome",
+      "email": "Seu E-mail Atual",
+      "phone": "Número de Telefone",
+      "password": "Senha",
+      "notSet": "Não Definido",
+      "dangerZone": "Zona de Perigo",
+      "deactivateDesc": "Pause temporariamente ou exclua permanentemente sua presença.",
+      "deactivateBtn": "Desativar ou Excluir Conta",
+      "deleteConfirmTitle": "Tem certeza absoluta?",
+      "deleteConfirmDesc": "Esta ação não pode ser desfeita. Ela excluirá permanentemente seu perfil de namoro, correspondências, recursos e históricos de conversas.",
+      "deleteConfirmBtn": "Excluir Minha Conta",
+      "deletingStatus": "Excluindo conta..."
+    },
+    "autoReply": {
+      "title": "Resposta automática quando estou offline",
+      "desc": "Quando ativado, uma resposta automática será enviada para novas mensagens enquanto você estiver offline.",
+      "addCustom": "Criar Resposta Automática Personalizada"
+    },
+    "resetPasses": {
+      "title": "Redefinir Passes Flame",
+      "desc": "Quando você ignora perfis no FLAME, não verá esses membros novamente até que não haja mais opções disponíveis. Você pode redefinir seus passes anteriores a qualquer momento.",
+      "btn": "Redefinir Meus Passes Flame",
+      "success": "Passes redefinidos com sucesso!"
+    },
+    "hidden": {
+      "title": "Membros Ocultos",
+      "searchPlaceholder": "Pesquisar conexões ocultas...",
+      "unhide": "Reexibir",
+      "empty": "Nenhum membro oculto encontrado."
+    },
+    "common": {
+      "edit": "Editar",
+      "save": "Salvar alterações"
+    }
   }
 }

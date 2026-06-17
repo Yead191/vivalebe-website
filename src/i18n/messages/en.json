@@ -267,5 +267,84 @@
     "commentHint": "Be kind, specific, and genuine.",
     "postComment": "Post comment",
     "storyNotFound": "Success story not found."
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "account": "Account Settings",
+      "customization": "Customization",
+      "general": "General Preference"
+    },
+    "tabs": {
+      "privacy": "Privacy",
+      "notifications": "Notifications",
+      "myAccount": "My Account",
+      "hiddenMembers": "Hidden Members",
+      "autoReply": "Auto Reply Message",
+      "resetPasses": "Reset Flame Passes"
+    },
+    "privacy": {
+      "profileTitle": "Profile Privacy",
+      "activityTitle": "Activity Privacy",
+      "premiumBadge": "Premium Feature",
+      "showAll": "Show my profile to all members",
+      "showLiked": "Show only to members I like",
+      "showLikedStandard": "Show to members I like or members beyond the Standard",
+      "hideAll": "Hide me from all members (including my photos)",
+      "hideWomen": "Hide me from Women",
+      "hideMen": "Hide me from Men",
+      "hideCouples": "Hide me from Couples",
+      "showSameStd": "Show to members with the same STD",
+      "regionTitle": "Show me to members in",
+      "allRegions": "All Regions",
+      "countryOnly": "My Country Only",
+      "anonymous": "Browse profiles anonymously",
+      "hideOnline": "Hide my online status from my profile",
+      "hideMoments": "Hide my activities in 'Moments'"
+    },
+    "notifications": {
+      "title": "In-App Notifications",
+      "viewed": "Who Viewed You",
+      "viewedDesc": "Be notified when a member views your profile.",
+      "likes": "Who Likes You",
+      "likesDesc": "Be notified when a member likes you.",
+      "messages": "Who Sends You a Message",
+      "messagesDesc": "Be notified when a member sends you a new message."
+    },
+    "account": {
+      "name": "Name",
+      "email": "Your Current Email",
+      "phone": "Phone Number",
+      "password": "Password",
+      "notSet": "Not Set",
+      "dangerZone": "Danger Zone",
+      "deactivateDesc": "Temporarily pause or permanently delete your presence.",
+      "deactivateBtn": "Deactivate or Delete Account",
+      "deleteConfirmTitle": "Are you absolutely sure?",
+      "deleteConfirmDesc": "This action cannot be undone. This will permanently delete your dating profile, matches, assets, and chat context histories.",
+      "deleteConfirmBtn": "Delete My Account",
+      "deletingStatus": "Deleting Account..."
+    },
+    "autoReply": {
+      "title": "Auto-reply when I'm offline",
+      "desc": "When enabled, one auto-reply will be sent to new messages while you're offline.",
+      "addCustom": "Create Custom Auto Reply"
+    },
+    "resetPasses": {
+      "title": "Reset Flame Passes",
+      "desc": "When you pass on profiles in FLAME, you won't see these members again until you run out of other options. You may reset your previous passes at any time.",
+      "btn": "Reset My Flame Passes",
+      "success": "Passes reset successfully!"
+    },
+    "hidden": {
+      "title": "Hidden Members",
+      "searchPlaceholder": "Search hidden connections...",
+      "unhide": "Unhide",
+      "empty": "No hidden members found."
+    },
+    "common": {
+      "edit": "Edit",
+      "save": "Save changes"
+    }
   }
 }
