@@ -46,7 +46,7 @@ export default function SettingsPageFeature({ lang, dict }: SettingsPageFeatureP
 
     return (
         <div className="min-h-screen bg-neutral-50/60  text-neutral-900 antialiased">
-            <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <div className="container py-8 ">
                 <h1 className="text-3xl font-bold tracking-tight mb-8 bg-linear-to-r from-neutral-900 to-neutral-600 bg-clip-text text-transparent">
                     {t.title}
                 </h1>
