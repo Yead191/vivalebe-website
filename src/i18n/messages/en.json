@@ -238,7 +238,8 @@
     "reportDetailsPlaceholder": "Your report is confidential. Please provide more details to help our review.",
     "reportEvidenceTitle": "Upload evidence (optional)",
     "reportEvidenceNote": "(Upload up to 4 photos or screenshots to help us better understand the issue.)",
-    "reportAdd": "ADD"
+    "reportAdd": "ADD",
+    "viewAllComments": "View all {{count}} comments"
   },
   "successStories": {
     "title": "Success Stories",

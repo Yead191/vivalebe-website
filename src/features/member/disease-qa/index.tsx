@@ -15,6 +15,7 @@ import { AddDiseasePostDialog, PostHeader, ReactionStats, brandButtonClass } fro
 
 export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: Dictionary }) {
     const [posts, setPosts] = useState(diseaseQaPosts);
+    const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState<DiseaseCategory | "All">("All");
     const [openCreate, setOpenCreate] = useState(false);
@@ -62,8 +63,46 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
 
     const handlePostLike = (postId: string) => {
         setPosts((current) =>
-            current.map((post) => (post.id === postId ? { ...post, likesCount: post.likesCount + 1 } : post))
+            current.map((post) => {
+                if (post.id === postId) {
+                    const isLiked = likedPosts.has(postId);
+                    return { ...post, likesCount: post.likesCount + (isLiked ? -1 : 1) };
+                }
+                return post;
+            })
         );
+        setLikedPosts((prev) => {
+            const next = new Set(prev);
+            if (next.has(postId)) next.delete(postId);
+            else next.add(postId);
+            return next;
+        });
+    };
+
+    const handleCommentSubmit = (postId: string, text: string, anonymous: boolean) => {
+        setPosts((current) =>
+            current.map((post) => {
+                if (post.id === postId) {
+                    return {
+                        ...post,
+                        commentsCount: post.commentsCount + 1,
+                        comments: [
+                            {
+                                id: `${post.id}-${Date.now()}`,
+                                authorId: "u_lucas",
+                                text,
+                                createdAt: new Date().toISOString(),
+                                anonymous,
+                                likesCount: 0,
+                            },
+                            ...post.comments,
+                        ],
+                    };
+                }
+                return post;
+            })
+        );
+        toast.success(dict.diseaseQa.commentPosted || "Comment posted!");
     };
 
     return (
@@ -126,8 +165,23 @@ export default function DiseaseQnAFeature({ lang, dict }: { lang: Locale; dict: 
                             </div>
                         </div>
 
-                        {visiblePosts.map((post) => (
-                            <PostHeader key={post.id} post={post} lang={lang} href={`/${lang}/disease-qa/details/${post.id}`} dict={dict} onOpen={() => { }} />
+                        {visiblePosts?.map((post) => (
+                            <PostHeader 
+                                key={post.id} 
+                                post={post} 
+                                lang={lang} 
+                                href={`/${lang}/disease-qa/details/${post.id}`} 
+                                dict={dict} 
+                                onOpen={() => { }} 
+                                isLiked={likedPosts.has(post.id)}
+                                onLike={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handlePostLike(post.id);
+                                }}
+                                onCommentSubmit={(text, anonymous) => handleCommentSubmit(post.id, text, anonymous)}
+                                onCommentLike={(commentId) => handleCommentLike(post.id, commentId)}
+                            />
                         ))}
                     </div>
 

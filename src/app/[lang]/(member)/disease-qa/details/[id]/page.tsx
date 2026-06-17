@@ -5,7 +5,7 @@ import DiseaseQnADetailsFeature from "@/features/member/disease-qa/details";
 
 export default async function DiseaseQnADetailsPage({
   params,
-}: PageProps<"/[lang]/disease-qa/details/[id]">) {
+}: PageProps<any>) {
   const { lang, id } = await params;
   if (!isLocale(lang)) notFound();
   const dict = await getDictionary(lang);

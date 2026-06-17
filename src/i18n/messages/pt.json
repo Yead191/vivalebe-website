@@ -238,7 +238,8 @@
     "reportDetailsPlaceholder": "Sua denúncia é confidencial. Forneça mais detalhes para ajudar na nossa análise.",
     "reportEvidenceTitle": "Enviar evidências (opcional)",
     "reportEvidenceNote": "(Envie até 4 fotos ou capturas de tela para nos ajudar a entender melhor o problema.)",
-    "reportAdd": "ADICIONAR"
+    "reportAdd": "ADICIONAR",
+    "viewAllComments": "Ver todos os {{count}} comentários"
   },
   "successStories": {
     "title": "Histórias de Sucesso",

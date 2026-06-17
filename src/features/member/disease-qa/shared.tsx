@@ -60,42 +60,103 @@ export function PostHeader({
   lang,
   href,
   onOpen,
+  onLike,
+  isLiked,
+  onCommentSubmit,
+  onCommentLike,
   dict,
 }: {
   post: DiseasePost;
   lang: string;
   href: string;
   onOpen: () => void;
+  onLike?: (e: React.MouseEvent) => void;
+  isLiked?: boolean;
+  onCommentSubmit?: (text: string, anonymous: boolean) => void;
+  onCommentLike?: (commentId: string) => void;
   dict: Dictionary;
 }) {
   const author = post.anonymous ? getAnonymousProfile(0) : getAuthorProfile(post.authorId);
 
   return (
-    <Link href={href} onClick={onOpen} className="block w-full text-left">
-      <div className="rounded-[2rem] border border-white/70 bg-white/95 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_80px_rgba(15,23,42,0.1)]">
-        <div className="flex items-start gap-4">
-          <Image
-            src={author.image}
-            alt={author.name}
-            width={52}
-            height={52}
-            className="size-13 rounded-full object-cover ring-2 ring-white"
-            unoptimized
-          />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
+    <div className="group relative w-full text-left rounded-[2rem] border border-white/70 bg-white/95 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.06)] transition-all hover:-translate-y-0.5 hover:shadow-[0_24px_80px_rgba(15,23,42,0.1)]">
+      <Link href={href} onClick={onOpen} className="absolute inset-0 z-0 rounded-[2rem]" aria-label="View post details" />
+
+      <div className="relative z-10 flex items-start gap-4 pointer-events-none">
+        <Image
+          src={author.image}
+          alt={author.name}
+          width={52}
+          height={52}
+          className="size-13 shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm"
+          unoptimized
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
               <p className="font-semibold text-slate-950">{post.anonymous ? dict.diseaseQa.anonymousAuthor : author.name}</p>
-              <span className="rounded-full bg-[#429CA8]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#2b7e87]">
-                {post.disease}
-              </span>
+              <span className="text-xs text-muted-foreground">• {formatDate(post.createdAt, lang)}</span>
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">{formatDate(post.createdAt, lang)}</p>
-            <h3 className="mt-3 text-xl font-semibold tracking-tight text-slate-950">{post.title}</h3>
-            <p className="mt-2 line-clamp-3 text-sm leading-7 text-slate-600">{post.body}</p>
+            <span className="rounded-full bg-[#429CA8]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#2b7e87]">
+              {post.disease}
+            </span>
           </div>
+
+          <h3 className="mt-3 text-xl font-semibold tracking-tight text-slate-950 group-hover:text-[#429CA8] transition-colors pointer-events-auto w-fit">
+            <Link href={href} onClick={onOpen}>{post.title}</Link>
+          </h3>
+          <p className="mt-2 line-clamp-3 text-sm leading-7 text-slate-600 pointer-events-auto">
+            <Link href={href} onClick={onOpen}>{post.body}</Link>
+          </p>
+
+          {/* Interaction Bar */}
+          <div className="mt-5 flex items-center gap-6 border-t border-slate-100/80 pt-4 pointer-events-auto">
+            <button
+              type="button"
+              onClick={onLike}
+              className={`flex items-center gap-2 text-sm font-medium transition-colors group/like ${isLiked ? 'text-rose-500' : 'text-slate-500 hover:text-rose-500'}`}
+            >
+              <div className={`flex size-9 items-center justify-center rounded-full transition-colors ${isLiked ? 'bg-rose-50' : 'bg-slate-50 group-hover/like:bg-rose-50'}`}>
+                <Heart className={`size-4.5 transition-colors ${isLiked ? "fill-rose-500 text-rose-500" : "text-slate-400 group-hover/like:text-rose-500"}`} />
+              </div>
+              <span>{post.likesCount > 0 ? post.likesCount : "Like"}</span>
+            </button>
+
+            <Link href={href} onClick={onOpen} className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-[#429CA8] transition-colors group/comment">
+              <div className={`flex size-9 items-center justify-center rounded-full transition-colors ${post.commentsCount > 0 ? 'bg-[#429CA8]/10' : 'bg-slate-50 group-hover/comment:bg-[#429CA8]/10'}`}>
+                <MessageCircle className={`size-4.5 transition-colors ${post.commentsCount > 0 ? 'text-[#429CA8] fill-[#429CA8]/20' : 'text-slate-400 group-hover/comment:text-[#429CA8]'}`} />
+              </div>
+              <span>{post.commentsCount > 0 ? post.commentsCount : "Comment"}</span>
+            </Link>
+          </div>
+
+          {/* Comments Section */}
+          {onCommentSubmit && (
+            <div className="mt-5 space-y-4 border-t border-slate-100/80 pt-4 pointer-events-auto">
+              {post.comments.slice(0, 2).map((comment) => (
+                <CommentCard
+                  key={comment.id}
+                  comment={comment}
+                  anonymous={comment.anonymous}
+                  dict={dict}
+                  onLike={() => onCommentLike?.(comment.id)}
+                />
+              ))}
+
+              {post.comments.length > 2 && (
+                <Link href={href} onClick={onOpen} className="inline-block text-sm font-medium text-[#2b7e87] hover:underline">
+                  {dict.diseaseQa.viewAllComments.replace("{{count}}", post.comments.length.toString())}
+                </Link>
+              )}
+
+              <div className="mt-2">
+                <CommentComposer dict={dict} onSubmit={(payload) => onCommentSubmit(payload.text, payload.anonymous)} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 
