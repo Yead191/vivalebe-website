@@ -2,8 +2,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { createOtpSchema } from "@/schemas/auth/otp-verification.schema";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 
@@ -18,7 +20,12 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
     const [loading, setLoading] = useState(false);
     const inputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
 
-    const form = useForm({ defaultValues: { code: ["", "", "", ""] } });
+    const tValidation = (key: string) => dict.validation?.[key] || key;
+
+    const form = useForm({
+        resolver: zodResolver(createOtpSchema(tValidation)),
+        defaultValues: { code: ["", "", "", ""] }
+    });
 
     useEffect(() => {
         if (countdown > 0) {
@@ -48,7 +55,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-            router.push(`/${lang}/dashboard`);
+            router.push(`/${lang}/auth/login`);
         }, 1000);
     };
 
@@ -85,6 +92,12 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
                         />
                     ))}
                 </div>
+
+                {form.formState.errors.code && (
+                    <p className="text-rose-500 text-xs font-medium text-center mt-2">
+                        {(form.formState.errors.code as any).root?.message || (form.formState.errors.code as any).message || tValidation("invalidOtp")}
+                    </p>
+                )}
 
                 <div className="text-center text-xs">
                     {countdown > 0 ? (

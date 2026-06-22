@@ -361,6 +361,7 @@
     "registerSubtitle": "Join an authentic, safe match making space.",
     "registerButton": "Get Started",
     "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Log in",
     "verifyEmail": "Verify your identity",
     "codeSentTo": "Enter the verification pin token code sent to your destination address.",
     "resendIn": "Resend available in",
@@ -388,6 +389,7 @@
     "passwordUppercase": "Passkey requires at least one uppercase letter [A-Z].",
     "passwordNumber": "Passkey requires at least one numerical identifier [0-9].",
     "passwordMismatch": "The confirmation passkey does not match your assigned password.",
-    "acceptTerms": "You must check and authorize the core terms of use to register."
+    "acceptTerms": "You must check and authorize the core terms of use to register.",
+    "invalidOtp": "Please enter a valid 4-digit code."
   }
 }

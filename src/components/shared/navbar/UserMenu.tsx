@@ -54,7 +54,7 @@ export function UserMenu({
         <DropdownMenuItem onClick={() => router.push(`/${lang}/settings`)}>
           {dict.nav.profileMenuSettings}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push(`/${lang}`)}>
+        <DropdownMenuItem onClick={() => router.push(`/${lang}/auth/login`)}>
           {dict.nav.profileMenuSignOut}
         </DropdownMenuItem>
       </DropdownMenuContent>

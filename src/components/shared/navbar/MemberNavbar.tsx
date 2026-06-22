@@ -175,7 +175,7 @@ function DesktopNavItem({
         {hasChildren ? <ChevronDown className="size-3.5 opacity-80" /> : null}
       </Link>
       {isActive ? (
-        <span className="pointer-events-none absolute -bottom-px left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full bg-white" />
+        <span className="pointer-events-none absolute -bottom-px left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-white" />
       ) : null}
 
       {hasChildren && isOpen ? (

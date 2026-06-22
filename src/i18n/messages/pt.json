@@ -361,6 +361,7 @@
     "registerSubtitle": "Participe de um espaço de conexões autêntico e seguro.",
     "registerButton": "Começar Agora",
     "alreadyHaveAccount": "Já possui uma conta?",
+    "loginLink": "Entrar",
     "verifyEmail": "Verifique sua identidade",
     "codeSentTo": "Insira o código do token do pin de verificação enviado para o seu endereço de destino.",
     "resendIn": "Reenviar disponível em",
@@ -388,6 +389,7 @@
     "passwordUppercase": "A senha exige pelo menos uma letra maiúscula [A-Z].",
     "passwordNumber": "A senha exige pelo menos um identificador numérico [0-9].",
     "passwordMismatch": "A chave protetora de confirmação não corresponde à senha atribuída.",
-    "acceptTerms": "Você deve marcar e autorizar os termos principais de uso para registrar."
+    "acceptTerms": "Você deve marcar e autorizar os termos principais de uso para registrar.",
+    "invalidOtp": "Por favor, insira um código de 4 dígitos válido."
   }
 }

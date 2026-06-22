@@ -20,10 +20,21 @@ export default async function AuthSharedLayout({
         <div className="min-h-screen bg-neutral-50">
 
             {/* LEFT COLUMN: Fixed branding panel (large screens only) */}
-            <div className="relative hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 lg:w-5/12 xl:w-4/12 flex-col justify-between p-10 text-white bg-linear-to-br from-[#429CA8] to-[#24585F] overflow-hidden">
-
+            <div className="relative hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 lg:w-5/12 xl:w-4/12 flex-col justify-between p-10 text-white
+             overflow-hidden"
+                style={{
+                    backgroundImage: "url('/assets/bg/auth/auth-bg.jpg')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                }}
+            >
+                {/* Dark Overlay */}
+                <div className="absolute inset-0 bg-black/60" />
                 {/* 1. AppLogo used here in high-contrast white variant */}
-                <AppLogo variant="white" />
+                <div className="relative z-10">
+                    <AppLogo variant="white" />
+                </div>
 
                 <div className="relative z-10 space-y-4 max-w-sm">
                     <div className="h-1 w-12 bg-white/40 rounded-full" />
@@ -35,7 +46,7 @@ export default async function AuthSharedLayout({
                     </p>
                 </div>
 
-                <div className="text-xs text-white/50 font-medium tracking-wide uppercase">
+                <div className="text-xs text-white/50 font-medium tracking-wide uppercase relative z-10">
                     © 2026 VIVALIVE
                 </div>
             </div>
