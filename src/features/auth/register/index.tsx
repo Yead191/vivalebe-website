@@ -24,7 +24,7 @@ export default function RegisterFeature({ dict, lang }: Props) {
     const [loading, setLoading] = useState(false);
     const tValidation = (key: string) => dict.validation?.[key] || key;
 
-    const form = useForm({
+    const form = useForm<any>({
         resolver: zodResolver(createRegisterSchema(tValidation)),
         defaultValues: { fullName: "", email: "", password: "", confirmPassword: "", acceptTerms: false },
     });
@@ -67,7 +67,7 @@ export default function RegisterFeature({ dict, lang }: Props) {
                     )}
                 />
                 {form.formState.errors.acceptTerms && (
-                    <p className="text-rose-500 text-xs font-medium">{form.formState.errors.acceptTerms.message}</p>
+                    <p className="text-rose-500 text-xs font-medium">{String(form.formState.errors.acceptTerms.message)}</p>
                 )}
 
                 <Button type="submit" disabled={loading} className="w-full h-11 bg-[#429CA8] hover:bg-[#357D87] text-white font-semibold rounded-xl transition-all shadow-sm cursor-pointer">
@@ -84,3 +84,4 @@ export default function RegisterFeature({ dict, lang }: Props) {
         </Form>
     );
 }
+
