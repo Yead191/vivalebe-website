@@ -346,5 +346,48 @@
       "edit": "Editar",
       "save": "Salvar alterações"
     }
+  },
+  "auth": {
+    "layoutPanelTitle": "Descubra sistemas estruturais premium.",
+    "layoutPanelSubtitle": "Experimente componentes de plataforma padrão em tela dividida com segurança e rapidez.",
+    "loginTitle": "Bem-vindo de volta",
+    "loginSubtitle": "Insira suas credenciais estruturais para iniciar sua sessão.",
+    "or": "ou",
+    "forgotPasswordLink": "Esqueceu a senha?",
+    "loginButton": "Entrar na Conta",
+    "notMember": "Ainda não possui conta?",
+    "registerLink": "Criar conta gratuita",
+    "registerTitle": "Crie sua conta",
+    "registerSubtitle": "Participe de um espaço de conexões autêntico e seguro.",
+    "registerButton": "Começar Agora",
+    "alreadyHaveAccount": "Já possui uma conta?",
+    "verifyEmail": "Verifique sua identidade",
+    "codeSentTo": "Insira o código do token do pin de verificação enviado para o seu endereço de destino.",
+    "resendIn": "Reenviar disponível em",
+    "resendCode": "Reenviar Pin de Validação",
+    "verifyButton": "Confirmar Código",
+    "forgotPasswordTitle": "Recuperar Senha",
+    "forgotPasswordSubtitle": "Informe seu endereço de e-mail de registro abaixo.",
+    "sendCodeButton": "Gerar Código de Verificação",
+    "resetPasswordTitle": "Definir Nova Senha",
+    "resetPasswordSubtitle": "Configure suas novas chaves estruturais de segurança abaixo.",
+    "resetPasswordButton": "Atualizar Chave de Segurança",
+    "labels": {
+      "fullName": "Nome completo legal",
+      "email": "Endereço de e-mail",
+      "password": "Senha de acesso estrutural",
+      "confirmPassword": "Confirmar senha de proteção",
+      "rememberMe": "Manter conectado neste dispositivo"
+    }
+  },
+  "validation": {
+    "invalidEmail": "Por favor, insira um endereço de e-mail válido.",
+    "passwordRequired": "A senha estrutural de acesso é obrigatória.",
+    "nameMin": "O nome completo legal deve conter pelo menos 2 caracteres.",
+    "passwordMin": "A chave protetora deve ter pelo menos 8 caracteres.",
+    "passwordUppercase": "A senha exige pelo menos uma letra maiúscula [A-Z].",
+    "passwordNumber": "A senha exige pelo menos um identificador numérico [0-9].",
+    "passwordMismatch": "A chave protetora de confirmação não corresponde à senha atribuída.",
+    "acceptTerms": "Você deve marcar e autorizar os termos principais de uso para registrar."
   }
 }

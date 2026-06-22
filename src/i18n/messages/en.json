@@ -346,5 +346,48 @@
       "edit": "Edit",
       "save": "Save changes"
     }
+  },
+  "auth": {
+    "layoutPanelTitle": "Discover premium structural systems.",
+    "layoutPanelSubtitle": "Experience standard split-screen platform components safely and rapidly.",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Enter your structural credentials to open your session.",
+    "or": "or",
+    "forgotPasswordLink": "Forgot password?",
+    "loginButton": "Sign In",
+    "notMember": "Not a member yet?",
+    "registerLink": "Create free account",
+    "registerTitle": "Create your account",
+    "registerSubtitle": "Join an authentic, safe match making space.",
+    "registerButton": "Get Started",
+    "alreadyHaveAccount": "Already have an account?",
+    "verifyEmail": "Verify your identity",
+    "codeSentTo": "Enter the verification pin token code sent to your destination address.",
+    "resendIn": "Resend available in",
+    "resendCode": "Resend Validation Pin",
+    "verifyButton": "Confirm Code",
+    "forgotPasswordTitle": "Recover Password",
+    "forgotPasswordSubtitle": "Provide your registration email destination address below.",
+    "sendCodeButton": "Generate Verification Code",
+    "resetPasswordTitle": "Setup New Password",
+    "resetPasswordSubtitle": "Configure your modern security key configurations below.",
+    "resetPasswordButton": "Update Password Security Key",
+    "labels": {
+      "fullName": "Full legal name",
+      "email": "Email address",
+      "password": "Password structural key",
+      "confirmPassword": "Confirm protective passkey",
+      "rememberMe": "Keep me logged in"
+    }
+  },
+  "validation": {
+    "invalidEmail": "Please enter a valid email address.",
+    "passwordRequired": "Password structural key is required.",
+    "nameMin": "Full legal name must contain at least 2 characters.",
+    "passwordMin": "Security passkey must be at least 8 characters long.",
+    "passwordUppercase": "Passkey requires at least one uppercase letter [A-Z].",
+    "passwordNumber": "Passkey requires at least one numerical identifier [0-9].",
+    "passwordMismatch": "The confirmation passkey does not match your assigned password.",
+    "acceptTerms": "You must check and authorize the core terms of use to register."
   }
 }
