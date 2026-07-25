@@ -25,8 +25,22 @@ export const diseaseQaPosts: DiseasePost[] = [
     likesCount: 24,
     commentsCount: 3,
     comments: [
-      { id: "dq1_c1", authorId: "u_maya", text: "Consistency helped me most. One day at a time.", createdAt: "2026-06-14T12:00:00Z", anonymous: false, likesCount: 8 },
-      { id: "dq1_c2", authorId: "u_aurora", text: "I stayed off search engines and focused on verified sources.", createdAt: "2026-06-14T13:00:00Z", anonymous: true, likesCount: 5 },
+      {
+        id: "dq1_c1",
+        authorId: "u_maya",
+        text: "Consistency helped me most. One day at a time.",
+        createdAt: "2026-06-14T12:00:00Z",
+        anonymous: false,
+        likesCount: 8,
+      },
+      {
+        id: "dq1_c2",
+        authorId: "u_aurora",
+        text: "I stayed off search engines and focused on verified sources.",
+        createdAt: "2026-06-14T13:00:00Z",
+        anonymous: true,
+        likesCount: 5,
+      },
     ],
   },
   {
@@ -40,8 +54,22 @@ export const diseaseQaPosts: DiseasePost[] = [
     likesCount: 31,
     commentsCount: 4,
     comments: [
-      { id: "dq2_c1", authorId: "u_camila", text: "Planning meals ahead saved me a lot of stress.", createdAt: "2026-06-13T10:10:00Z", anonymous: false, likesCount: 9 },
-      { id: "dq2_c2", authorId: "u_pedro", text: "Short breaks and hydration made a bigger difference than I expected.", createdAt: "2026-06-13T10:40:00Z", anonymous: true, likesCount: 4 },
+      {
+        id: "dq2_c1",
+        authorId: "u_camila",
+        text: "Planning meals ahead saved me a lot of stress.",
+        createdAt: "2026-06-13T10:10:00Z",
+        anonymous: false,
+        likesCount: 9,
+      },
+      {
+        id: "dq2_c2",
+        authorId: "u_pedro",
+        text: "Short breaks and hydration made a bigger difference than I expected.",
+        createdAt: "2026-06-13T10:40:00Z",
+        anonymous: true,
+        likesCount: 4,
+      },
     ],
   },
   {
@@ -55,8 +83,14 @@ export const diseaseQaPosts: DiseasePost[] = [
     likesCount: 18,
     commentsCount: 2,
     comments: [
-      { id: "dq3_c1", authorId: "u_helena", text: "Ask about treatment timing, side effects, and follow-up testing.", createdAt: "2026-06-12T16:02:00Z", anonymous: false, likesCount: 6 },
+      {
+        id: "dq3_c1",
+        authorId: "u_helena",
+        text: "Ask about treatment timing, side effects, and follow-up testing.",
+        createdAt: "2026-06-12T16:02:00Z",
+        anonymous: false,
+        likesCount: 6,
+      },
     ],
   },
 ];
-

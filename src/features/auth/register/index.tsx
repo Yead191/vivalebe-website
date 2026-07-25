@@ -13,6 +13,8 @@ import { FormPassword } from "@/components/forms/form-password";
 import { Form, FormField, FormItem, FormControl, FormLabel } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+import { registerAction } from "./action";
 
 interface Props {
     dict: any;
@@ -29,12 +31,28 @@ export default function RegisterFeature({ dict, lang }: Props) {
         defaultValues: { fullName: "", email: "", password: "", confirmPassword: "", acceptTerms: false },
     });
 
-    const onSubmit = async () => {
+    const onSubmit = async (values: any) => {
         setLoading(true);
-        setTimeout(() => {
+        try {
+            const res = await registerAction({
+                name: values.fullName,
+                email: values.email,
+                password: values.password
+            });
+
+            if (res.success) {
+                toast.success(res.message || "Registration successful");
+                sessionStorage.setItem("prefillEmail", values.email);
+                sessionStorage.setItem("prefillPassword", values.password);
+                router.push(`/${lang}/auth/otp-verification?email=${values.email}`);
+            } else {
+                toast.error(res.error || res.message || "Registration failed");
+            }
+        } catch (err: any) {
+            toast.error(err.message || "An unexpected error occurred");
+        } finally {
             setLoading(false);
-            router.push(`/${lang}/auth/otp-verification`);
-        }, 1000);
+        }
     };
 
     return (

@@ -3,116 +3,205 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { createOtpSchema } from "@/schemas/auth/otp-verification.schema";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { toast } from "sonner";
+import { verifyEmailAction, resendOtpAction } from "./action";
 
 interface Props {
-    dict: any;
-    lang: string;
+  dict: any;
+  lang: string;
 }
 
 export default function OTPVerificationFeature({ dict, lang }: Props) {
-    const router = useRouter();
-    const [countdown, setCountdown] = useState(60);
-    const [loading, setLoading] = useState(false);
-    const inputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
+  const [countdown, setCountdown] = useState(60);
+  const [loading, setLoading] = useState(false);
+  const inputRefs = [
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+  ];
 
-    const tValidation = (key: string) => dict.validation?.[key] || key;
+  const tValidation = (key: string) => dict.validation?.[key] || key;
 
-    const form = useForm({
-        resolver: zodResolver(createOtpSchema(tValidation)),
-        defaultValues: { code: ["", "", "", ""] }
+  const form = useForm({
+    resolver: zodResolver(createOtpSchema(tValidation)),
+    defaultValues: { code: ["", "", "", "", "", ""] },
+  });
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
+
+  const handleChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const currentCode = form.getValues("code");
+    currentCode[index] = value.slice(-1);
+    form.setValue("code", currentCode);
+
+    if (value && index < 5) {
+      inputRefs[index + 1].current?.focus();
+    }
+  };
+
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Backspace" && !form.getValues("code")[index] && index > 0) {
+      inputRefs[index - 1].current?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text/plain").replace(/\D/g, "").slice(0, 6);
+    if (!pastedData) return;
+
+    const currentCode = [...form.getValues("code")];
+    pastedData.split("").forEach((char, index) => {
+      currentCode[index] = char;
     });
+    form.setValue("code", currentCode);
 
-    useEffect(() => {
-        if (countdown > 0) {
-            const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [countdown]);
+    const nextIndex = Math.min(pastedData.length, 5);
+    if (pastedData.length === 6) {
+      inputRefs[5].current?.focus();
+    } else {
+      inputRefs[nextIndex].current?.focus();
+    }
+  };
 
-    const handleChange = (index: number, value: string) => {
-        if (!/^\d*$/.test(value)) return;
-        const currentCode = form.getValues("code");
-        currentCode[index] = value.slice(-1);
-        form.setValue("code", currentCode);
+  const onSubmit = async (values: any) => {
+    if (!email) {
+      toast.error("Email not found. Please try registering again.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const otpString = values.code.join("");
+      const res = await verifyEmailAction({ email, oneTimeCode: Number(otpString) });
+      
+      if (res.success) {
+        toast.success(res.message || "Email verified successfully!");
+        router.push(`/${lang}/auth/login`);
+      } else {
+        toast.error(res.error || res.message || "Invalid OTP code");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (value && index < 3) {
-            inputRefs[index + 1].current?.focus();
-        }
-    };
+  const handleResendOtp = async () => {
+    if (!email) {
+      toast.error("Email not found.");
+      return;
+    }
+    
+    try {
+      const res = await resendOtpAction({ email });
+      if (res.success) {
+        toast.success(res.message || "OTP resent successfully");
+        setCountdown(60);
+      } else {
+        toast.error(res.error || res.message || "Failed to resend OTP");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    }
+  };
 
-    const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Backspace" && !form.getValues("code")[index] && index > 0) {
-            inputRefs[index - 1].current?.focus();
-        }
-    };
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-1.5 text-center">
+          <h2 className="text-2xl font-bold text-neutral-900">
+            {dict.auth?.verifyEmail || "Verify Identity"}
+          </h2>
+          <p className="text-sm text-neutral-500">
+            {dict.auth?.codeSentTo || "Enter security pin token code"}
+          </p>
+        </div>
 
-    const onSubmit = async () => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            router.push(`/${lang}/auth/login`);
-        }, 1000);
-    };
+        <div className="flex justify-center gap-3">
+          {[0, 1, 2, 3, 4, 5].map((index) => (
+            <FormField
+              key={index}
+              control={form.control}
+              name={`code.${index}`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <input
+                      {...field}
+                      ref={inputRefs[index]}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      onChange={(e) => handleChange(index, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(index, e)}
+                      onPaste={handlePaste}
+                      className="w-12 h-14 text-center text-xl font-bold rounded-xl border-2 border-neutral-200 focus:border-[#429CA8] focus:ring-4 focus:ring-[#429CA8]/10 outline-none transition-all"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          ))}
+        </div>
 
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="space-y-1.5 text-center">
-                    <h2 className="text-2xl font-bold text-neutral-900">{dict.auth?.verifyEmail || "Verify Identity"}</h2>
-                    <p className="text-sm text-neutral-500">{dict.auth?.codeSentTo || "Enter security pin token code"}</p>
-                </div>
+        {form.formState.errors.code && (
+          <p className="text-rose-500 text-xs font-medium text-center mt-2">
+            {(form.formState.errors.code as any).root?.message ||
+              (form.formState.errors.code as any).message ||
+              tValidation("invalidOtp")}
+          </p>
+        )}
 
-                <div className="flex justify-center gap-3">
-                    {[0, 1, 2, 3].map((index) => (
-                        <FormField
-                            key={index}
-                            control={form.control}
-                            name={`code.${index}`}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <input
-                                            {...field}
-                                            ref={inputRefs[index]}
-                                            type="text"
-                                            inputMode="numeric"
-                                            maxLength={1}
-                                            onChange={(e) => handleChange(index, e.target.value)}
-                                            onKeyDown={(e) => handleKeyDown(index, e)}
-                                            className="w-12 h-14 text-center text-xl font-bold rounded-xl border-2 border-neutral-200 focus:border-[#429CA8] focus:ring-4 focus:ring-[#429CA8]/10 outline-none transition-all"
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                    ))}
-                </div>
+        <div className="text-center text-xs">
+          {countdown > 0 ? (
+            <p className="text-neutral-500">
+              {dict.auth?.resendIn || "Resend in"}{" "}
+              <span className="font-bold text-[#429CA8]">{countdown}s</span>
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={handleResendOtp}
+              className="text-[#429CA8] font-bold hover:underline bg-transparent border-none cursor-pointer"
+            >
+              {dict.auth?.resendCode || "Resend Pin"}
+            </button>
+          )}
+        </div>
 
-                {form.formState.errors.code && (
-                    <p className="text-rose-500 text-xs font-medium text-center mt-2">
-                        {(form.formState.errors.code as any).root?.message || (form.formState.errors.code as any).message || tValidation("invalidOtp")}
-                    </p>
-                )}
-
-                <div className="text-center text-xs">
-                    {countdown > 0 ? (
-                        <p className="text-neutral-500">{dict.auth?.resendIn || "Resend in"} <span className="font-bold text-[#429CA8]">{countdown}s</span></p>
-                    ) : (
-                        <button type="button" onClick={() => setCountdown(60)} className="text-[#429CA8] font-bold hover:underline bg-transparent border-none cursor-pointer">
-                            {dict.auth?.resendCode || "Resend Pin"}
-                        </button>
-                    )}
-                </div>
-
-                <Button type="submit" disabled={loading} className="w-full h-11 bg-[#429CA8] hover:bg-[#357D87] text-white font-semibold rounded-xl transition-all shadow-sm cursor-pointer">
-                    {loading ? <Loader2 className="size-4 animate-spin" /> : dict.auth?.verifyButton || "Confirm Code"}
-                </Button>
-            </form>
-        </Form>
-    );
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full h-11 bg-[#429CA8] hover:bg-[#357D87] text-white font-semibold rounded-xl transition-all shadow-sm cursor-pointer"
+        >
+          {loading ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            dict.auth?.verifyButton || "Confirm Code"
+          )}
+        </Button>
+      </form>
+    </Form>
+  );
 }

@@ -30,7 +30,7 @@ export function PhotosBlock({ photos, onAdd, onRemove }: PhotosBlockProps) {
         acc[t.key] = photos.filter((p) => p.visibility === t.key).length;
         return acc;
       },
-      { public: 0, private: 0, custom: 0 }
+      { public: 0, private: 0, custom: 0 },
     );
   }, [photos]);
 
@@ -49,7 +49,7 @@ export function PhotosBlock({ photos, onAdd, onRemove }: PhotosBlockProps) {
               "text-sm transition-colors cursor-pointer",
               activeTab === t.key
                 ? "font-semibold text-foreground underline underline-offset-4"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {t.label} ({counts[t.key]})

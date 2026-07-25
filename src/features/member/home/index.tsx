@@ -22,7 +22,7 @@ export function HomeFeature({ lang, dict }: HomeFeatureProps) {
   const viewedCount = getCurrentViewedCount();
 
   const authors: Record<string, User> = Object.fromEntries(
-    users.map((u) => [u.id, u])
+    users.map((u) => [u.id, u]),
   );
 
   const videoMeta: Record<string, PostMeta> = {};
@@ -49,9 +49,7 @@ export function HomeFeature({ lang, dict }: HomeFeatureProps) {
     };
   }
 
-  const suggestions = users
-    .filter((u) => u.id !== me.id)
-    .slice(0, 4);
+  const suggestions = users.filter((u) => u.id !== me.id).slice(0, 4);
 
   const connectionEvents = connections.filter((c) => getUserById(c.userId));
 
@@ -60,7 +58,12 @@ export function HomeFeature({ lang, dict }: HomeFeatureProps) {
       <div className="grid gap-6 lg:gap-10 lg:grid-cols-[16rem_minmax(0,1fr)_16rem] xl:grid-cols-[11rem_minmax(0,1fr)_11rem]">
         <div className="hidden lg:block">
           <div className="sticky top-22">
-            <LeftSidebar lang={lang} dict={dict} me={me} viewedCount={viewedCount} />
+            <LeftSidebar
+              lang={lang}
+              dict={dict}
+              me={me}
+              viewedCount={viewedCount}
+            />
           </div>
         </div>
 

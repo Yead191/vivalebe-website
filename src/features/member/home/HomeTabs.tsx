@@ -45,10 +45,10 @@ function sortByDate<T extends { createdAt: string }>(items: T[]): T[] {
 
 function sortByPopularity<T extends { id: string }>(
   items: T[],
-  meta: Record<string, PostMeta>
+  meta: Record<string, PostMeta>,
 ): T[] {
   return [...items].sort(
-    (a, b) => (meta[b.id]?.popularity ?? 0) - (meta[a.id]?.popularity ?? 0)
+    (a, b) => (meta[b.id]?.popularity ?? 0) - (meta[a.id]?.popularity ?? 0),
   );
 }
 
@@ -71,7 +71,7 @@ export function HomeTabs({
       videoSort === "newest"
         ? sortByDate(videos)
         : sortByPopularity(videos, videoMeta),
-    [videos, videoMeta, videoSort]
+    [videos, videoMeta, videoSort],
   );
 
   const sortedMoments = useMemo(
@@ -79,20 +79,22 @@ export function HomeTabs({
       momentSort === "newest"
         ? sortByDate(moments)
         : sortByPopularity(moments, momentMeta),
-    [moments, momentMeta, momentSort]
+    [moments, momentMeta, momentSort],
   );
 
-  const authorMini: Record<string, { displayName: string; avatarSeed: string }> =
-    useMemo(
-      () =>
-        Object.fromEntries(
-          Object.entries(authors).map(([id, u]) => [
-            id,
-            { displayName: u.displayName, avatarSeed: u.avatarSeed },
-          ])
-        ),
-      [authors]
-    );
+  const authorMini: Record<
+    string,
+    { displayName: string; avatarSeed: string }
+  > = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(authors).map(([id, u]) => [
+          id,
+          { displayName: u.displayName, avatarSeed: u.avatarSeed },
+        ]),
+      ),
+    [authors],
+  );
 
   return (
     <Tabs defaultValue="videos" className="w-full">
@@ -164,7 +166,11 @@ export function HomeTabs({
         </div>
         <div className="flex items-center justify-between px-1">
           <span />
-          <SortDropdown value={momentSort} onChange={setMomentSort} dict={dict} />
+          <SortDropdown
+            value={momentSort}
+            onChange={setMomentSort}
+            dict={dict}
+          />
         </div>
         <div className="space-y-4">
           {sortedMoments.map((m) => {
@@ -198,7 +204,13 @@ export function HomeTabs({
           {connections.map((c) => {
             const user = authors[c.userId];
             return user ? (
-              <ConnectionRow key={c.id} lang={lang} dict={dict} event={c} user={user} />
+              <ConnectionRow
+                key={c.id}
+                lang={lang}
+                dict={dict}
+                event={c}
+                user={user}
+              />
             ) : null;
           })}
         </div>

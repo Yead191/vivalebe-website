@@ -25,7 +25,8 @@ export function ProfileMain({ dict, user }: Props) {
 
   const publicPhotos = user.photos.slice(0, 3);
   const remainingPublic = Math.max(0, user.photos.length - publicPhotos.length);
-  const aboutPreview = user.bio.length > 320 ? user.bio.slice(0, 320) : user.bio;
+  const aboutPreview =
+    user.bio.length > 320 ? user.bio.slice(0, 320) : user.bio;
   const hasMore = user.bio.length > 320;
 
   return (
@@ -33,7 +34,9 @@ export function ProfileMain({ dict, user }: Props) {
       <header className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-base font-semibold tracking-wider">{user.displayName}</h1>
+            <h1 className="text-base font-semibold tracking-wider">
+              {user.displayName}
+            </h1>
             {user.online ? (
               <span
                 aria-label="Online"
@@ -67,7 +70,7 @@ export function ProfileMain({ dict, user }: Props) {
               "underline-offset-4",
               activeTab === "public"
                 ? "font-semibold text-foreground underline"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {dict.profile.public.replace("{count}", String(user.photos.length))}
@@ -80,7 +83,7 @@ export function ProfileMain({ dict, user }: Props) {
               "underline-offset-4 disabled:opacity-50 disabled:cursor-not-allowed",
               activeTab === "private"
                 ? "font-semibold text-foreground underline"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {dict.profile.private} ({user.privatePhotosCount})
@@ -117,10 +120,7 @@ export function ProfileMain({ dict, user }: Props) {
           })}
         </div>
 
-        <button
-          type="button"
-          className="text-sm text-foreground"
-        >
+        <button type="button" className="text-sm text-foreground">
           <span className="underline underline-offset-4">
             {dict.profile.remindUpload.split(" ")[0]}
           </span>{" "}
@@ -158,7 +158,9 @@ export function ProfileMain({ dict, user }: Props) {
       </form>
 
       <section id="more-about-me" className="space-y-2 scroll-mt-24">
-        <h2 className="text-sm font-semibold">{dict.profile.profileHeadline}</h2>
+        <h2 className="text-sm font-semibold">
+          {dict.profile.profileHeadline}
+        </h2>
         <p className="text-sm text-foreground">{user.headline}</p>
       </section>
 
@@ -184,11 +186,15 @@ export function ProfileMain({ dict, user }: Props) {
         <p className="text-sm text-muted-foreground">—</p>
       </section>
       <section id="personal-blogs" className="space-y-2 scroll-mt-24">
-        <h2 className="text-sm font-semibold">{dict.profile.navPersonalBlogs}</h2>
+        <h2 className="text-sm font-semibold">
+          {dict.profile.navPersonalBlogs}
+        </h2>
         <p className="text-sm text-muted-foreground">—</p>
       </section>
       <section id="private-note" className="space-y-2 scroll-mt-24">
-        <h2 className="text-sm font-semibold">{dict.profile.navAddPrivateNote}</h2>
+        <h2 className="text-sm font-semibold">
+          {dict.profile.navAddPrivateNote}
+        </h2>
         <textarea
           placeholder="…"
           rows={3}

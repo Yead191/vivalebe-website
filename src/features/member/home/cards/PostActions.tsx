@@ -29,7 +29,10 @@ export function PostActions({
   currentUserAvatarSeed,
   commentPlaceholder = "Write a comment...",
 }: PostActionsProps) {
-  const [likes, setLikes] = useState({ count: initialLikeCount, liked: initialLiked });
+  const [likes, setLikes] = useState({
+    count: initialLikeCount,
+    liked: initialLiked,
+  });
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [showComments, setShowComments] = useState(initialComments.length > 0);
   const [text, setText] = useState("");
@@ -39,7 +42,7 @@ export function PostActions({
     setLikes((prev) =>
       prev.liked
         ? { count: Math.max(0, prev.count - 1), liked: false }
-        : { count: prev.count + 1, liked: true }
+        : { count: prev.count + 1, liked: true },
     );
     startTransition(async () => {
       const next = await toggleLikeAction(kind, postId);
@@ -68,12 +71,12 @@ export function PostActions({
           disabled={isPending}
           className={cn(
             "inline-flex items-center gap-1.5 text-sm transition-colors",
-            likes.liked ? "text-brand" : "text-muted-foreground hover:text-foreground"
+            likes.liked
+              ? "text-brand"
+              : "text-muted-foreground hover:text-foreground",
           )}
         >
-          <ThumbsUp
-            className={cn("size-4", likes.liked ? "fill-brand" : "")}
-          />
+          <ThumbsUp className={cn("size-4", likes.liked ? "fill-brand" : "")} />
           {likes.count > 0 ? likes.count : ""}
         </button>
         <button
@@ -101,7 +104,9 @@ export function PostActions({
                   unoptimized
                 />
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold">{author?.displayName ?? "USER"}</p>
+                  <p className="text-xs font-semibold">
+                    {author?.displayName ?? "USER"}
+                  </p>
                   <p className="text-sm text-foreground">{c.text}</p>
                 </div>
               </div>

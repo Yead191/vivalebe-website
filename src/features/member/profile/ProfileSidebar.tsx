@@ -39,7 +39,9 @@ export function ProfileSidebar({ dict, user }: Props) {
   }, []);
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -56,13 +58,25 @@ export function ProfileSidebar({ dict, user }: Props) {
       </div>
 
       <div className="flex items-center gap-5 px-1 text-muted-foreground">
-        <button type="button" aria-label="Wink" className="hover:text-brand transition-colors">
+        <button
+          type="button"
+          aria-label="Wink"
+          className="hover:text-brand transition-colors"
+        >
           <Smile className="size-5" />
         </button>
-        <button type="button" aria-label="Like" className="hover:text-brand transition-colors">
+        <button
+          type="button"
+          aria-label="Like"
+          className="hover:text-brand transition-colors"
+        >
           <Heart className="size-5" />
         </button>
-        <button type="button" aria-label="Message" className="hover:text-brand transition-colors">
+        <button
+          type="button"
+          aria-label="Message"
+          className="hover:text-brand transition-colors"
+        >
           <MessageCircle className="size-5" />
         </button>
       </div>
@@ -77,7 +91,7 @@ export function ProfileSidebar({ dict, user }: Props) {
               "block text-left transition-colors",
               active === s.id
                 ? "text-foreground underline underline-offset-4"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {dict.profile[s.labelKey]}

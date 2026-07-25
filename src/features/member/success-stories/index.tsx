@@ -17,7 +17,11 @@ export default function SuccessStoriesFeature({
     <SuccessStoriesPageClient
       lang={lang}
       dict={dict}
-      currentUser={{ id: me.id, username: me.username, avatarSeed: me.avatarSeed }}
+      currentUser={{
+        id: me.id,
+        username: me.username,
+        avatarSeed: me.avatarSeed,
+      }}
       initialStories={successStories}
     />
   );

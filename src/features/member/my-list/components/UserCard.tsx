@@ -58,7 +58,6 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
           <Link
             href={`/${lang}/profile/${user.username}`}
             className="relative block overflow-hidden bg-muted min-h-70 lg:min-h-92 2xl:min-h-120 "
-
           >
             <Image
               src={photo}
@@ -195,7 +194,9 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
                 onClick={() => setWinked((w) => !w)}
                 className={cn(
                   "transition-colors",
-                  winked ? "text-brand" : "text-muted-foreground hover:text-brand"
+                  winked
+                    ? "text-brand"
+                    : "text-muted-foreground hover:text-brand",
                 )}
               >
                 <Smile className="size-5 lg:size-6" />
@@ -214,7 +215,9 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
                 onClick={() => setLiked((l) => !l)}
                 className={cn(
                   "transition-colors",
-                  liked ? "text-brand" : "text-muted-foreground hover:text-brand"
+                  liked
+                    ? "text-brand"
+                    : "text-muted-foreground hover:text-brand",
                 )}
               >
                 <Heart className="size-5 lg:size-6" />

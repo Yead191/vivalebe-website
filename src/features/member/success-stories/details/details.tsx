@@ -17,5 +17,12 @@ export default function SuccessStoryDetailsFeature({
   const story = successStories.find((item) => item.id === storyId);
   if (!story) notFound();
 
-  return <SuccessStoryDetailsClient lang={lang} dict={dict} currentUser={getCurrentUser()} initialStory={story} />;
+  return (
+    <SuccessStoryDetailsClient
+      lang={lang}
+      dict={dict}
+      currentUser={getCurrentUser()}
+      initialStory={story}
+    />
+  );
 }

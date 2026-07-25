@@ -63,7 +63,6 @@ export function FlameCard({
     <TooltipProvider>
       <article className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="grid gap-0 md:grid-cols-[minmax(0,520px)_minmax(0,1fr)] min-h-[calc(100vh-160px)]">
-
           {/* Left Side: Image container */}
           <div className="group relative aspect-square w-full bg-muted md:aspect-auto md:h-full">
             <Link
@@ -113,12 +112,14 @@ export function FlameCard({
                       type="button"
                       onClick={onUndo}
                       disabled={!isPremium}
-                      aria-label={isPremium ? "Undo last pass" : "Undo (premium required)"}
+                      aria-label={
+                        isPremium ? "Undo last pass" : "Undo (premium required)"
+                      }
                       className={cn(
                         "inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-transform",
                         isPremium
                           ? "text-foreground hover:scale-105"
-                          : "cursor-not-allowed text-muted-foreground opacity-60"
+                          : "cursor-not-allowed text-muted-foreground opacity-60",
                       )}
                     >
                       <RotateCcw className="size-5" />
@@ -162,7 +163,6 @@ export function FlameCard({
 
           {/* Right Side */}
           <div className="flex flex-col gap-8 p-8 justify-start">
-
             {/* Header info */}
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2.5">
@@ -184,7 +184,9 @@ export function FlameCard({
                 {user.state ? `, ${user.state}` : ""}, {user.country}
               </p>
               {user.willingToFly ? (
-                <p className="text-base font-semibold text-brand">Willing to fly to meet</p>
+                <p className="text-base font-semibold text-brand">
+                  Willing to fly to meet
+                </p>
               ) : null}
             </div>
 
@@ -193,7 +195,10 @@ export function FlameCard({
                 More About Me
               </h4>
               <dl className="space-y-2 text-base">
-                <Row label="Relationship status" value={user.relationshipStatus} />
+                <Row
+                  label="Relationship status"
+                  value={user.relationshipStatus}
+                />
                 <Row label="Height" value={user.height} />
                 <Row label="Body type" value={user.bodyType} />
                 <Row label="Living With" value={user.livingWith} />
@@ -204,10 +209,11 @@ export function FlameCard({
               <h4 className="text-sm font-bold uppercase tracking-widest text-foreground/80">
                 Profile Headline
               </h4>
-              <p className="text-base leading-relaxed text-foreground">{user.headline}</p>
+              <p className="text-base leading-relaxed text-foreground">
+                {user.headline}
+              </p>
             </div>
           </div>
-
         </div>
       </article>
     </TooltipProvider>

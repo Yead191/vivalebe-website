@@ -53,7 +53,7 @@ export function BlogPageClient({
       list = list.filter((b) => likeMetaMap[b.id]?.liked);
     } else if (activeTab === "commented") {
       list = list.filter((b) =>
-        (commentMap[b.id] ?? []).some((c) => c.authorId === currentUserId)
+        (commentMap[b.id] ?? []).some((c) => c.authorId === currentUserId),
       );
     }
 
@@ -71,16 +71,14 @@ export function BlogPageClient({
     if (sortMode === "newest") {
       list.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     } else {
       list.sort((a, b) => {
         const scoreA =
-          (likeMetaMap[a.id]?.count ?? 0) * 2 +
-          (commentMap[a.id]?.length ?? 0);
+          (likeMetaMap[a.id]?.count ?? 0) * 2 + (commentMap[a.id]?.length ?? 0);
         const scoreB =
-          (likeMetaMap[b.id]?.count ?? 0) * 2 +
-          (commentMap[b.id]?.length ?? 0);
+          (likeMetaMap[b.id]?.count ?? 0) * 2 + (commentMap[b.id]?.length ?? 0);
         return scoreB - scoreA;
       });
     }

@@ -22,14 +22,11 @@ export function MyListFeature({ lang, dict, activeTab }: MyListFeatureProps) {
 
   const tabUsers = ids
     .map((id) => users.find((u) => u.id === id))
-    .filter((u): u is NonNullable<typeof u> => u !== undefined && u.id !== me.id);
+    .filter(
+      (u): u is NonNullable<typeof u> => u !== undefined && u.id !== me.id,
+    );
 
   return (
-    <MyListClient
-      lang={lang}
-      dict={dict}
-      activeTab={tab}
-      users={tabUsers}
-    />
+    <MyListClient lang={lang} dict={dict} activeTab={tab} users={tabUsers} />
   );
 }

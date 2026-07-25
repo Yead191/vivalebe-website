@@ -6,9 +6,23 @@ import { Camera, Play, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import { avatarUrl } from "@/lib/image";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { brandButtonClass, brandSoftClass } from "./shared";
 
@@ -32,11 +46,19 @@ export function AddSuccessStoryDialog({
   const [open, setOpen] = useState(false);
   const [media, setMedia] = useState<PreviewItem[]>([]);
   const [storyTitle, setStoryTitle] = useState("");
-  const [relationshipStatus, setRelationshipStatus] = useState<"DATING" | "ENGAGED" | "OTHER">("DATING");
+  const [relationshipStatus, setRelationshipStatus] = useState<
+    "DATING" | "ENGAGED" | "OTHER"
+  >("DATING");
   const [storyText, setStoryText] = useState("");
 
-  const imageCount = useMemo(() => media.filter((item) => item.type === "image").length, [media]);
-  const videoCount = useMemo(() => media.filter((item) => item.type === "video").length, [media]);
+  const imageCount = useMemo(
+    () => media.filter((item) => item.type === "image").length,
+    [media],
+  );
+  const videoCount = useMemo(
+    () => media.filter((item) => item.type === "video").length,
+    [media],
+  );
 
   const handleFiles = (files: FileList | null) => {
     if (!files?.length) return;
@@ -47,7 +69,11 @@ export function AddSuccessStoryDialog({
     let nextVideoCount = videoCount;
 
     for (const file of nextFiles) {
-      const type = file.type.startsWith("video/") ? "video" : file.type.startsWith("image/") ? "image" : null;
+      const type = file.type.startsWith("video/")
+        ? "video"
+        : file.type.startsWith("image/")
+          ? "image"
+          : null;
       if (!type) continue;
 
       if (type === "image" && nextImageCount >= 9) {
@@ -101,7 +127,9 @@ export function AddSuccessStoryDialog({
               />
               <Select
                 value={relationshipStatus}
-                onValueChange={(value) => setRelationshipStatus(value as "DATING" | "ENGAGED" | "OTHER")}
+                onValueChange={(value) =>
+                  setRelationshipStatus(value as "DATING" | "ENGAGED" | "OTHER")
+                }
               >
                 <SelectTrigger className="min-h-10 w-full">
                   <SelectValue placeholder="Relationship status" />
@@ -124,7 +152,9 @@ export function AddSuccessStoryDialog({
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="font-medium text-slate-900">Upload media</p>
-                  <p className="text-sm text-muted-foreground">Max 9 images and 1 video. Images and video can be mixed.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Max 9 images and 1 video. Images and video can be mixed.
+                  </p>
                 </div>
                 <Button
                   type="button"
@@ -148,9 +178,19 @@ export function AddSuccessStoryDialog({
 
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 {media.map((item) => (
-                  <div key={item.id} className="relative overflow-hidden rounded-2xl border border-white/70 bg-white">
+                  <div
+                    key={item.id}
+                    className="relative overflow-hidden rounded-2xl border border-white/70 bg-white"
+                  >
                     {item.type === "image" ? (
-                      <Image src={item.url} alt={item.file.name} width={320} height={240} className="h-36 w-full object-cover" unoptimized />
+                      <Image
+                        src={item.url}
+                        alt={item.file.name}
+                        width={320}
+                        height={240}
+                        className="h-36 w-full object-cover"
+                        unoptimized
+                      />
                     ) : (
                       <div className="flex h-36 items-center justify-center bg-slate-950 text-white">
                         <Play className="size-10" />
@@ -159,7 +199,11 @@ export function AddSuccessStoryDialog({
                     <button
                       type="button"
                       className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white"
-                      onClick={() => setMedia((prev) => prev.filter((current) => current.id !== item.id))}
+                      onClick={() =>
+                        setMedia((prev) =>
+                          prev.filter((current) => current.id !== item.id),
+                        )
+                      }
                     >
                       <X className="size-4" />
                     </button>
@@ -178,7 +222,8 @@ export function AddSuccessStoryDialog({
                 unoptimized
               />
               <div className="text-sm text-muted-foreground">
-                Posts can include polished media previews, readable copy, and a premium story layout.
+                Posts can include polished media previews, readable copy, and a
+                premium story layout.
               </div>
             </div>
           </div>

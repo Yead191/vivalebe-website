@@ -34,7 +34,7 @@ export function ProfileNotFoundState({
             <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">
               {dict.profile.notFoundDescription.replace(
                 "@{username}",
-                `@${username}`
+                `@${username}`,
               )}
             </p>
           </div>
@@ -75,9 +75,7 @@ export function ProfileNotFoundState({
             className="rounded-full border-[#429CA8]/20 text-[#2b7e87]"
             asChild
           >
-            <Link href={`/${lang}/myHome`}>
-              {dict.profile.notFoundHome}
-            </Link>
+            <Link href={`/${lang}/myHome`}>{dict.profile.notFoundHome}</Link>
           </Button>
         </div>
       </div>

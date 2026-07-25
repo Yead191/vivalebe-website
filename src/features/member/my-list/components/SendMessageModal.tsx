@@ -3,10 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { X, Send } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { avatarUrl } from "@/lib/image";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
@@ -62,7 +59,6 @@ export function SendMessageModal({
                 </p>
               </div>
             </div>
-
           </div>
 
           {/* Message input */}

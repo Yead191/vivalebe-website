@@ -46,7 +46,7 @@ interface FooterProps {
   dict: Dictionary;
 }
 
-export async function Footer({ lang, dict }: FooterProps) {
+export function Footer({ lang, dict }: FooterProps) {
   const year = new Date().getFullYear();
   const pathname = usePathname();
   if (pathname?.includes('/chat')) {

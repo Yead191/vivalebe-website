@@ -39,7 +39,7 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
             videoState.set({ activeVideoId: id });
           }
           if (video && video.paused) {
-            video.play().catch(() => { });
+            video.play().catch(() => {});
           }
         } else {
           if (video && !video.paused) {
@@ -53,7 +53,7 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
           }
         }
       },
-      { threshold: [0, 0.1, 0.6] }
+      { threshold: [0, 0.1, 0.6] },
     );
 
     observer.observe(container);
@@ -81,7 +81,10 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
     if (!video) return;
 
     const currentGlobal = videoState.get();
-    if (video.muted !== currentGlobal.isMuted || video.volume !== currentGlobal.volume) {
+    if (
+      video.muted !== currentGlobal.isMuted ||
+      video.volume !== currentGlobal.volume
+    ) {
       videoState.set({
         isMuted: video.muted,
         volume: video.volume,
@@ -110,13 +113,7 @@ export function FeedVideoPlayer({ id, src, poster }: FeedVideoPlayerProps) {
           className="size-full object-cover [&:fullscreen]:object-contain"
         />
       ) : (
-        <Image
-          src={poster}
-          alt=""
-          fill
-          className="object-cover"
-          unoptimized
-        />
+        <Image src={poster} alt="" fill className="object-cover" unoptimized />
       )}
     </div>
   );

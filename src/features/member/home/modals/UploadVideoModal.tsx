@@ -65,7 +65,9 @@ export function UploadVideoModal({ dict, trigger }: UploadVideoModalProps) {
           />
         </label>
         <div className="space-y-1">
-          <label className="text-sm font-medium">{dict.myHome.modalDescription}</label>
+          <label className="text-sm font-medium">
+            {dict.myHome.modalDescription}
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -84,14 +86,15 @@ export function UploadVideoModal({ dict, trigger }: UploadVideoModalProps) {
           </button>
         </DialogClose>
         <div className="space-y-2 border-t border-border pt-4 text-xs text-muted-foreground">
-          <p className="font-semibold text-foreground">{dict.myHome.modalNotes}</p>
+          <p className="font-semibold text-foreground">
+            {dict.myHome.modalNotes}
+          </p>
           <ol className="list-decimal space-y-1 pl-5">
             {notes.map((n, i) => (
               <li key={i}>{n}</li>
             ))}
           </ol>
         </div>
-
       </DialogContent>
     </Dialog>
   );

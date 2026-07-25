@@ -12,7 +12,11 @@ interface PostHeaderProps {
   showAgeGender?: boolean;
 }
 
-export function PostHeader({ user, lang, showAgeGender = false }: PostHeaderProps) {
+export function PostHeader({
+  user,
+  lang,
+  showAgeGender = false,
+}: PostHeaderProps) {
   return (
     <div className="flex items-start gap-3 px-4 pt-4">
       <Link href={`/${lang}/profile/${user.username}`} className="shrink-0">

@@ -68,7 +68,7 @@ export function MomentCard({
     };
   }, [selectedImage]);
 
-  const toggleZoom = () => setZoomLevel(prev => (prev === 1 ? 2.5 : 1));
+  const toggleZoom = () => setZoomLevel((prev) => (prev === 1 ? 2.5 : 1));
 
   return (
     <>
@@ -81,7 +81,7 @@ export function MomentCard({
           <div
             className={cn(
               "mt-3 gap-1 px-4 pb-3",
-              count === 1 ? "flex" : "grid grid-cols-2"
+              count === 1 ? "flex" : "grid grid-cols-2",
             )}
           >
             {moment.imageSeeds.map((seed, i) => (
@@ -115,71 +115,79 @@ export function MomentCard({
       </article>
 
       {/* High-Performance Portal-based Photo Viewer */}
-      {selectedImage && mounted && createPortal(
-        <div className="fixed inset-0 z-40 flex flex-col bg-black animate-in fade-in duration-200">
-          {/* Top Controls Overlay */}
-          <div className="absolute right-6 top-6 z-50 flex items-center gap-6 text-white/90">
-            <button
-              onClick={() => setIsReportModalOpen(true)}
-              className="text-sm font-medium hover:text-white transition-colors"
-            >
-              Report
-            </button>
-            <button
-              onClick={toggleZoom}
-              className="hover:text-white transition-colors"
-            >
-              {zoomLevel > 1 ? <ZoomOut className="size-5" /> : <ZoomIn className="size-5" />}
-            </button>
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="hover:text-white transition-colors"
-            >
-              <X className="size-6" />
-            </button>
-          </div>
-
-          {/* Main Photo Area - Optimized for Instant Rendering & Zoom */}
-          <div className={cn(
-            "relative flex h-full w-full items-center justify-center overflow-auto p-0 transition-all duration-300",
-            zoomLevel > 1 ? "cursor-zoom-out" : "cursor-zoom-in"
-          )}>
-            <div
-              className="relative transition-all duration-300 ease-out"
-              style={{
-                width: zoomLevel > 1 ? '250%' : '100%',
-                height: zoomLevel > 1 ? '250%' : '100%',
-                minHeight: '100vh',
-                minWidth: '100vw'
-              }}
-              onClick={(e) => {
-                // Only toggle if clicking the image area, not background
-                if (e.target === e.currentTarget) toggleZoom();
-              }}
-            >
-              {/* Low-res background for instant visual feedback */}
-              <Image
-                src={photoUrl(selectedImage, 600, 600)}
-                alt=""
-                fill
-                className="object-contain blur-md opacity-50"
-                unoptimized
-              />
-              {/* High-res actual photo */}
-              <Image
-                src={photoUrl(selectedImage, 1600, 1600)}
-                alt="Moment photo full screen"
-                fill
-                className="object-contain"
-                unoptimized
-                priority
+      {selectedImage &&
+        mounted &&
+        createPortal(
+          <div className="fixed inset-0 z-40 flex flex-col bg-black animate-in fade-in duration-200">
+            {/* Top Controls Overlay */}
+            <div className="absolute right-6 top-6 z-50 flex items-center gap-6 text-white/90">
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                className="text-sm font-medium hover:text-white transition-colors"
+              >
+                Report
+              </button>
+              <button
                 onClick={toggleZoom}
-              />
+                className="hover:text-white transition-colors"
+              >
+                {zoomLevel > 1 ? (
+                  <ZoomOut className="size-5" />
+                ) : (
+                  <ZoomIn className="size-5" />
+                )}
+              </button>
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="hover:text-white transition-colors"
+              >
+                <X className="size-6" />
+              </button>
             </div>
-          </div>
-        </div>,
-        document.body
-      )}
+
+            {/* Main Photo Area - Optimized for Instant Rendering & Zoom */}
+            <div
+              className={cn(
+                "relative flex h-full w-full items-center justify-center overflow-auto p-0 transition-all duration-300",
+                zoomLevel > 1 ? "cursor-zoom-out" : "cursor-zoom-in",
+              )}
+            >
+              <div
+                className="relative transition-all duration-300 ease-out"
+                style={{
+                  width: zoomLevel > 1 ? "250%" : "100%",
+                  height: zoomLevel > 1 ? "250%" : "100%",
+                  minHeight: "100vh",
+                  minWidth: "100vw",
+                }}
+                onClick={(e) => {
+                  // Only toggle if clicking the image area, not background
+                  if (e.target === e.currentTarget) toggleZoom();
+                }}
+              >
+                {/* Low-res background for instant visual feedback */}
+                <Image
+                  src={photoUrl(selectedImage, 600, 600)}
+                  alt=""
+                  fill
+                  className="object-contain blur-md opacity-50"
+                  unoptimized
+                />
+                {/* High-res actual photo */}
+                <Image
+                  src={photoUrl(selectedImage, 1600, 1600)}
+                  alt="Moment photo full screen"
+                  fill
+                  className="object-contain"
+                  unoptimized
+                  priority
+                  onClick={toggleZoom}
+                />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
 
       {/* Content Reporting Modal */}
       <ReportContentModal

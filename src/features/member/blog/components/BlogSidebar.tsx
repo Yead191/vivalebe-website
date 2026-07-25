@@ -59,7 +59,7 @@ export function BlogSidebar({
               "text-left text-sm py-1.5 transition-colors border-b border-transparent",
               activeTab === tab.id
                 ? "text-brand font-semibold border-brand"
-                : "text-foreground hover:text-brand"
+                : "text-foreground hover:text-brand",
             )}
           >
             {tab.label}

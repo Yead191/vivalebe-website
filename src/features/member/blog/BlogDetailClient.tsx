@@ -75,7 +75,7 @@ export function BlogDetailClient({
 
   const formattedDate = new Intl.DateTimeFormat(
     lang === "pt" ? "pt-BR" : "en-US",
-    { year: "numeric", month: "long", day: "numeric" }
+    { year: "numeric", month: "long", day: "numeric" },
   ).format(new Date(blog.createdAt));
 
   const count = blog.imageSeeds.length;
@@ -98,7 +98,9 @@ export function BlogDetailClient({
           {/* Title + date */}
           <div className="px-4 pt-4 pb-2">
             <h1 className="text-xl font-bold leading-snug">{blog.title}</h1>
-            <p className="text-xs text-muted-foreground mt-1">{formattedDate}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {formattedDate}
+            </p>
           </div>
 
           {/* Images */}
@@ -106,7 +108,7 @@ export function BlogDetailClient({
             <div
               className={cn(
                 "mt-2 gap-1 px-4",
-                count === 1 ? "flex" : "grid grid-cols-2"
+                count === 1 ? "flex" : "grid grid-cols-2",
               )}
             >
               {blog.imageSeeds.map((seed, i) => (
@@ -214,7 +216,7 @@ export function BlogDetailClient({
               <div
                 className={cn(
                   "relative flex h-full w-full items-center justify-center overflow-auto transition-all duration-300",
-                  zoomLevel > 1 ? "cursor-zoom-out" : "cursor-zoom-in"
+                  zoomLevel > 1 ? "cursor-zoom-out" : "cursor-zoom-in",
                 )}
               >
                 <div
@@ -248,7 +250,7 @@ export function BlogDetailClient({
                 </div>
               </div>
             </div>,
-            document.body
+            document.body,
           )
         : null}
 

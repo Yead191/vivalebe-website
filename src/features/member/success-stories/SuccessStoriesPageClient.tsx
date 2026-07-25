@@ -16,12 +16,12 @@ import type { Comment } from "@/lib/types";
 import { toast } from "sonner";
 
 const sortKeyMap: Record<string, SuccessStoriesSortKey> = {
-  "Newest": "newest",
+  Newest: "newest",
   "Photos & Videos": "media",
   "Most Popular": "popular",
-  "Dating": "dating",
-  "Engaged": "engaged",
-  "Other": "other",
+  Dating: "dating",
+  Engaged: "engaged",
+  Other: "other",
   "My Post": "mine",
 };
 
@@ -40,7 +40,9 @@ function FeedFilters({
 }) {
   return (
     <aside className="grid gap-4 rounded-[2rem] border border-white/70 bg-slate-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.16)]">
-      <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/65">Feed filters</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/65">
+        Feed filters
+      </p>
       <div className="flex flex-wrap gap-2">
         {sortOptions.map((option) => {
           const key = sortKeyMap[option];
@@ -73,7 +75,9 @@ function FeedFilters({
           <p className="text-xs text-white/65">Media</p>
         </div>
         <div>
-          <p className="text-2xl font-semibold">{isPending ? "Live" : "Ready"}</p>
+          <p className="text-2xl font-semibold">
+            {isPending ? "Live" : "Ready"}
+          </p>
           <p className="text-xs text-white/65">Sort updates</p>
         </div>
       </div>
@@ -100,13 +104,30 @@ export function SuccessStoriesPageClient({
   const visibleStories = useMemo(() => {
     const list = [...stories];
     return list.sort((a, b) => {
-      if (sortKey === "newest") return +new Date(b.createdAt) - +new Date(a.createdAt);
+      if (sortKey === "newest")
+        return +new Date(b.createdAt) - +new Date(a.createdAt);
       if (sortKey === "popular") return b.likesCount - a.likesCount;
       if (sortKey === "media") return countMedia(b) - countMedia(a);
-      if (sortKey === "dating") return Number(b.relationshipStatus === "DATING") - Number(a.relationshipStatus === "DATING");
-      if (sortKey === "engaged") return Number(b.relationshipStatus === "ENGAGED") - Number(a.relationshipStatus === "ENGAGED");
-      if (sortKey === "other") return Number(b.relationshipStatus === "OTHER") - Number(a.relationshipStatus === "OTHER");
-      if (sortKey === "mine") return Number(b.user.username === currentUser.username) - Number(a.user.username === currentUser.username);
+      if (sortKey === "dating")
+        return (
+          Number(b.relationshipStatus === "DATING") -
+          Number(a.relationshipStatus === "DATING")
+        );
+      if (sortKey === "engaged")
+        return (
+          Number(b.relationshipStatus === "ENGAGED") -
+          Number(a.relationshipStatus === "ENGAGED")
+        );
+      if (sortKey === "other")
+        return (
+          Number(b.relationshipStatus === "OTHER") -
+          Number(a.relationshipStatus === "OTHER")
+        );
+      if (sortKey === "mine")
+        return (
+          Number(b.user.username === currentUser.username) -
+          Number(a.user.username === currentUser.username)
+        );
       return 0;
     });
   }, [stories, sortKey, currentUser.username]);
@@ -117,9 +138,12 @@ export function SuccessStoriesPageClient({
       setStories((current) =>
         current.map((story) =>
           story.id === storyId
-            ? { ...story, likesCount: Math.max(story.likesCount + (isLiked ? -1 : 1), 0) }
-            : story
-        )
+            ? {
+                ...story,
+                likesCount: Math.max(story.likesCount + (isLiked ? -1 : 1), 0),
+              }
+            : story,
+        ),
       );
       return isLiked ? prev.filter((id) => id !== storyId) : [...prev, storyId];
     });
@@ -137,12 +161,12 @@ export function SuccessStoriesPageClient({
       prev.map((story) =>
         story.id === storyId
           ? {
-            ...story,
-            commentsCount: story.commentsCount + 1,
-            comments: [comment, ...story.comments],
-          }
-          : story
-      )
+              ...story,
+              commentsCount: story.commentsCount + 1,
+              comments: [comment, ...story.comments],
+            }
+          : story,
+      ),
     );
     toast.success("Comment posted");
   };
@@ -187,7 +211,10 @@ export function SuccessStoriesPageClient({
             setSortKey={(value) => startTransition(() => setSortKey(value))}
             isPending={isPending}
             totalStories={stories.length}
-            totalMedia={stories.reduce((sum, story) => sum + countMedia(story), 0)}
+            totalMedia={stories.reduce(
+              (sum, story) => sum + countMedia(story),
+              0,
+            )}
           />
         </section>
 
@@ -212,9 +239,16 @@ export function SuccessStoriesPageClient({
                 Why this section matters
               </p>
               <div className="space-y-4 text-sm text-muted-foreground">
-                <p>Stories create trust. Members can show progress, celebrate milestones, and inspire others in the community.</p>
+                <p>
+                  Stories create trust. Members can show progress, celebrate
+                  milestones, and inspire others in the community.
+                </p>
               </div>
-              <Button variant="outline" className="w-full rounded-full border-[#429CA8]/20 text-[#2b7e87]" asChild>
+              <Button
+                variant="outline"
+                className="w-full rounded-full border-[#429CA8]/20 text-[#2b7e87]"
+                asChild
+              >
                 <Link href={`/${lang}/myHome`}>
                   <ChevronDown className="size-4 rotate-90" />
                   Explore more

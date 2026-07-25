@@ -34,7 +34,7 @@ export function MyListTabs({ lang, dict, activeTab }: MyListTabsProps) {
               "relative inline-flex items-center gap-1.5 pb-3 text-[11px] font-semibold tracking-wider uppercase whitespace-nowrap transition-colors",
               isActive
                 ? "text-foreground border-b-2 border-foreground -mb-px"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {dict.nav[labelKey]}

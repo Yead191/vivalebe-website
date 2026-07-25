@@ -132,7 +132,7 @@ export function ProfileSidebar({
               "text-left text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer",
               activeId === item.id
                 ? "text-foreground underline underline-offset-4"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {item.label}

@@ -16,13 +16,18 @@ export function BlogFeature({ lang, dict }: BlogFeatureProps) {
   const me = getCurrentUser();
 
   const authorsMap: Record<string, User> = Object.fromEntries(
-    users.map((u) => [u.id, u])
+    users.map((u) => [u.id, u]),
   );
 
-  const authorInfoMap: Record<string, { displayName: string; avatarSeed: string }> =
-    Object.fromEntries(
-      users.map((u) => [u.id, { displayName: u.displayName, avatarSeed: u.avatarSeed }])
-    );
+  const authorInfoMap: Record<
+    string,
+    { displayName: string; avatarSeed: string }
+  > = Object.fromEntries(
+    users.map((u) => [
+      u.id,
+      { displayName: u.displayName, avatarSeed: u.avatarSeed },
+    ]),
+  );
 
   const likeMetaMap: Record<string, { count: number; liked: boolean }> = {};
   const commentMap: Record<string, Comment[]> = {};
@@ -35,7 +40,10 @@ export function BlogFeature({ lang, dict }: BlogFeatureProps) {
   }
 
   const recentBlogs = [...mockBlogs]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
     .slice(0, 5)
     .map(({ id, title }) => ({ id, title }));
 

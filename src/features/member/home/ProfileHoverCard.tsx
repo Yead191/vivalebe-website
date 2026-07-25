@@ -44,7 +44,11 @@ export function ProfileHoverCard({ user, lang, dict }: Props) {
           />
         </button>
       </HoverCardTrigger>
-      <HoverCardContent side="left" align="start" className="w-80 p-0 overflow-hidden">
+      <HoverCardContent
+        side="left"
+        align="start"
+        className="w-80 p-0 overflow-hidden"
+      >
         <button
           type="button"
           onClick={goToProfile}
@@ -73,7 +77,9 @@ export function ProfileHoverCard({ user, lang, dict }: Props) {
           </div>
         </button>
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 border-t border-border px-4 py-3 text-xs">
-          <dt className="text-muted-foreground">{dict.profile.relationshipStatus}:</dt>
+          <dt className="text-muted-foreground">
+            {dict.profile.relationshipStatus}:
+          </dt>
           <dd>{user.relationshipStatus}</dd>
           <dt className="text-muted-foreground">{dict.discover.ethnicity}:</dt>
           <dd>{user.ethnicity}</dd>

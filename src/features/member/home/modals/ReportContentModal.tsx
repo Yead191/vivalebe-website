@@ -53,17 +53,26 @@ export function ReportContentModal({
       <DialogContent className="max-w-xl p-0  rounded-none sm:rounded-none border-none max-h-[calc(100vh-10rem)] overflow-auto scrollbar-hide">
         <div className="bg-white p-6 sm:p-10 relative">
           <DialogHeader className="mb-8 items-center">
-            <DialogTitle className="text-xl font-bold tracking-tight">{title}</DialogTitle>
+            <DialogTitle className="text-xl font-bold tracking-tight">
+              {title}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-8">
             <div className="space-y-4">
               <h3 className="text-base font-bold">{reasonsTitle}</h3>
-              <RadioGroup value={reason} onValueChange={setReason} className="space-y-4">
+              <RadioGroup
+                value={reason}
+                onValueChange={setReason}
+                className="space-y-4"
+              >
                 {REPORT_REASONS.map((r) => (
                   <div key={r} className="flex items-center space-x-3">
                     <RadioGroupItem value={r} id={r} className="size-5" />
-                    <Label htmlFor={r} className="text-base font-normal cursor-pointer leading-tight">
+                    <Label
+                      htmlFor={r}
+                      className="text-base font-normal cursor-pointer leading-tight"
+                    >
                       {r}
                     </Label>
                   </div>
@@ -89,9 +98,7 @@ export function ReportContentModal({
 
             <div className="space-y-3 pb-4">
               <h3 className="text-base font-bold">{evidenceTitle}</h3>
-              <p className="text-sm text-muted-foreground">
-                {evidenceNote}
-              </p>
+              <p className="text-sm text-muted-foreground">{evidenceNote}</p>
               <div className="mt-4">
                 <button
                   type="button"
