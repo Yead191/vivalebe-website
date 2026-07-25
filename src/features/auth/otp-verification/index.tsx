@@ -3,11 +3,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { createOtpSchema } from "@/schemas/auth/otp-verification.schema";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { toast } from "sonner";
+import { verifyEmailAction } from "./action";
 
 interface Props {
   dict: any;
@@ -16,9 +18,13 @@ interface Props {
 
 export default function OTPVerificationFeature({ dict, lang }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
   const [countdown, setCountdown] = useState(60);
   const [loading, setLoading] = useState(false);
   const inputRefs = [
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -29,7 +35,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
 
   const form = useForm({
     resolver: zodResolver(createOtpSchema(tValidation)),
-    defaultValues: { code: ["", "", "", ""] },
+    defaultValues: { code: ["", "", "", "", "", ""] },
   });
 
   useEffect(() => {
@@ -45,7 +51,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
     currentCode[index] = value.slice(-1);
     form.setValue("code", currentCode);
 
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs[index + 1].current?.focus();
     }
   };
@@ -59,12 +65,46 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
     }
   };
 
-  const onSubmit = async () => {
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text/plain").replace(/\D/g, "").slice(0, 6);
+    if (!pastedData) return;
+
+    const currentCode = [...form.getValues("code")];
+    pastedData.split("").forEach((char, index) => {
+      currentCode[index] = char;
+    });
+    form.setValue("code", currentCode);
+
+    const nextIndex = Math.min(pastedData.length, 5);
+    if (pastedData.length === 6) {
+      inputRefs[5].current?.focus();
+    } else {
+      inputRefs[nextIndex].current?.focus();
+    }
+  };
+
+  const onSubmit = async (values: any) => {
+    if (!email) {
+      toast.error("Email not found. Please try registering again.");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const otpString = values.code.join("");
+      const res = await verifyEmailAction({ email, oneTimeCode: Number(otpString) });
+      
+      if (res.success) {
+        toast.success(res.message || "Email verified successfully!");
+        router.push(`/${lang}/auth/login`);
+      } else {
+        toast.error(res.error || res.message || "Invalid OTP code");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    } finally {
       setLoading(false);
-      router.push(`/${lang}/auth/login`);
-    }, 1000);
+    }
   };
 
   return (
@@ -80,7 +120,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
         </div>
 
         <div className="flex justify-center gap-3">
-          {[0, 1, 2, 3].map((index) => (
+          {[0, 1, 2, 3, 4, 5].map((index) => (
             <FormField
               key={index}
               control={form.control}
@@ -96,6 +136,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
                       maxLength={1}
                       onChange={(e) => handleChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
+                      onPaste={handlePaste}
                       className="w-12 h-14 text-center text-xl font-bold rounded-xl border-2 border-neutral-200 focus:border-[#429CA8] focus:ring-4 focus:ring-[#429CA8]/10 outline-none transition-all"
                     />
                   </FormControl>

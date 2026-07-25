@@ -5,7 +5,7 @@ export const createOtpSchema = (t: (key: string) => string) =>
     code: z
       .array(z.string())
       .refine(
-        (arr) => arr.length === 4 && arr.every((val) => /^\d$/.test(val)),
+        (arr) => arr.length === 6 && arr.every((val) => /^\d$/.test(val)),
         {
           message: t("invalidOtp"),
         },
