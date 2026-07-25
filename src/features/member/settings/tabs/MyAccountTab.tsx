@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { changePasswordAction } from "../action";
 
 interface AccountField {
   key: string;
@@ -33,6 +34,16 @@ export default function MyAccountTab({ t }: { t: any }) {
   // State for Account Delete Action
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+
+  // State for Password Change
+  const [isPasswordModalOpen, setIsPasswordModalOpen] =
+    useState<boolean>(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false);
 
   // Dynamic user data values (Connect these to your database or React Query/Context mutations)
   const [userData, setUserData] = useState<
@@ -72,14 +83,22 @@ export default function MyAccountTab({ t }: { t: any }) {
     },
   ];
 
-  // Starts field editing state
   const startEditing = (
     key: string,
     currentVal: string,
     isNotSet?: boolean,
   ) => {
+    if (key === "password") {
+      setIsPasswordModalOpen(true);
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      return;
+    }
     setEditingKey(key);
-    setTempValue(isNotSet ? "" : key === "password" ? "" : currentVal);
+    setTempValue(isNotSet ? "" : currentVal);
   };
 
   // Persists changes mock-style with local states
@@ -112,6 +131,28 @@ export default function MyAccountTab({ t }: { t: any }) {
 
     // Redirect logic goes here (e.g., router.push("/login"))
     toast.success("Account permanently deleted.");
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error("New passwords do not match.");
+      return;
+    }
+    setIsChangingPassword(true);
+    try {
+      const res = await changePasswordAction(passwordForm);
+      if (res.success) {
+        toast.success(res.message || "Password changed successfully");
+        setIsPasswordModalOpen(false);
+      } else {
+        toast.error(res.error || res.message || "Failed to change password");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   return (
@@ -196,6 +237,91 @@ export default function MyAccountTab({ t }: { t: any }) {
           );
         })}
       </div>
+
+      {/* Password Change Modal */}
+      <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              {t.account?.changePasswordTitle || "Change Password"}
+            </DialogTitle>
+            <DialogDescription>
+              {t.account?.changePasswordDesc ||
+                "Enter your current password and a new password."}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleChangePassword} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                {t.account?.currentPassword || "Current Password"}
+              </label>
+              <Input
+                type="password"
+                required
+                value={passwordForm.currentPassword}
+                onChange={(e) =>
+                  setPasswordForm({
+                    ...passwordForm,
+                    currentPassword: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                {t.account?.newPassword || "New Password"}
+              </label>
+              <Input
+                type="password"
+                required
+                value={passwordForm.newPassword}
+                onChange={(e) =>
+                  setPasswordForm({
+                    ...passwordForm,
+                    newPassword: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                {t.account?.confirmNewPassword || "Confirm New Password"}
+              </label>
+              <Input
+                type="password"
+                required
+                value={passwordForm.confirmPassword}
+                onChange={(e) =>
+                  setPasswordForm({
+                    ...passwordForm,
+                    confirmPassword: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsPasswordModalOpen(false)}
+                disabled={isChangingPassword}
+              >
+                {t.common?.cancel || "Cancel"}
+              </Button>
+              <Button
+                type="submit"
+                disabled={isChangingPassword}
+                className="bg-[#429CA8] hover:bg-[#357d87] text-white"
+              >
+                {isChangingPassword && (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                )}
+                {t.common?.save || "Save Password"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Premium Styled Danger Zone */}
       <div className="pt-4">
