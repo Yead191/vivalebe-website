@@ -1,11 +1,14 @@
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import type { Comment } from "@/lib/types";
+import type { Comment, User } from "@/lib/types";
 import { getCurrentUser } from "@/lib/mock/current-user";
-import type { ApiBlog } from "./types";
+import { myFetch } from "@/helpers/myFetch";
+import type { ApiBlog, ApiBlogComment } from "./types";
 import {
   buildAuthorsFromBlogs,
+  buildAuthorsFromComments,
   mapApiBlogToPost,
+  mapApiComment,
 } from "./mappers";
 import { BlogPageClient } from "./BlogPageClient";
 
@@ -16,7 +19,7 @@ interface BlogFeatureProps {
   totalBlogs?: number;
 }
 
-export function BlogFeature({
+export async function BlogFeature({
   lang,
   dict,
   blogs,
@@ -24,8 +27,44 @@ export function BlogFeature({
 }: BlogFeatureProps) {
   const me = getCurrentUser();
 
+  const commentEntries = await Promise.all(
+    blogs.map(async (blog) => {
+      if (!blog.totalComments) {
+        return [blog._id, [] as ApiBlogComment[]] as const;
+      }
+      const res = await myFetch<ApiBlogComment[]>(
+        `/blog-comments/${blog._id}`,
+        {
+          cache: "no-store",
+          tags: [`blog-comments-${blog._id}`],
+        },
+      );
+      return [blog._id, res.data ?? []] as const;
+    }),
+  );
+
   const mappedBlogs = blogs.map(mapApiBlogToPost);
-  const authorsMap = buildAuthorsFromBlogs(blogs);
+  const authorsMap: Record<string, User> = {
+    ...buildAuthorsFromBlogs(blogs),
+  };
+
+  const likeMetaMap: Record<string, { count: number; liked: boolean }> = {};
+  const commentCountMap: Record<string, number> = {};
+  const commentMap: Record<string, Comment[]> = {};
+
+  for (const blog of blogs) {
+    likeMetaMap[blog._id] = { count: blog.totalLikes, liked: false };
+    commentCountMap[blog._id] = blog.totalComments;
+  }
+
+  for (const [blogId, apiComments] of commentEntries) {
+    commentMap[blogId] = apiComments.map(mapApiComment);
+    Object.assign(authorsMap, buildAuthorsFromComments(apiComments));
+    commentCountMap[blogId] = Math.max(
+      commentCountMap[blogId] ?? 0,
+      apiComments.length,
+    );
+  }
 
   const authorInfoMap: Record<
     string,
@@ -36,16 +75,6 @@ export function BlogFeature({
       { displayName: u.displayName, avatarSeed: u.avatarSeed },
     ]),
   );
-
-  const likeMetaMap: Record<string, { count: number; liked: boolean }> = {};
-  const commentCountMap: Record<string, number> = {};
-  const commentMap: Record<string, Comment[]> = {};
-
-  for (const blog of blogs) {
-    likeMetaMap[blog._id] = { count: blog.totalLikes, liked: false };
-    commentCountMap[blog._id] = blog.totalComments;
-    commentMap[blog._id] = [];
-  }
 
   const recentBlogs = [...mappedBlogs]
     .sort(

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import { ThumbsUp, MessageCircle, Send } from "lucide-react";
+import { toast } from "sonner";
 import { toggleLikeAction, addCommentAction } from "@/lib/actions/feed";
+import { createBlogCommentAction } from "@/features/member/blog/actions";
 import { avatarUrl } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import type { Comment } from "@/lib/types";
@@ -27,7 +29,7 @@ export function PostActions({
   initialLiked,
   initialComments,
   initialCommentCount,
-  authors,
+  authors: initialAuthors,
   currentUserAvatarSeed,
   commentPlaceholder = "Write a comment...",
 }: PostActionsProps) {
@@ -36,9 +38,26 @@ export function PostActions({
     liked: initialLiked,
   });
   const [comments, setComments] = useState<Comment[]>(initialComments);
+  const [authors, setAuthors] =
+    useState<Record<string, { displayName: string; avatarSeed: string }>>(
+      initialAuthors,
+    );
   const [showComments, setShowComments] = useState(initialComments.length > 0);
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setComments(initialComments);
+    setAuthors(initialAuthors);
+    if (initialComments.length > 0) {
+      setShowComments(true);
+    }
+  }, [initialComments, initialAuthors]);
+
+  const commentCount = Math.max(
+    initialCommentCount ?? 0,
+    comments.length,
+  );
 
   const onLike = () => {
     setLikes((prev) =>
@@ -59,6 +78,19 @@ export function PostActions({
     setText("");
     setShowComments(true);
     startTransition(async () => {
+      if (kind === "blog") {
+        const res = await createBlogCommentAction(postId, trimmed);
+        if (!res.success) {
+          toast.error(res.message ?? "Failed to post comment");
+          return;
+        }
+        setComments(res.comments);
+        if (res.authors) {
+          setAuthors((prev) => ({ ...prev, ...res.authors }));
+        }
+        return;
+      }
+
       const updated = await addCommentAction(kind, postId, trimmed);
       setComments(updated);
     });
@@ -87,9 +119,7 @@ export function PostActions({
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <MessageCircle className="size-4" />
-          {(initialCommentCount ?? comments.length) > 0
-            ? (initialCommentCount ?? comments.length)
-            : ""}
+          {commentCount > 0 ? commentCount : ""}
         </button>
       </div>
 
