@@ -20,6 +20,7 @@ interface BlogPageClientProps {
   authorInfoMap: Record<string, { displayName: string; avatarSeed: string }>;
   likeMetaMap: Record<string, { count: number; liked: boolean }>;
   commentMap: Record<string, Comment[]>;
+  commentCountMap?: Record<string, number>;
   currentUserAvatarSeed: string;
   currentUserId: string;
   recentBlogs: Pick<BlogPost, "id" | "title">[];
@@ -34,6 +35,7 @@ export function BlogPageClient({
   authorInfoMap,
   likeMetaMap,
   commentMap,
+  commentCountMap = {},
   currentUserAvatarSeed,
   currentUserId,
   recentBlogs,
@@ -76,9 +78,11 @@ export function BlogPageClient({
     } else {
       list.sort((a, b) => {
         const scoreA =
-          (likeMetaMap[a.id]?.count ?? 0) * 2 + (commentMap[a.id]?.length ?? 0);
+          (likeMetaMap[a.id]?.count ?? 0) * 2 +
+          (commentCountMap[a.id] ?? commentMap[a.id]?.length ?? 0);
         const scoreB =
-          (likeMetaMap[b.id]?.count ?? 0) * 2 + (commentMap[b.id]?.length ?? 0);
+          (likeMetaMap[b.id]?.count ?? 0) * 2 +
+          (commentCountMap[b.id] ?? commentMap[b.id]?.length ?? 0);
         return scoreB - scoreA;
       });
     }
@@ -92,6 +96,7 @@ export function BlogPageClient({
     currentUserId,
     likeMetaMap,
     commentMap,
+    commentCountMap,
     authorsMap,
   ]);
 
@@ -159,6 +164,7 @@ export function BlogPageClient({
                     likeCount={likeMetaMap[blog.id]?.count ?? 0}
                     liked={likeMetaMap[blog.id]?.liked ?? false}
                     comments={commentMap[blog.id] ?? []}
+                    commentCount={commentCountMap[blog.id]}
                     authors={authorInfoMap}
                     currentUserAvatarSeed={currentUserAvatarSeed}
                   />

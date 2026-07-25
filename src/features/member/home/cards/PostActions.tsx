@@ -14,6 +14,7 @@ interface PostActionsProps {
   initialLikeCount: number;
   initialLiked: boolean;
   initialComments: Comment[];
+  initialCommentCount?: number;
   authors: Record<string, { displayName: string; avatarSeed: string }>;
   currentUserAvatarSeed: string;
   commentPlaceholder?: string;
@@ -25,6 +26,7 @@ export function PostActions({
   initialLikeCount,
   initialLiked,
   initialComments,
+  initialCommentCount,
   authors,
   currentUserAvatarSeed,
   commentPlaceholder = "Write a comment...",
@@ -85,7 +87,9 @@ export function PostActions({
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <MessageCircle className="size-4" />
-          {comments.length > 0 ? comments.length : ""}
+          {(initialCommentCount ?? comments.length) > 0
+            ? (initialCommentCount ?? comments.length)
+            : ""}
         </button>
       </div>
 

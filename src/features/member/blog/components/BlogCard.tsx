@@ -18,6 +18,7 @@ interface BlogCardProps {
   likeCount: number;
   liked: boolean;
   comments: Comment[];
+  commentCount?: number;
   authors: Record<string, { displayName: string; avatarSeed: string }>;
   currentUserAvatarSeed: string;
 }
@@ -30,6 +31,7 @@ export function BlogCard({
   likeCount,
   liked,
   comments,
+  commentCount,
   authors,
   currentUserAvatarSeed,
 }: BlogCardProps) {
@@ -37,7 +39,7 @@ export function BlogCard({
 
   return (
     <article className="overflow-hidden rounded-xl border border-border bg-card">
-      <PostHeader user={author} lang={lang} showAgeGender />
+      <PostHeader user={author} lang={lang} />
 
       <Link href={`/${lang}/blog/${blog.id}`} className="block group">
         <div className="px-4 pt-3 pb-2">
@@ -81,6 +83,7 @@ export function BlogCard({
         initialLikeCount={likeCount}
         initialLiked={liked}
         initialComments={comments}
+        initialCommentCount={commentCount}
         authors={authors}
         currentUserAvatarSeed={currentUserAvatarSeed}
         commentPlaceholder={dict.blog.commentPlaceholder}

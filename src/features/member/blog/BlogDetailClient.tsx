@@ -93,7 +93,7 @@ export function BlogDetailClient({
         </Link>
 
         <article className="overflow-hidden rounded-xl border border-border bg-card">
-          <PostHeader user={author} lang={lang} showAgeGender />
+          <PostHeader user={author} lang={lang} />
 
           {/* Title + date */}
           <div className="px-4 pt-4 pb-2">

@@ -1,45 +1,53 @@
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import type { Comment, User } from "@/lib/types";
-import { mockBlogs } from "@/constants/mockBlogData";
-import { users } from "@/lib/mock/users";
-import { getLikes, getComments } from "@/lib/mock/store";
+import type { Comment } from "@/lib/types";
 import { getCurrentUser } from "@/lib/mock/current-user";
+import type { ApiBlog } from "./types";
+import {
+  buildAuthorsFromBlogs,
+  mapApiBlogToPost,
+} from "./mappers";
 import { BlogPageClient } from "./BlogPageClient";
 
 interface BlogFeatureProps {
   lang: Locale;
   dict: Dictionary;
+  blogs: ApiBlog[];
+  totalBlogs?: number;
 }
 
-export function BlogFeature({ lang, dict }: BlogFeatureProps) {
+export function BlogFeature({
+  lang,
+  dict,
+  blogs,
+  totalBlogs,
+}: BlogFeatureProps) {
   const me = getCurrentUser();
 
-  const authorsMap: Record<string, User> = Object.fromEntries(
-    users.map((u) => [u.id, u]),
-  );
+  const mappedBlogs = blogs.map(mapApiBlogToPost);
+  const authorsMap = buildAuthorsFromBlogs(blogs);
 
   const authorInfoMap: Record<
     string,
     { displayName: string; avatarSeed: string }
   > = Object.fromEntries(
-    users.map((u) => [
+    Object.values(authorsMap).map((u) => [
       u.id,
       { displayName: u.displayName, avatarSeed: u.avatarSeed },
     ]),
   );
 
   const likeMetaMap: Record<string, { count: number; liked: boolean }> = {};
+  const commentCountMap: Record<string, number> = {};
   const commentMap: Record<string, Comment[]> = {};
 
-  for (const blog of mockBlogs) {
-    const likes = getLikes("blog", blog.id);
-    const comments = getComments("blog", blog.id, blog.comments);
-    likeMetaMap[blog.id] = { count: likes.count, liked: likes.byCurrentUser };
-    commentMap[blog.id] = comments;
+  for (const blog of blogs) {
+    likeMetaMap[blog._id] = { count: blog.totalLikes, liked: false };
+    commentCountMap[blog._id] = blog.totalComments;
+    commentMap[blog._id] = [];
   }
 
-  const recentBlogs = [...mockBlogs]
+  const recentBlogs = [...mappedBlogs]
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -51,15 +59,16 @@ export function BlogFeature({ lang, dict }: BlogFeatureProps) {
     <BlogPageClient
       lang={lang}
       dict={dict}
-      blogs={mockBlogs}
+      blogs={mappedBlogs}
       authorsMap={authorsMap}
       authorInfoMap={authorInfoMap}
       likeMetaMap={likeMetaMap}
       commentMap={commentMap}
+      commentCountMap={commentCountMap}
       currentUserAvatarSeed={me.avatarSeed}
       currentUserId={me.id}
       recentBlogs={recentBlogs}
-      totalBlogs={6945}
+      totalBlogs={totalBlogs ?? mappedBlogs.length}
     />
   );
 }

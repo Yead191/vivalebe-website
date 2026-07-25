@@ -38,9 +38,8 @@ export function PostHeader({
           {user.verified ? <VerifiedBadge /> : null}
         </Link>
         <p className="text-xs text-muted-foreground">
-          {showAgeGender ? `${user.age}, ${user.gender}, ` : ""}
-          {user.city}
-          {user.state ? `, ${user.state}` : ""}, {user.country}
+          {showAgeGender && user.age > 0 ? `${user.age}, ${user.gender}, ` : ""}
+          {[user.city, user.state, user.country].filter(Boolean).join(", ")}
         </p>
       </div>
       <button
