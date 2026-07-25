@@ -65,7 +65,9 @@ export const myFetch = async <T = any>(
       return {
         success: false,
         message: json?.message,
-        error: json?.errorMessages || "Request failed",
+        error: Array.isArray(json?.errorMessages) 
+          ? json.errorMessages.map((e: any) => e.message).join(", ") 
+          : (json?.errorMessages || "Request failed"),
       };
     }
 

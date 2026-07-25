@@ -2,8 +2,8 @@
 
 import { myFetch } from "@/helpers/myFetch";
 
-export async function verifyEmailAction(data: Record<string, any>) {
-  const res = await myFetch("/auth/verify-email", {
+export async function forgotPasswordAction(data: Record<string, any>) {
+  const res = await myFetch("/auth/forgot-password", {
     method: "POST",
     body: data,
   });

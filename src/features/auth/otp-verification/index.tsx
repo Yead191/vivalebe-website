@@ -9,7 +9,7 @@ import { createOtpSchema } from "@/schemas/auth/otp-verification.schema";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { toast } from "sonner";
-import { verifyEmailAction } from "./action";
+import { verifyEmailAction, resendOtpAction } from "./action";
 
 interface Props {
   dict: any;
@@ -107,6 +107,25 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
     }
   };
 
+  const handleResendOtp = async () => {
+    if (!email) {
+      toast.error("Email not found.");
+      return;
+    }
+    
+    try {
+      const res = await resendOtpAction({ email });
+      if (res.success) {
+        toast.success(res.message || "OTP resent successfully");
+        setCountdown(60);
+      } else {
+        toast.error(res.error || res.message || "Failed to resend OTP");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -163,7 +182,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
           ) : (
             <button
               type="button"
-              onClick={() => setCountdown(60)}
+              onClick={handleResendOtp}
               className="text-[#429CA8] font-bold hover:underline bg-transparent border-none cursor-pointer"
             >
               {dict.auth?.resendCode || "Resend Pin"}

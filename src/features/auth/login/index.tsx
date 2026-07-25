@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { createLoginSchema } from "@/schemas/auth/login.schema";
@@ -36,6 +36,21 @@ export default function LoginFeature({ dict, lang }: Props) {
     resolver: zodResolver(createLoginSchema(tValidation)),
     defaultValues: { email: "", password: "", rememberMe: false },
   });
+
+  useEffect(() => {
+    const prefillEmail = sessionStorage.getItem("prefillEmail");
+    const prefillPassword = sessionStorage.getItem("prefillPassword");
+
+    if (prefillEmail) {
+      form.setValue("email", prefillEmail);
+    }
+    if (prefillPassword) {
+      form.setValue("password", prefillPassword);
+    }
+
+    sessionStorage.removeItem("prefillEmail");
+    sessionStorage.removeItem("prefillPassword");
+  }, [form]);
 
   const onSubmit = async (data: any) => {
     setLoading(true);

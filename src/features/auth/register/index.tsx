@@ -42,6 +42,8 @@ export default function RegisterFeature({ dict, lang }: Props) {
 
             if (res.success) {
                 toast.success(res.message || "Registration successful");
+                sessionStorage.setItem("prefillEmail", values.email);
+                sessionStorage.setItem("prefillPassword", values.password);
                 router.push(`/${lang}/auth/otp-verification?email=${values.email}`);
             } else {
                 toast.error(res.error || res.message || "Registration failed");
