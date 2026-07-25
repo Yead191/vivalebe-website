@@ -19,6 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { loginAction } from "./action";
 
 interface Props {
   dict: any;
@@ -35,12 +37,21 @@ export default function LoginFeature({ dict, lang }: Props) {
     defaultValues: { email: "", password: "", rememberMe: false },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: any) => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await loginAction(data);
+      if (res.success) {
+        toast.success(res.message || "Logged in successfully");
+        router.push(`/${lang}/myHome`);
+      } else {
+        toast.error(res.error || res.message || "Failed to login");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    } finally {
       setLoading(false);
-      router.push(`/${lang}/myHome`);
-    }, 1000);
+    }
   };
 
   return (

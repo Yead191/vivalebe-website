@@ -36,7 +36,7 @@ export const myFetch = async <T = any>(
     token,
     headers = {},
     cache = "force-cache",
-  }: FetchOptions = {}
+  }: FetchOptions = {},
 ): Promise<FetchResponse<T>> => {
   const accessToken = await getAccessToken();
   const isFormData = body instanceof FormData;
@@ -74,7 +74,7 @@ export const myFetch = async <T = any>(
       message: json?.message,
       data: json?.data,
       error: null,
-      pagination: json?.pagination
+      pagination: json?.pagination,
     };
   } catch (err) {
     return {
