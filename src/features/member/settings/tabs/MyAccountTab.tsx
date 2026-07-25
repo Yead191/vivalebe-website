@@ -1,8 +1,8 @@
 // @/components/settings/tabs/MyAccountTab.tsx
 "use client";
 
-import React, { useState } from "react";
-import { Pencil, Trash2, Check, X, Loader2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Pencil, Trash2, Check, X, Loader2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,7 +15,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { changePasswordAction } from "../action";
+import {
+  changePasswordAction,
+  getProfileAction,
+  updateProfileAction,
+} from "../action";
+import { avatarUrl } from "@/lib/image";
 
 interface AccountField {
   key: string;
@@ -45,15 +50,51 @@ export default function MyAccountTab({ t }: { t: any }) {
   });
   const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false);
 
-  // Dynamic user data values (Connect these to your database or React Query/Context mutations)
   const [userData, setUserData] = useState<
     Record<string, { value: string; isNotSet?: boolean }>
   >({
-    name: { value: "Micheal" },
-    email: { value: "example.email@gmail.com" },
-    phone: { value: t.account.notSet, isNotSet: true },
+    name: { value: "", isNotSet: true },
+    email: { value: "", isNotSet: true },
+    phone: { value: t.account?.notSet, isNotSet: true },
     password: { value: "••••••••••••••••" },
+    image: { value: "", isNotSet: true },
   });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await getProfileAction();
+        if (res.success && res.data) {
+          setUserData((prev) => ({
+            ...prev,
+            name: {
+              value: res.data.name || res.data.displayName || prev.name.value,
+              isNotSet: !res.data.name && !res.data.displayName,
+            },
+            email: {
+              value: res.data.email || prev.email.value,
+              isNotSet: !res.data.email,
+            },
+            phone: {
+              value: res.data.phone || t.account?.notSet,
+              isNotSet: !res.data.phone,
+            },
+            image: {
+              value:
+                res.data.image ||
+                res.data.profileImage ||
+                res.data.avatarSeed ||
+                "default",
+              isNotSet: false,
+            },
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile", error);
+      }
+    };
+    fetchProfile();
+  }, [t.account?.notSet]);
 
   const fields: AccountField[] = [
     {
@@ -101,24 +142,67 @@ export default function MyAccountTab({ t }: { t: any }) {
     setTempValue(isNotSet ? "" : currentVal);
   };
 
-  // Persists changes mock-style with local states
+  // Persists changes using the actual API
   const handleSaveField = async (key: string) => {
     if (!tempValue.trim()) return;
     setIsUpdating(true);
 
-    // Simulate database update API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const formData = new FormData();
+      formData.append(key, tempValue);
+      const res = await updateProfileAction(formData);
 
+      if (res.success) {
+        setUserData((prev) => ({
+          ...prev,
+          [key]: {
+            value: key === "password" ? "••••••••••••••••" : tempValue,
+            isNotSet: false,
+          },
+        }));
+        toast.success(res.message || `${key} updated successfully`);
+      } else {
+        toast.error(res.error || res.message || `Failed to update ${key}`);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    } finally {
+      setIsUpdating(false);
+      setEditingKey(null);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create a local preview immediately
+    const objectUrl = URL.createObjectURL(file);
     setUserData((prev) => ({
       ...prev,
-      [key]: {
-        value: key === "password" ? "••••••••••••••••" : tempValue,
-        isNotSet: false,
-      },
+      image: { value: objectUrl, isNotSet: false },
     }));
 
-    setIsUpdating(false);
-    setEditingKey(null);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await updateProfileAction(formData);
+
+      if (res.success) {
+        toast.success("Profile photo updated");
+        // If API returns the uploaded image URL, we can set it here
+        if (res.data?.image) {
+          setUserData((prev) => ({
+            ...prev,
+            image: { value: res.data.image, isNotSet: false },
+          }));
+        }
+      } else {
+        toast.error(res.error || res.message || "Failed to upload photo");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Error uploading photo");
+    }
   };
 
   // Mock function for permanent account cleanup execution
@@ -157,10 +241,40 @@ export default function MyAccountTab({ t }: { t: any }) {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div>
-        <h2 className="text-xl font-bold tracking-tight mb-1">
-          {t.tabs.myAccount}
-        </h2>
+      <div className="flex flex-col sm:flex-row items-center gap-6">
+        <div className="relative group">
+          <div className="w-24 h-24 rounded-full bg-neutral-200 overflow-hidden border-4 border-white shadow-sm flex items-center justify-center">
+            {userData.image?.value ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarUrl(userData.image.value, 256)}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-3xl text-neutral-400 font-bold">
+                {userData.name.value.charAt(0).toUpperCase() || "U"}
+              </span>
+            )}
+          </div>
+          <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+            <Camera className="w-6 h-6" />
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageUpload}
+            />
+          </label>
+        </div>
+        <div>
+          <h2 className="text-xl font-bold tracking-tight mb-1">
+            {t.tabs?.myAccount || "My Account"}
+          </h2>
+          <p className="text-sm text-neutral-500">
+            Update your profile details and photo.
+          </p>
+        </div>
       </div>
 
       <div className="divide-y divide-neutral-100  border-y border-neutral-100 ">
