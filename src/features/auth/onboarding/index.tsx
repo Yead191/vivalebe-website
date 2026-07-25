@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import type { ButtonHTMLAttributes } from "react";
@@ -22,6 +22,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LangSwitcher } from "@/components/shared/LangSwitcher";
+import { toast } from "sonner";
+import { submitOnboardingAction } from "./action";
 import {
   Form,
   FormControl,
@@ -96,7 +98,24 @@ export default function OnboardingFeature({ dict, lang }: Props) {
   const [step, setStep] = useState<StepKey>("preferences");
   const [success, setSuccess] = useState(false);
   const schema = useMemo(
-    () => createOnboardingSchema((key) => dict.validation?.[key] || key),
+    () =>
+      createOnboardingSchema((key) => {
+        const defaultMessages: Record<string, string> = {
+          aboutMin: "Bio must be at least 40 characters.",
+          aboutMax: "Bio cannot exceed 320 characters.",
+          countryRequired: "Country is required.",
+          stateRequired: "State is required.",
+          zipRequired: "ZIP Code is required.",
+          nationalityRequired: "Nationality is required.",
+          dobRequired: "Date of Birth is required.",
+          displayNameRequired: "Display Name is required.",
+          heightRequired: "Height is required.",
+          weightRequired: "Weight is required.",
+          occupationRequired: "Occupation is required.",
+          mustBeAdult: "You must be at least 18 years old.",
+        };
+        return dict.validation?.[key] || defaultMessages[key] || key;
+      }),
     [dict],
   );
 
@@ -151,10 +170,40 @@ export default function OnboardingFeature({ dict, lang }: Props) {
       return;
     }
 
-    setTimeout(() => {
-      setSuccess(true);
-      setTimeout(() => router.push(`/${lang}/myHome`), 1800);
-    }, 600);
+    try {
+      const formValues = form.getValues();
+      const payload = {
+        gender: formValues.interestedIn === "man" ? "MALE" : "FEMALE",
+        lookingFor: formValues.lookingFor === "man" ? "MALE" : "FEMALE",
+        country: formValues.country,
+        state: formValues.state,
+        zidCode: Number(formValues.zipCode) || 0,
+        nationality: formValues.nationality,
+        DOB: formValues.dateOfBirth
+          ? new Date(formValues.dateOfBirth).toISOString()
+          : new Date().toISOString(),
+        livingWith: formValues.livingWith.toUpperCase(),
+        displayName: formValues.displayName,
+        height: Number(formValues.heightValue) || 0,
+        weight: Number(formValues.weightValue) || 0,
+        occupation: formValues.occupation,
+        education: formValues.educationLevel.toUpperCase(),
+        relationStatus: formValues.relationshipStatus.toUpperCase(),
+        bio: formValues.aboutYou,
+      };
+
+      const res = await submitOnboardingAction(payload);
+
+      if (res.success) {
+        window.localStorage.removeItem(STORAGE_KEY);
+        setSuccess(true);
+        setTimeout(() => router.push(`/${lang}/myHome`), 1800);
+      } else {
+        toast.error(res.error || res.message || "Failed to submit onboarding");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    }
   };
 
   if (success) {
