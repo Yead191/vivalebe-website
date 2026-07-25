@@ -22,8 +22,16 @@ interface Country {
 }
 
 const countries: Country[] = [
-  { code: "BR", name: "Brazil", states: ["SP", "RJ", "MG", "BA", "PE", "PR", "SC", "DF"] },
-  { code: "PT", name: "Portugal", states: ["Lisbon", "Porto", "Coimbra", "Faro"] },
+  {
+    code: "BR",
+    name: "Brazil",
+    states: ["SP", "RJ", "MG", "BA", "PE", "PR", "SC", "DF"],
+  },
+  {
+    code: "PT",
+    name: "Portugal",
+    states: ["Lisbon", "Porto", "Coimbra", "Faro"],
+  },
   { code: "ES", name: "Spain", states: ["Madrid", "Catalonia", "Andalusia"] },
   { code: "US", name: "USA", states: ["CA", "TX", "NY", "FL"] },
 ];

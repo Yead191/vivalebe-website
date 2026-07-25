@@ -17,7 +17,8 @@ interface SortDropdownProps {
 }
 
 export function SortDropdown({ value, onChange, dict }: SortDropdownProps) {
-  const label = value === "newest" ? dict.myHome.feedNewest : dict.myHome.feedPopular;
+  const label =
+    value === "newest" ? dict.myHome.feedNewest : dict.myHome.feedPopular;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">

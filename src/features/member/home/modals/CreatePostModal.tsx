@@ -19,10 +19,31 @@ interface CreatePostModalProps {
 }
 
 const HASHTAGS = [
-  "Pet", "Music", "Fitness", "Travel", "Food", "Happy", "Friends", "Selfie",
-  "Fashion", "Love", "Question", "Event", "Study", "Stdtest", "Mentalhealth",
-  "Story", "Relationship", "Endherpes", "Support", "Health", "Lifestlye",
-  "Herpesdating", "Herpescure", "Herpesawareness", "Hsv",
+  "Pet",
+  "Music",
+  "Fitness",
+  "Travel",
+  "Food",
+  "Happy",
+  "Friends",
+  "Selfie",
+  "Fashion",
+  "Love",
+  "Question",
+  "Event",
+  "Study",
+  "Stdtest",
+  "Mentalhealth",
+  "Story",
+  "Relationship",
+  "Endherpes",
+  "Support",
+  "Health",
+  "Lifestlye",
+  "Herpesdating",
+  "Herpescure",
+  "Herpesawareness",
+  "Hsv",
 ];
 
 export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
@@ -34,17 +55,17 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
 
   // Generate previews when files change
   useEffect(() => {
-    const newPreviews = files.map(file => URL.createObjectURL(file));
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
     setPreviews(newPreviews);
 
     // Cleanup URLs to avoid memory leaks
-    return () => newPreviews.forEach(url => URL.revokeObjectURL(url));
+    return () => newPreviews.forEach((url) => URL.revokeObjectURL(url));
   }, [files]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      setFiles(prev => {
+      setFiles((prev) => {
         const combined = [...prev, ...newFiles];
         return combined.slice(0, 9); // Max 9
       });
@@ -52,15 +73,17 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
   };
 
   const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const toggleHashtag = (tag: string) => {
     const hashtag = `#${tag}`;
     if (text.includes(hashtag)) {
-      setText(prev => prev.replace(new RegExp(`${hashtag}\\s?`, 'g'), '').trim());
+      setText((prev) =>
+        prev.replace(new RegExp(`${hashtag}\\s?`, "g"), "").trim(),
+      );
     } else {
-      setText(prev => `${prev}${prev ? ' ' : ''}${hashtag}`.trim());
+      setText((prev) => `${prev}${prev ? " " : ""}${hashtag}`.trim());
     }
   };
 
@@ -107,8 +130,6 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide p-0 bg-white border-none rounded-none">
         <div className="relative p-8 space-y-8">
-
-
           <DialogTitle className="text-center text-2xl font-bold tracking-tight text-gray-900">
             Add Moment
           </DialogTitle>
@@ -120,7 +141,10 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
             </label>
             <div className="grid grid-cols-3 gap-4">
               {previews.map((src, i) => (
-                <div key={src} className="group relative aspect-3/4 overflow-hidden bg-gray-100">
+                <div
+                  key={src}
+                  className="group relative aspect-3/4 overflow-hidden bg-gray-100"
+                >
                   <Image
                     src={src}
                     alt={`Preview ${i}`}
@@ -158,7 +182,9 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
 
           {/* Description Section */}
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-900">Description</label>
+            <label className="text-sm font-bold text-gray-900">
+              Description
+            </label>
             <div className="relative">
               <textarea
                 value={text}
@@ -174,7 +200,7 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
 
           {/* Hashtags Section */}
           <div className="flex flex-wrap gap-2">
-            {HASHTAGS.map(tag => {
+            {HASHTAGS.map((tag) => {
               const isActive = text.includes(`#${tag}`);
               return (
                 <button
@@ -185,7 +211,7 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
                     "px-3 py-1.5 border text-xs font-medium transition-colors",
                     isActive
                       ? "border-brand bg-brand text-white"
-                      : "border-gray-200 text-gray-600 hover:border-gray-400"
+                      : "border-gray-200 text-gray-600 hover:border-gray-400",
                   )}
                 >
                   #{tag}
@@ -208,9 +234,14 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
           <div className="space-y-2 pt-4">
             <p className="text-sm font-bold text-gray-900">Note:</p>
             <p className="text-xs text-gray-600 leading-relaxed">
-              Photos that are lewd, offensive, nude, racist, or featuring children are prohibited, as are any other photos or
-              videos that are prohibited by law, protected by a copyright, or that violate our{" "}
-              <a href="#" className="text-blue-600 underline">Service Agreement</a>.
+              Photos that are lewd, offensive, nude, racist, or featuring
+              children are prohibited, as are any other photos or videos that
+              are prohibited by law, protected by a copyright, or that violate
+              our{" "}
+              <a href="#" className="text-blue-600 underline">
+                Service Agreement
+              </a>
+              .
             </p>
           </div>
         </div>

@@ -3,11 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Plus, X } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Dictionary } from "@/i18n/dictionaries";
 
 interface PostBlogModalProps {
@@ -16,7 +12,11 @@ interface PostBlogModalProps {
   dict: Dictionary;
 }
 
-export function PostBlogModal({ open, onOpenChange, dict }: PostBlogModalProps) {
+export function PostBlogModal({
+  open,
+  onOpenChange,
+  dict,
+}: PostBlogModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
@@ -122,7 +122,9 @@ export function PostBlogModal({ open, onOpenChange, dict }: PostBlogModalProps) 
               <div className="relative">
                 <textarea
                   value={description}
-                  onChange={(e) => setDescription(e.target.value.slice(0, 5000))}
+                  onChange={(e) =>
+                    setDescription(e.target.value.slice(0, 5000))
+                  }
                   placeholder={dict.blog.modalFieldDescriptionPlaceholder}
                   rows={6}
                   className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm outline-none focus:border-brand transition-colors resize-none placeholder:text-gray-400"
@@ -203,7 +205,9 @@ export function PostBlogModal({ open, onOpenChange, dict }: PostBlogModalProps) 
                 disabled={!isValid || isSubmitting}
                 className="px-8 py-2.5 bg-brand text-white text-sm font-bold tracking-wide hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {isSubmitting ? dict.blog.modalPosting : dict.blog.modalPostBlog}
+                {isSubmitting
+                  ? dict.blog.modalPosting
+                  : dict.blog.modalPostBlog}
               </button>
             </div>
 

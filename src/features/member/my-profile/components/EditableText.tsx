@@ -58,7 +58,7 @@ export function EditableText({
         <p
           className={cn(
             "text-sm leading-relaxed",
-            value ? "text-foreground" : "text-muted-foreground italic"
+            value ? "text-foreground" : "text-muted-foreground italic",
           )}
         >
           {value || placeholder || "Add details about yourself."}

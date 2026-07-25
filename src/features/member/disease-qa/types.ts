@@ -29,4 +29,3 @@ export type DiseasePostComment = Comment & {
   anonymous: boolean;
   likesCount: number;
 };
-

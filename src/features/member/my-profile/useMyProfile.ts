@@ -1,12 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type {
-  PhotoEntry,
-  ProfileDetails,
-  User,
-  VideoEntry,
-} from "@/lib/types";
+import type { PhotoEntry, ProfileDetails, User, VideoEntry } from "@/lib/types";
 
 const storageKey = (userId: string) => `viveleve:my-profile:${userId}`;
 
@@ -37,58 +32,57 @@ function buildInitial(user: User): PersistedState {
   return {
     displayName: user.displayName,
     avatarUrl: user.image ?? user.avatarSeed,
-    details:
-      user.profile ?? {
-        photos: [],
-        videos: [],
-        aboutMe: "",
-        aboutMyMatch: "",
-        preferences: {
-          gender: "",
-          ageMin: 18,
-          ageMax: 99,
-          distance: "Anywhere",
-          lookingFor: "",
-          matchLivesWith: "",
-        },
-        bodyShapeStory: "",
-        inspirationalQuotes: "",
-        conditionExperience: "",
-        myFavorites: "",
-        recommendations: "",
-        basics: {
-          livingWith: "",
-          positiveSince: "",
-          gender: "",
-          willingToFly: "",
-          willingToMeetSoon: "",
-          location: "",
-          height: "",
-          weight: "",
-          ethnicity: "",
-          relationshipStatus: "",
-          bodyType: "",
-          eyeColor: "",
-          hairColor: "",
-        },
-        extras: {
-          languages: "",
-          education: "",
-          occupation: "",
-          smoking: "",
-          drinking: "",
-          haveChildren: "",
-          wantChildren: "",
-          astrologicalSign: "",
-          annualIncome: "",
-          politicalViews: "",
-          religion: "",
-          havePets: "",
-          hobbies: "",
-          favoriteMusic: "",
-        },
-        personality: "",
+    details: user.profile ?? {
+      photos: [],
+      videos: [],
+      aboutMe: "",
+      aboutMyMatch: "",
+      preferences: {
+        gender: "",
+        ageMin: 18,
+        ageMax: 99,
+        distance: "Anywhere",
+        lookingFor: "",
+        matchLivesWith: "",
       },
+      bodyShapeStory: "",
+      inspirationalQuotes: "",
+      conditionExperience: "",
+      myFavorites: "",
+      recommendations: "",
+      basics: {
+        livingWith: "",
+        positiveSince: "",
+        gender: "",
+        willingToFly: "",
+        willingToMeetSoon: "",
+        location: "",
+        height: "",
+        weight: "",
+        ethnicity: "",
+        relationshipStatus: "",
+        bodyType: "",
+        eyeColor: "",
+        hairColor: "",
+      },
+      extras: {
+        languages: "",
+        education: "",
+        occupation: "",
+        smoking: "",
+        drinking: "",
+        haveChildren: "",
+        wantChildren: "",
+        astrologicalSign: "",
+        annualIncome: "",
+        politicalViews: "",
+        religion: "",
+        havePets: "",
+        hobbies: "",
+        favoriteMusic: "",
+      },
+      personality: "",
+    },
   };
 }
 

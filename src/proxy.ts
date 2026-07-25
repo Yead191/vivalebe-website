@@ -14,12 +14,15 @@ export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   const hasLocale = locales.some(
-    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
+    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
   );
   if (hasLocale) return;
 
   const locale = pickLocale(request);
-  const target = new URL(`/${locale}${pathname === "/" ? "" : pathname}${search}`, request.url);
+  const target = new URL(
+    `/${locale}${pathname === "/" ? "" : pathname}${search}`,
+    request.url,
+  );
   return NextResponse.redirect(target);
 }
 

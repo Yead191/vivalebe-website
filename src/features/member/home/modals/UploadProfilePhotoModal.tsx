@@ -18,11 +18,12 @@ interface UploadProfilePhotoModalProps {
   onAdd: (photos: PhotoEntry[]) => void;
 }
 
-const VISIBILITY_OPTIONS: { label: string; value: PhotoEntry["visibility"] }[] = [
-  { label: "Public", value: "public" },
-  { label: "Private", value: "private" },
-  { label: "Custom", value: "custom" },
-];
+const VISIBILITY_OPTIONS: { label: string; value: PhotoEntry["visibility"] }[] =
+  [
+    { label: "Public", value: "public" },
+    { label: "Private", value: "private" },
+    { label: "Custom", value: "custom" },
+  ];
 
 export function UploadProfilePhotoModal({
   trigger,
@@ -32,7 +33,8 @@ export function UploadProfilePhotoModal({
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [visibility, setVisibility] = useState<PhotoEntry["visibility"]>(defaultVisibility);
+  const [visibility, setVisibility] =
+    useState<PhotoEntry["visibility"]>(defaultVisibility);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -92,7 +94,7 @@ export function UploadProfilePhotoModal({
                     "border px-4 py-1.5 text-xs font-medium uppercase tracking-wider transition-colors",
                     visibility === opt.value
                       ? "border-brand bg-brand text-white"
-                      : "border-gray-200 text-gray-600 hover:border-gray-400"
+                      : "border-gray-200 text-gray-600 hover:border-gray-400",
                   )}
                 >
                   {opt.label}

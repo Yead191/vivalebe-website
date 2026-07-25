@@ -71,7 +71,11 @@ export function SuccessStoryDetailsClient({
           variant="outline"
           size="sm"
           className={brandSoftClass}
-          onClick={() => toast.message("Report sent", { description: "Thanks for helping keep the feed safe." })}
+          onClick={() =>
+            toast.message("Report sent", {
+              description: "Thanks for helping keep the feed safe.",
+            })
+          }
         >
           <Flag className="size-4" />
           {dict.successStories.report}
@@ -91,17 +95,28 @@ export function SuccessStoryDetailsClient({
                 unoptimized
               />
               <div>
-                <Link href={`/${lang}/profile/${story.user.username}`} className="font-semibold text-slate-900 hover:text-[#429CA8]">
+                <Link
+                  href={`/${lang}/profile/${story.user.username}`}
+                  className="font-semibold text-slate-900 hover:text-[#429CA8]"
+                >
                   {story.user.name}
                 </Link>
-                <p className="text-sm text-muted-foreground">@{story.user.username}</p>
+                <p className="text-sm text-muted-foreground">
+                  @{story.user.username}
+                </p>
               </div>
             </div>
 
             <div className="mt-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#2b7e87]">{story.relationshipStatus}</p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">{story.title}</h1>
-              <p className="mt-4 text-base leading-8 text-slate-600">{story.story}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#2b7e87]">
+                {story.relationshipStatus}
+              </p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+                {story.title}
+              </h1>
+              <p className="mt-4 text-base leading-8 text-slate-600">
+                {story.story}
+              </p>
             </div>
 
             <div className="mt-6 flex items-center gap-2">

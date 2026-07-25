@@ -13,7 +13,11 @@ interface BlogDetailFeatureProps {
   blogId: string;
 }
 
-export function BlogDetailFeature({ lang, dict, blogId }: BlogDetailFeatureProps) {
+export function BlogDetailFeature({
+  lang,
+  dict,
+  blogId,
+}: BlogDetailFeatureProps) {
   const blog = getBlogById(blogId);
   if (!blog) notFound();
 
@@ -24,10 +28,15 @@ export function BlogDetailFeature({ lang, dict, blogId }: BlogDetailFeatureProps
   const likes = getLikes("blog", blog.id);
   const comments = getComments("blog", blog.id, blog.comments);
 
-  const authorsMap: Record<string, { displayName: string; avatarSeed: string }> =
-    Object.fromEntries(
-      users.map((u) => [u.id, { displayName: u.displayName, avatarSeed: u.avatarSeed }])
-    );
+  const authorsMap: Record<
+    string,
+    { displayName: string; avatarSeed: string }
+  > = Object.fromEntries(
+    users.map((u) => [
+      u.id,
+      { displayName: u.displayName, avatarSeed: u.avatarSeed },
+    ]),
+  );
 
   return (
     <BlogDetailClient

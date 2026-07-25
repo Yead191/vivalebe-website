@@ -20,20 +20,35 @@ export const createOnboardingSchema = (t: (key: string) => string) =>
       weightValue: z.string().min(1, { message: t("weightRequired") }),
       weightUnit: weightUnitSchema,
       occupation: z.string().min(2, { message: t("occupationRequired") }),
-      educationLevel: z.enum(["highSchool", "college", "graduate", "masters", "doctorate"]),
+      educationLevel: z.enum([
+        "highSchool",
+        "college",
+        "graduate",
+        "masters",
+        "doctorate",
+      ]),
       relationshipStatus: z.enum(["single", "divorced", "married", "widowed"]),
-      aboutYou: z.string().min(40, { message: t("aboutMin") }).max(320, { message: t("aboutMax") }),
+      aboutYou: z
+        .string()
+        .min(40, { message: t("aboutMin") })
+        .max(320, { message: t("aboutMax") }),
     })
-    .refine((data) => {
-      const dob = new Date(data.dateOfBirth);
-      if (Number.isNaN(dob.getTime())) return false;
-      const today = new Date();
-      let age = today.getFullYear() - dob.getFullYear();
-      const monthDiff = today.getMonth() - dob.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) age -= 1;
-      return age >= 18;
-    }, {
-      path: ["dateOfBirth"],
-      message: t("mustBeAdult"),
-    });
-
+    .refine(
+      (data) => {
+        const dob = new Date(data.dateOfBirth);
+        if (Number.isNaN(dob.getTime())) return false;
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < dob.getDate())
+        )
+          age -= 1;
+        return age >= 18;
+      },
+      {
+        path: ["dateOfBirth"],
+        message: t("mustBeAdult"),
+      },
+    );

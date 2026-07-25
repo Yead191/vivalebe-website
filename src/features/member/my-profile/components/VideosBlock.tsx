@@ -41,7 +41,7 @@ export function VideosBlock({ videos, onAdd, onRemove }: VideosBlockProps) {
         acc[t.key] = videos.filter((v) => v.visibility === t.key).length;
         return acc;
       },
-      { public: 0, private: 0 }
+      { public: 0, private: 0 },
     );
   }, [videos]);
 
@@ -60,7 +60,7 @@ export function VideosBlock({ videos, onAdd, onRemove }: VideosBlockProps) {
               "text-sm transition-colors cursor-pointer",
               activeTab === t.key
                 ? "font-semibold text-foreground underline underline-offset-4"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {t.label} ({counts[t.key]})
@@ -183,7 +183,7 @@ function AddVideoTile({ defaultVisibility, onAdd }: AddVideoTileProps) {
                   "rounded-md border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
                   visibility === t.key
                     ? "border-brand bg-brand text-white"
-                    : "border-input bg-background text-foreground hover:bg-muted"
+                    : "border-input bg-background text-foreground hover:bg-muted",
                 )}
               >
                 {t.label}

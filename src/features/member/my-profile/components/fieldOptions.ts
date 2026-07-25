@@ -63,9 +63,25 @@ export const BODY_TYPE = [
   "Shapely",
 ];
 
-export const EYE_COLOR = ["Brown", "Blue", "Green", "Hazel", "Gray", "Amber", "Other"];
+export const EYE_COLOR = [
+  "Brown",
+  "Blue",
+  "Green",
+  "Hazel",
+  "Gray",
+  "Amber",
+  "Other",
+];
 
-export const HAIR_COLOR = ["Black", "Brown", "Blonde", "Red", "Gray", "Bald", "Other"];
+export const HAIR_COLOR = [
+  "Black",
+  "Brown",
+  "Blonde",
+  "Red",
+  "Gray",
+  "Bald",
+  "Other",
+];
 
 export const EDUCATION = [
   "High school",

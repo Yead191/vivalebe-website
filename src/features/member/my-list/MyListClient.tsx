@@ -17,7 +17,12 @@ interface MyListClientProps {
   users: User[];
 }
 
-export function MyListClient({ lang, dict, activeTab, users }: MyListClientProps) {
+export function MyListClient({
+  lang,
+  dict,
+  activeTab,
+  users,
+}: MyListClientProps) {
   const [sort, setSort] = useState<SortMode>("newest");
 
   const sorted = sort === "newest" ? users : [...users].reverse();
@@ -35,7 +40,9 @@ export function MyListClient({ lang, dict, activeTab, users }: MyListClientProps
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <span className="font-medium">{dict.myList.sortBy}</span>
-          <span>{sort === "newest" ? dict.myList.newest : dict.myList.oldest}</span>
+          <span>
+            {sort === "newest" ? dict.myList.newest : dict.myList.oldest}
+          </span>
           <ChevronDown className="size-4" />
         </button>
       </div>
@@ -44,12 +51,7 @@ export function MyListClient({ lang, dict, activeTab, users }: MyListClientProps
       {sorted.length > 0 ? (
         <div className="space-y-4">
           {sorted.map((user) => (
-            <UserCard
-              key={user.id}
-              lang={lang}
-              dict={dict}
-              user={user}
-            />
+            <UserCard key={user.id} lang={lang} dict={dict} user={user} />
           ))}
         </div>
       ) : (

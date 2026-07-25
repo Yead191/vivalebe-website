@@ -53,7 +53,7 @@ export function BlogCard({
           <div
             className={cn(
               "mt-2 gap-1 px-4 pb-3",
-              count === 1 ? "flex" : "grid grid-cols-2"
+              count === 1 ? "flex" : "grid grid-cols-2",
             )}
           >
             {blog.imageSeeds.slice(0, 2).map((seed, i) => (

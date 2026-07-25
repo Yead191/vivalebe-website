@@ -147,9 +147,7 @@ export function PreferencesModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="anywhere">Anywhere</SelectItem>
-                  <SelectItem value="country">
-                    Within {userCountry}
-                  </SelectItem>
+                  <SelectItem value="country">Within {userCountry}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -185,8 +183,9 @@ export function PreferencesModal({
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                (Once you&apos;ve swiped through all matching members, we&apos;ll
-                automatically expand your search to find more potential matches.)
+                (Once you&apos;ve swiped through all matching members,
+                we&apos;ll automatically expand your search to find more
+                potential matches.)
               </p>
             </div>
           </div>

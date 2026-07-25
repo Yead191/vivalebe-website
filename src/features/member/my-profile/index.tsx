@@ -78,7 +78,7 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
       {
         rootMargin: "-25% 0px -55% 0px",
         threshold: [0, 0.25, 0.5, 1],
-      }
+      },
     );
 
     NAV_ITEMS.forEach((item) => {
@@ -133,13 +133,23 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
         options: MATCH_LIVES_WITH,
       },
     ],
-    []
+    [],
   );
 
   const basicsFields: FieldDef[] = useMemo(
     () => [
-      { key: "livingWith", label: "Living With", type: "select", options: LIVING_WITH },
-      { key: "positiveSince", label: "Positive Since", type: "select", options: POSITIVE_SINCE },
+      {
+        key: "livingWith",
+        label: "Living With",
+        type: "select",
+        options: LIVING_WITH,
+      },
+      {
+        key: "positiveSince",
+        label: "Positive Since",
+        type: "select",
+        options: POSITIVE_SINCE,
+      },
       { key: "gender", label: "Gender", type: "select", options: BASIC_GENDER },
       { key: "willingToFly", label: "Willing to fly to meet?", type: "yesno" },
       {
@@ -147,43 +157,139 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
         label: "Willing to Meet in Person Next 7 Days?",
         type: "yesno",
       },
-      { key: "location", label: "Location", type: "text", placeholder: "City, Country" },
-      { key: "height", label: "Height", type: "text", placeholder: "e.g. 5' 10\" (178 cm)" },
-      { key: "weight", label: "Weight", type: "text", emptyLabel: "Add", placeholder: "e.g. 75 kg" },
-      { key: "ethnicity", label: "Ethnicity", type: "select", options: ETHNICITY },
-      { key: "relationshipStatus", label: "Relationship status", type: "select", options: RELATIONSHIP_STATUS },
-      { key: "bodyType", label: "Body type", type: "select", options: BODY_TYPE },
-      { key: "eyeColor", label: "Eye color", type: "select", options: EYE_COLOR },
-      { key: "hairColor", label: "Hair color", type: "select", options: HAIR_COLOR },
+      {
+        key: "location",
+        label: "Location",
+        type: "text",
+        placeholder: "City, Country",
+      },
+      {
+        key: "height",
+        label: "Height",
+        type: "text",
+        placeholder: "e.g. 5' 10\" (178 cm)",
+      },
+      {
+        key: "weight",
+        label: "Weight",
+        type: "text",
+        emptyLabel: "Add",
+        placeholder: "e.g. 75 kg",
+      },
+      {
+        key: "ethnicity",
+        label: "Ethnicity",
+        type: "select",
+        options: ETHNICITY,
+      },
+      {
+        key: "relationshipStatus",
+        label: "Relationship status",
+        type: "select",
+        options: RELATIONSHIP_STATUS,
+      },
+      {
+        key: "bodyType",
+        label: "Body type",
+        type: "select",
+        options: BODY_TYPE,
+      },
+      {
+        key: "eyeColor",
+        label: "Eye color",
+        type: "select",
+        options: EYE_COLOR,
+      },
+      {
+        key: "hairColor",
+        label: "Hair color",
+        type: "select",
+        options: HAIR_COLOR,
+      },
     ],
-    []
+    [],
   );
 
   const extrasFields: FieldDef[] = useMemo(
     () => [
-      { key: "languages", label: "Languages", type: "text", placeholder: "e.g. English, Portuguese" },
-      { key: "education", label: "Education", type: "select", options: EDUCATION },
-      { key: "occupation", label: "Occupation", type: "text", placeholder: "e.g. Software engineer" },
+      {
+        key: "languages",
+        label: "Languages",
+        type: "text",
+        placeholder: "e.g. English, Portuguese",
+      },
+      {
+        key: "education",
+        label: "Education",
+        type: "select",
+        options: EDUCATION,
+      },
+      {
+        key: "occupation",
+        label: "Occupation",
+        type: "text",
+        placeholder: "e.g. Software engineer",
+      },
       { key: "smoking", label: "Smoking", type: "select", options: SMOKING },
       { key: "drinking", label: "Drinking", type: "select", options: DRINKING },
-      { key: "haveChildren", label: "Have children", type: "select", options: HAVE_CHILDREN },
-      { key: "wantChildren", label: "Want children", type: "select", options: WANT_CHILDREN },
-      { key: "astrologicalSign", label: "Astrological sign", type: "select", options: ASTROLOGICAL_SIGN },
-      { key: "annualIncome", label: "Annual income", type: "select", options: ANNUAL_INCOME },
-      { key: "politicalViews", label: "Political views", type: "select", options: POLITICAL_VIEWS },
+      {
+        key: "haveChildren",
+        label: "Have children",
+        type: "select",
+        options: HAVE_CHILDREN,
+      },
+      {
+        key: "wantChildren",
+        label: "Want children",
+        type: "select",
+        options: WANT_CHILDREN,
+      },
+      {
+        key: "astrologicalSign",
+        label: "Astrological sign",
+        type: "select",
+        options: ASTROLOGICAL_SIGN,
+      },
+      {
+        key: "annualIncome",
+        label: "Annual income",
+        type: "select",
+        options: ANNUAL_INCOME,
+      },
+      {
+        key: "politicalViews",
+        label: "Political views",
+        type: "select",
+        options: POLITICAL_VIEWS,
+      },
       { key: "religion", label: "Religion", type: "select", options: RELIGION },
-      { key: "havePets", label: "Have pets", type: "select", options: HAVE_PETS },
-      { key: "hobbies", label: "My hobbies & interests", type: "text", placeholder: "e.g. Cycling, photography" },
-      { key: "favoriteMusic", label: "My favorite music", type: "text", placeholder: "Genres or artists" },
+      {
+        key: "havePets",
+        label: "Have pets",
+        type: "select",
+        options: HAVE_PETS,
+      },
+      {
+        key: "hobbies",
+        label: "My hobbies & interests",
+        type: "text",
+        placeholder: "e.g. Cycling, photography",
+      },
+      {
+        key: "favoriteMusic",
+        label: "My favorite music",
+        type: "text",
+        placeholder: "Genres or artists",
+      },
     ],
-    []
+    [],
   );
 
   const updateDetails = useCallback(
     (patch: Partial<ProfileDetails>) => {
       profile.update((prev) => ({ ...prev, ...patch }));
     },
-    [profile]
+    [profile],
   );
 
   const handlePreferencesSave = (next: FieldValues) => {
@@ -191,8 +297,7 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
       gender: (next.gender as MatchPreferences["gender"]) || "",
       ageMin: Number(next.ageMin ?? 18),
       ageMax: Number(next.ageMax ?? 99),
-      distance:
-        (next.distance as MatchPreferences["distance"]) || "Anywhere",
+      distance: (next.distance as MatchPreferences["distance"]) || "Anywhere",
       lookingFor: String(next.lookingFor ?? ""),
       matchLivesWith: String(next.matchLivesWith ?? ""),
     };
@@ -269,9 +374,7 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
           <section id="summary" className="space-y-6 scroll-mt-24">
             <PhotosBlock
               photos={details.photos}
-              onAdd={(arr) =>
-                arr.forEach((p) => profile.addPhoto(p))
-              }
+              onAdd={(arr) => arr.forEach((p) => profile.addPhoto(p))}
               onRemove={profile.removePhoto}
             />
 

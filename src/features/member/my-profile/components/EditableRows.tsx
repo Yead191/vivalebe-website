@@ -150,7 +150,8 @@ function FieldReadView({
   if (value) {
     return <span className="text-foreground">{value}</span>;
   }
-  const empty = "emptyLabel" in field && field.emptyLabel ? field.emptyLabel : "Select";
+  const empty =
+    "emptyLabel" in field && field.emptyLabel ? field.emptyLabel : "Select";
   return (
     <span className="cursor-default text-brand underline underline-offset-2">
       {empty}
@@ -209,7 +210,7 @@ function FieldEditor({
               "rounded-md border px-3 py-1 text-xs font-medium transition-colors cursor-pointer",
               current === opt
                 ? "border-brand bg-brand text-white"
-                : "border-input bg-background text-foreground hover:bg-muted"
+                : "border-input bg-background text-foreground hover:bg-muted",
             )}
           >
             {opt}
