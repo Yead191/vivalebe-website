@@ -1,3 +1,5 @@
+
+import type { User } from "@/lib/types";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { users } from "@/lib/mock/users";
@@ -15,16 +17,24 @@ interface MyListFeatureProps {
   activeTab: string;
 }
 
-export function MyListFeature({ lang, dict, activeTab }: MyListFeatureProps) {
+import { getYouLikedUsers } from "./action";
+
+export async function MyListFeature({ lang, dict, activeTab }: MyListFeatureProps) {
   const me = getCurrentUser();
   const tab = isValidTab(activeTab) ? activeTab : DEFAULT_TAB;
-  const ids = TAB_USER_IDS[tab];
+  
+  let tabUsers: User[] = [];
 
-  const tabUsers = ids
-    .map((id) => users.find((u) => u.id === id))
-    .filter(
-      (u): u is NonNullable<typeof u> => u !== undefined && u.id !== me.id,
-    );
+  if (tab === "you-likes") {
+    tabUsers = await getYouLikedUsers();
+  } else {
+    const ids = TAB_USER_IDS[tab];
+    tabUsers = ids
+      .map((id) => users.find((u) => u.id === id))
+      .filter(
+        (u): u is NonNullable<typeof u> => u !== undefined && u.id !== me.id,
+      );
+  }
 
   return (
     <MyListClient lang={lang} dict={dict} activeTab={tab} users={tabUsers} />
