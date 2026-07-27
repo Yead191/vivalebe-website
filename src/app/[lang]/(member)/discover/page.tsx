@@ -10,8 +10,9 @@ export default async function DiscoverPage({
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const sp = await searchParams;
-  const raw = sp.q;
-  const query = typeof raw === "string" ? raw : Array.isArray(raw) ? raw[0] ?? "" : "";
+  const raw = sp.name || sp.q;
+  const query =
+    typeof raw === "string" ? raw : Array.isArray(raw) ? (raw[0] ?? "") : "";
   const dict = await getDictionary(lang);
   return <DiscoverFeature lang={lang} dict={dict} query={query} />;
 }

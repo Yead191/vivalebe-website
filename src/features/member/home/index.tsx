@@ -17,9 +17,30 @@ interface HomeFeatureProps {
   dict: Dictionary;
 }
 
-export function HomeFeature({ lang, dict }: HomeFeatureProps) {
-  const me = getCurrentUser();
+import { getMutualMatches } from "@/features/member/my-list/action";
+import { getProfileAction } from "@/features/member/settings/action";
+
+export async function HomeFeature({ lang, dict }: HomeFeatureProps) {
+  const mockMe = getCurrentUser();
   const viewedCount = getCurrentViewedCount();
+
+  let me = mockMe;
+  try {
+    const profileRes = await getProfileAction();
+    if (profileRes?.success && profileRes?.data) {
+      const p = profileRes.data;
+      me = {
+        ...mockMe,
+        id: p._id || p.id || mockMe.id,
+        username: p.name || p.username || mockMe.username,
+        displayName: p.name || p.displayName || mockMe.displayName,
+        avatarSeed: p.profile || p.image || mockMe.avatarSeed,
+        coverSeed: p.profile || p.image || mockMe.coverSeed,
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching profile in home:", error);
+  }
 
   const authors: Record<string, User> = Object.fromEntries(
     users.map((u) => [u.id, u]),
@@ -49,7 +70,8 @@ export function HomeFeature({ lang, dict }: HomeFeatureProps) {
     };
   }
 
-  const suggestions = users.filter((u) => u.id !== me.id).slice(0, 4);
+  let suggestions = await getMutualMatches();
+  suggestions = suggestions.filter((u) => u.id !== me.id).slice(0, 4);
 
   const connectionEvents = connections.filter((c) => getUserById(c.userId));
 

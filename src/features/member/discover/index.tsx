@@ -12,16 +12,18 @@ interface DiscoverFeatureProps {
   query: string;
 }
 
-export function DiscoverFeature({ lang, dict, query }: DiscoverFeatureProps) {
+import { getMutualMatches } from "@/features/member/my-list/action";
+
+export async function DiscoverFeature({ lang, dict, query }: DiscoverFeatureProps) {
   const me = getCurrentUser();
   const q = query.trim().toLowerCase();
+  
+  // Fetch real users from /user/matches API with the query param
+  let users = await getMutualMatches(q);
+
   const matches = users.filter((u) => {
     if (u.id === me.id) return false;
-    if (!q) return true;
-    return (
-      u.username.toLowerCase().includes(q) ||
-      u.displayName.toLowerCase().includes(q)
-    );
+    return true;
   });
 
   return (

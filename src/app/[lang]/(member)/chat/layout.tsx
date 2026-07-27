@@ -3,84 +3,84 @@
 import { ChatSidebar } from "@/components/shared/message/ChatSidebar";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { mockChatRooms, mockCurrentUser, mockGroupRooms } from "@/constants/mockChatData";
+import {
+  mockCurrentUser,
+} from "@/constants/mockChatData";
 import Spinner from "@/components/shared/Spinner";
+import { getChatList } from "@/features/member/chat/action";
 
-// API LOGIC COMMENTED OUT FOR DEMO PURPOSES
-// import getProfile from "@/helpers/getProfile";
-// import { myFetch } from "@/helpers/myFetch";
-// import { io } from "socket.io-client";
+export default function MessageLayoutWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const isChatPage = pathname.endsWith("/chat") || pathname.endsWith("/chat/");
+  const [search, setSearch] = useState("");
+  const [chatRooms, setChatRooms] = useState<any[]>([]);
+  const [groupRooms, setGroupRooms] = useState<any[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
-export default function MessageLayoutWrapper({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname();
-    const isChatPage = pathname.endsWith('/chat') || pathname.endsWith('/chat/');
-    const [search, setSearch] = useState("");
-    const [chatRooms, setChatRooms] = useState<any[]>([]);
-    const [groupRooms, setGroupRooms] = useState<any[]>([]);
-    const [currentUserId, setCurrentUserId] = useState<string>("");
-    const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getChatList();
+        setCurrentUserId(data.currentUserId || mockCurrentUser._id);
 
-    useEffect(() => {
-        // MOCK DATA INITIALIZATION
-        // Simulating network fetch
-        const fetchData = async () => {
-            setTimeout(() => {
-                setCurrentUserId(mockCurrentUser._id);
+        const mappedChats = (data.chats || []).map((room: any) => ({
+          _id: room._id,
+          participants: room.participants || [],
+          lastMessage: room.lastMessage || null,
+          status: room.status,
+          chatType: room.chatType,
+        }));
 
-                // Filter by search term if needed
-                const filteredChats = mockChatRooms.filter(room =>
-                    search ? room.participants.some(p => p.name.toLowerCase().includes(search.toLowerCase())) : true
-                );
+        const filtered = search
+          ? mappedChats.filter((room: any) =>
+              room.participants.some((p: any) =>
+                (p.name || p.id || "").toLowerCase().includes(search.toLowerCase())
+              )
+            )
+          : mappedChats;
 
-                const filteredGroups = mockGroupRooms.filter(room =>
-                    search ? room.name.toLowerCase().includes(search.toLowerCase()) : true
-                );
+        setChatRooms(filtered);
+      } catch (error) {
+        console.error("Failed to fetch chat data:", error);
+        setCurrentUserId(mockCurrentUser._id);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-                setChatRooms(filteredChats);
-                setGroupRooms(filteredGroups);
-                setLoading(false);
-            }, 500);
-        };
-        fetchData();
+    fetchData();
+  }, [search]);
 
-        /* --- OLD API LOGIC --- 
-        const fetchUser = async () => {
-            const user = await getProfile();
-            setCurrentUserId(user?._id);
-        };
-        fetchUser();
+  if (loading) {
+    return <Spinner />;
+  }
 
-        const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://68.178.164.48:5005");
-        socket.on(`chatList::${currentUserId}`, (data) => {
-            // ... update logic
-        });
-        ------------------------- */
+  return (
+    <div className="flex md:max-w-270 mx-auto overflow-hidden bg-white h-[calc(100vh-64px)]">
+      {/* Sidebar - Persistent */}
+      <div
+        className={`w-full lg:w-1/3 xl:w-1/4 shrink-0 h-full lg:border-r lg:border-gray-200 ${isChatPage ? "block" : "hidden lg:block"}`}
+      >
+        <ChatSidebar
+          chatRooms={chatRooms}
+          groupRooms={groupRooms}
+          currentUserId={currentUserId}
+          search={search}
+          setSearch={setSearch}
+        />
+      </div>
 
-    }, [search]);
-
-    if (loading) {
-        return (
-            <Spinner />
-        );
-    }
-
-    return (
-        <div className="flex md:max-w-270 mx-auto overflow-hidden bg-white h-[calc(100vh-64px)]">
-            {/* Sidebar - Persistent */}
-            <div className={`w-full lg:w-1/3 xl:w-1/4 shrink-0 h-full lg:border-r lg:border-gray-200 ${isChatPage ? 'block' : 'hidden lg:block'}`}>
-                <ChatSidebar
-                    chatRooms={chatRooms}
-                    groupRooms={groupRooms}
-                    currentUserId={currentUserId}
-                    search={search}
-                    setSearch={setSearch}
-                />
-            </div>
-
-            {/* Main Content (Conversations) */}
-            <div className={`flex-1 h-full relative overflow-hidden bg-[#F8FAFC] ${isChatPage ? 'hidden lg:block' : 'block'}`}>
-                {children}
-            </div>
-        </div>
-    );
+      {/* Main Content (Conversations) */}
+      <div
+        className={`flex-1 h-full relative overflow-hidden bg-[#F8FAFC] ${isChatPage ? "hidden lg:block" : "block"}`}
+      >
+        {children}
+      </div>
+    </div>
+  );
 }

@@ -28,16 +28,46 @@ interface UserCardProps {
   user: User;
 }
 
+import { useRouter } from "next/navigation";
+import { createChatRoom } from "../action";
+
 export function UserCard({ lang, dict, user }: UserCardProps) {
+  const router = useRouter();
   const [liked, setLiked] = useState(false);
   const [winked, setWinked] = useState(false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const photo = user.photos[0] ?? avatarUrl(user.avatarSeed, 520);
   const photoCount = user.photos.length;
+
+  const handleChatClick = async () => {
+    try {
+      setIsCreatingChat(true);
+      const res = await createChatRoom(user.id);
+      if (res.success) {
+        // Proceed to chat page
+        const roomId = res.data?._id || res.data?.id;
+        if (roomId) {
+          router.push(`/${lang}/chat/${roomId}`);
+        } else {
+          router.push(`/${lang}/chat`);
+        }
+      } else {
+        console.error("Failed to create chat room", res);
+        // Fallback to chat if creation fails (maybe already exists)
+        router.push(`/${lang}/chat`);
+      }
+    } catch (error) {
+      console.error(error);
+      router.push(`/${lang}/chat`);
+    } finally {
+      setIsCreatingChat(false);
+    }
+  };
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -204,8 +234,9 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
               <button
                 type="button"
                 aria-label={dict.myList.message}
-                onClick={() => setMessageOpen(true)}
-                className="text-muted-foreground hover:text-brand transition-colors"
+                onClick={handleChatClick}
+                disabled={isCreatingChat}
+                className="text-muted-foreground hover:text-brand transition-colors disabled:opacity-50"
               >
                 <MessageCircle className="size-5 lg:size-6" />
               </button>

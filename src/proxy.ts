@@ -30,7 +30,7 @@ const authRoutes = [
   "/auth/forgot-password",
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   // Bypass for Next.js internal requests and static assets

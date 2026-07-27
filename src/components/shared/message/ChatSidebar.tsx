@@ -108,15 +108,17 @@ export function ChatSidebar({
       {/* Conversations List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {activeRooms?.filter(room => {
-          if (search.trim()) return true;
-          if (pathname.includes(room._id)) return true;
-          return !!room.lastMessage;
+          if (!search.trim()) return true;
+          return room.participants.some((p: any) =>
+            (p.name || p.id || "").toLowerCase().includes(search.toLowerCase())
+          );
         }).length > 0 ? (
           activeRooms
             .filter(room => {
-              if (search.trim()) return true;
-              if (pathname.includes(room._id)) return true;
-              return !!room.lastMessage;
+              if (!search.trim()) return true;
+              return room.participants.some((p: any) =>
+                (p.name || p.id || "").toLowerCase().includes(search.toLowerCase())
+              );
             })
             .map(room => {
               const isGroup = room.type === 'group';
@@ -124,8 +126,8 @@ export function ChatSidebar({
                 ? room.participants.find((p: any) => p._id !== currentUserId)
                 : room.participants);
 
-              const displayName = isGroup ? room?.name : displayParticipant?.name;
-              const displayImage = isGroup ? room?.participants?.image : displayParticipant?.image;
+              const displayName = isGroup ? room?.name : (displayParticipant?.name || displayParticipant?.displayName);
+              const displayImage = isGroup ? room?.participants?.image : (displayParticipant?.profile || displayParticipant?.image);
 
               const isActive = pathname.includes(room._id);
 
@@ -141,7 +143,13 @@ export function ChatSidebar({
                   <div className="relative shrink-0">
                     <div className="w-11 h-11 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
                       <Image
-                        src={getImageUrl(displayImage) || "/user.png"}
+                        src={
+                          displayImage?.startsWith("http")
+                            ? displayImage
+                            : displayImage && !displayImage.startsWith("/image")
+                            ? getImageUrl(displayImage)
+                            : "/user.png"
+                        }
                         alt={displayName || "User"}
                         width={44}
                         height={44}

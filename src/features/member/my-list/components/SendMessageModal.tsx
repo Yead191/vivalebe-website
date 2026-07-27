@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { X, Send } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { avatarUrl } from "@/lib/image";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
@@ -37,6 +37,7 @@ export function SendMessageModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm p-0 bg-white border border-border shadow-lg rounded-none sm:rounded-none">
+        <DialogTitle className="sr-only">Send Message</DialogTitle>
         <div className="p-5">
           {/* Header: avatar + name + close */}
           <div className="flex items-center justify-between mb-4">

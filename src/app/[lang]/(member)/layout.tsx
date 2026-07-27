@@ -25,6 +25,7 @@ export default async function MemberLayout({
           username: userData.username || "user",
           displayName: userData.name || userData.displayName || "User",
           avatarSeed:
+            userData.profile ||
             userData.image ||
             userData.profileImage ||
             userData.avatarSeed ||
