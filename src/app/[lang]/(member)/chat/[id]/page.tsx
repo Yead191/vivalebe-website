@@ -1,9 +1,13 @@
 import { ChatInput } from "@/components/shared/message/ChatInput";
 import { ChatMessages } from "@/components/shared/message/ChatMessages";
-import { mockChatRooms, mockCurrentUser, mockGroupRooms, mockMessages } from "@/constants/mockChatData";
+import {
+  mockChatRooms,
+  mockCurrentUser,
+  mockGroupRooms,
+  mockMessages,
+} from "@/constants/mockChatData";
 // import getProfile from "@/helpers/getProfile";
 // import { myFetch } from "@/helpers/myFetch";
-
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +25,9 @@ export default async function ChatDetailPage({ params }: PageProps) {
   const profile = mockCurrentUser; // await getProfile();
   try {
     // MOCK DATA LOOKUP
-    const foundRoom = [...mockChatRooms, ...mockGroupRooms].find(r => r._id === id);
+    const foundRoom = [...mockChatRooms, ...mockGroupRooms].find(
+      (r) => r._id === id,
+    );
     if (foundRoom) {
       activeUser = foundRoom;
       initialMessages = mockMessages[id] || [];
@@ -64,9 +70,12 @@ export default async function ChatDetailPage({ params }: PageProps) {
         <div className="w-16 h-16 rounded-2xl bg-red-100 border border-red-200 flex items-center justify-center text-red-500 mb-4 shadow-lg shadow-red-500/5">
           <span className="font-black text-2xl">!</span>
         </div>
-        <h2 className="text-gray-900 font-bold text-lg mb-2">Conversation Not Found</h2>
+        <h2 className="text-gray-900 font-bold text-lg mb-2">
+          Conversation Not Found
+        </h2>
         <p className="text-gray-500 text-sm max-w-xs mx-auto">
-          We couldn't retrieve the details for this chat. It may have been deleted or moved.
+          We couldn't retrieve the details for this chat. It may have been
+          deleted or moved.
         </p>
       </div>
     );
@@ -86,11 +95,7 @@ export default async function ChatDetailPage({ params }: PageProps) {
 
       {/* ── Chat Input (Fixed Bottom) ── */}
       <div className="shrink-0 bg-white">
-        <ChatInput
-          chatId={id}
-          activeUser={activeUser}
-          profile={profile}
-        />
+        <ChatInput chatId={id} activeUser={activeUser} profile={profile} />
       </div>
 
       {/* Aesthetic Border Highlight */}
