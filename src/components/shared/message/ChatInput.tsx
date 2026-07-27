@@ -33,7 +33,6 @@ export function ChatInput({
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isSending, setIsSending] = useState(false);
-  const [isPurchasing, setIsPurchasing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,36 +52,42 @@ export function ChatInput({
     if (!text.trim() && files.length === 0) return;
 
     setIsSending(true);
+    const formData = new FormData();
+    formData.append("text", text);
+    formData.append("chatId", chatId);
+    formData.append("type", "text");
+
+    files.forEach((file) => {
+      formData.append("image", file);
+    });
 
     try {
-      const formData = new FormData();
-      formData.append("chatId", chatId);
-      formData.append("text", text.trim());
-      files.forEach((file) => {
-        formData.append("image", file);
-      });
-
-      const res = await fetch("/api/message", {
+      const res = await myFetch("/message", {
         method: "POST",
         body: formData,
       });
-
-      const json = await res.json();
-
-      if (json?.success && json?.data) {
-        // Dispatch event to ChatMessages component
-        const event = new CustomEvent("newChatMessage", {
-          detail: { chatId, message: json.data },
-        });
-        window.dispatchEvent(event);
-
+      // console.log(res)
+      if (res?.success) {
         setText("");
         setFiles([]);
+        revalidateTags(["message"]);
+        router.refresh();
         setTimeout(() => {
           inputRef.current?.focus();
         }, 100);
+      } else if (
+        res?.message === "You don't have enough credit to send messages" ||
+        res?.message === "blocked by user"
+      ) {
+        toast.error(res.message);
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 300);
+
+        return;
       } else {
-        toast.error(json?.message || "Failed to send message");
+        toast.error(res?.message || "Failed to send message");
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -92,27 +97,7 @@ export function ChatInput({
     }
   };
 
-  const handlePurchase = async () => {
-    setIsPurchasing(true);
-    try {
-      const res = await myFetch(`/message/purchase/${activeUser?._id}`, {
-        method: "POST",
-      });
-      // console.log(res)
-      if (res?.success) {
-        revalidateTags(["wallet"]);
-        toast.success("Credits purchased successfully!");
-        router.refresh();
-      } else {
-        toast.error(res?.message || "Purchase failed");
-      }
-    } catch (error) {
-      toast.error("Failed to process purchase");
-      console.error(error);
-    } finally {
-      setIsPurchasing(false);
-    }
-  };
+
 
   const onEmojiClick = (emojiData: EmojiClickData) => {
     setText((prev) => prev + emojiData.emoji);
@@ -121,43 +106,7 @@ export function ChatInput({
   const isBlocked = activeUser?.status === "block";
   const iBlockedThem = activeUser?.blockByMe === true;
   const theyBlockedMe = isBlocked && !iBlockedThem;
-  const hasNoCredit = activeUser?.remaningMessage <= 0;
 
-  if (hasNoCredit && !isBlocked && profile?.role === "FAN") {
-    return (
-      <div className="px-5 py-4 border-t border-gray-200 bg-white relative z-20">
-        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#429CA8]/10 flex items-center justify-center text-[#429CA8] shrink-0">
-              <CreditCard size={24} />
-            </div>
-            <div>
-              <p className="text-gray-900 font-semibold text-[15px]">
-                Out of messages
-              </p>
-              <p className="text-gray-500 text-xs">
-                You don't have enough credit to send messages.{" "}
-                <span className="text-[#429CA8] font-medium">
-                  5 Credits / 20 messages
-                </span>
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={handlePurchase}
-            disabled={isPurchasing}
-            className="w-full sm:w-auto bg-[#429CA8] hover:bg-[#347A83] text-white font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-nowrap"
-          >
-            {isPurchasing ? (
-              <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-            ) : (
-              "Buy 5 Credits"
-            )}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="px-5 py-4 border-t border-gray-200 bg-white relative z-20">

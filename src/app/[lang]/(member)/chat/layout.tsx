@@ -1,13 +1,14 @@
 "use client";
 
 import { ChatSidebar } from "@/components/shared/message/ChatSidebar";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import {
-  mockCurrentUser,
-} from "@/constants/mockChatData";
+import { mockCurrentUser } from "@/constants/mockChatData";
 import Spinner from "@/components/shared/Spinner";
 import { getChatList } from "@/features/member/chat/action";
+import { io } from "socket.io-client";
+import getProfile from "@/helpers/getProfile";
+import { myFetch } from "@/helpers/myFetch";
 
 export default function MessageLayoutWrapper({
   children,
@@ -15,44 +16,110 @@ export default function MessageLayoutWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isChatPage = pathname.endsWith("/chat") || pathname.endsWith("/chat/");
+  const isChatRoomActive = useMemo(() => {
+    const segments = pathname.split("/").filter(Boolean);
+    return segments.length > 1;
+  }, [pathname]);
+
   const [search, setSearch] = useState("");
+  const [userId, setUser] = useState(null);
   const [chatRooms, setChatRooms] = useState<any[]>([]);
-  const [groupRooms, setGroupRooms] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const socket = useMemo(
+    () =>
+      io(
+        process.env.NEXT_PUBLIC_SOCKET_URL ??
+          process.env.SOCKET_URL ??
+          "http://10.10.26.159:5000",
+      ),
+    [],
+  );
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getProfile();
+      setUser(user?._id);
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    socket.on(`chatList::${userId}`, (data) => {
+      // console.log(data, 'chat room data received');
+      if (!data) return;
+
+      setChatRooms((prev) => {
+        let updatedRooms = [...prev];
+        const incomingRooms = Array.isArray(data) ? data : [data];
+
+        incomingRooms.forEach((newRoom) => {
+          if (!newRoom?._id) return;
+
+          const roomIndex = updatedRooms.findIndex(
+            (r) => r._id === newRoom._id,
+          );
+          if (roomIndex !== -1) {
+            // Update existing room with new data, merging fields
+            updatedRooms[roomIndex] = {
+              ...updatedRooms[roomIndex],
+              ...newRoom,
+            };
+          } else {
+            // Add new room to the list
+            updatedRooms = [newRoom, ...updatedRooms];
+          }
+        });
+
+        // Keep the list sorted by most recent message
+        return updatedRooms.sort((a, b) => {
+          const timeA = a.lastMessage?.createdAt
+            ? new Date(a.lastMessage.createdAt).getTime()
+            : 0;
+          const timeB = b.lastMessage?.createdAt
+            ? new Date(b.lastMessage.createdAt).getTime()
+            : 0;
+          return timeB - timeA;
+        });
+      });
+    });
+
+    return () => {
+      socket.off(`chatList::${userId}`);
+    };
+  }, [socket, userId]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getChatList();
-        setCurrentUserId(data.currentUserId || mockCurrentUser._id);
-
-        const mappedChats = (data.chats || []).map((room: any) => ({
-          _id: room._id,
-          participants: room.participants || [],
-          lastMessage: room.lastMessage || null,
-          status: room.status,
-          chatType: room.chatType,
-        }));
-
-        const filtered = search
-          ? mappedChats.filter((room: any) =>
-              room.participants.some((p: any) =>
-                (p.name || p.id || "").toLowerCase().includes(search.toLowerCase())
-              )
-            )
-          : mappedChats;
-
-        setChatRooms(filtered);
+        const profile = await getProfile();
+        if (profile?._id) {
+          setCurrentUserId(profile._id);
+          const rooms = await myFetch(`/chat?searchTerm=${search}`, {
+            method: "GET",
+            tags: ["chat"],
+            cache: "no-store",
+          });
+          if (rooms?.success) {
+            const sortedRooms = [...(rooms.data || [])].sort((a, b) => {
+              const timeA = a.lastMessage?.createdAt
+                ? new Date(a.lastMessage.createdAt).getTime()
+                : 0;
+              const timeB = b.lastMessage?.createdAt
+                ? new Date(b.lastMessage.createdAt).getTime()
+                : 0;
+              return timeB - timeA;
+            });
+            setChatRooms(sortedRooms);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch chat data:", error);
-        setCurrentUserId(mockCurrentUser._id);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [search]);
 
@@ -64,11 +131,10 @@ export default function MessageLayoutWrapper({
     <div className="flex md:max-w-270 mx-auto overflow-hidden bg-white h-[calc(100vh-64px)]">
       {/* Sidebar - Persistent */}
       <div
-        className={`w-full lg:w-1/3 xl:w-1/4 shrink-0 h-full lg:border-r lg:border-gray-200 ${isChatPage ? "block" : "hidden lg:block"}`}
+        className={`w-full lg:w-1/3 xl:w-1/4 shrink-0 h-full lg:border-r lg:border-gray-200 ${isChatRoomActive ? "hidden lg:block" : "block"}`}
       >
         <ChatSidebar
           chatRooms={chatRooms}
-          groupRooms={groupRooms}
           currentUserId={currentUserId}
           search={search}
           setSearch={setSearch}
@@ -77,7 +143,7 @@ export default function MessageLayoutWrapper({
 
       {/* Main Content (Conversations) */}
       <div
-        className={`flex-1 h-full relative overflow-hidden bg-[#F8FAFC] ${isChatPage ? "hidden lg:block" : "block"}`}
+        className={`flex-1 h-full relative overflow-hidden bg-[#F8FAFC] ${isChatRoomActive ? "block" : "hidden lg:block"}`}
       >
         {children}
       </div>

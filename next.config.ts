@@ -10,9 +10,15 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "**.r2.dev" },
       { protocol: "http", hostname: "68.178.164.48" },
+      { protocol: "http", hostname: "10.10.26.159" },
     ],
   },
   allowedDevOrigins: ["10.10.26.175"],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "5mb",
+    },
+  },
 };
 
 export default nextConfig;
