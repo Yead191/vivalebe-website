@@ -1,8 +1,6 @@
 import { ChatInput } from "@/components/shared/message/ChatInput";
 import { ChatMessages } from "@/components/shared/message/ChatMessages";
-import {
-  mockCurrentUser,
-} from "@/constants/mockChatData";
+import { mockCurrentUser } from "@/constants/mockChatData";
 import getProfile from "@/helpers/getProfile";
 import { myFetch } from "@/helpers/myFetch";
 
@@ -14,48 +12,43 @@ interface PageProps {
 
 export default async function ChatDetailPage({ params }: PageProps) {
   const { id } = await params;
+  // console.log(id);
   let activeUser = null;
-  let currentUserId = mockCurrentUser._id;
-  let initialMessages: any[] = [];
+  let currentUserId = "";
+  let initialMessages = [];
   let loadingError = false;
-
+  const profile = await getProfile();
+// console.log(profile)
   try {
-    const profile = await getProfile();
     if (profile?._id) {
       currentUserId = profile._id;
-    }
 
-    // Fetch list of chats and find the matching room by ID
-    const chatList = await myFetch(`/chat/`, {
-      method: "GET",
-      cache: "no-store",
-    });
+      // Fetch chat room details
+      const room = await myFetch(`/chat/${id}`, {
+        method: "GET",
+        tags: ["chat", `chat-${id}`],
+        cache: "no-store",
+      });
+      if (room?.success) {
+        activeUser = room.data;
 
-    if (chatList?.success && chatList?.data) {
-      const foundRoom = chatList.data.find((r: any) => r._id === id);
-      if (foundRoom) {
-        activeUser = foundRoom;
-
+        // Fetch initial messages
         const msgRes = await myFetch(`/message/${id}?page=1`, {
           method: "GET",
+          tags: ["message", `message-${id}`],
           cache: "no-store",
-          tags:["message"]
         });
-
+        // console.log(msgRes, "msgRes");
         if (msgRes?.success) {
           initialMessages = msgRes.data || [];
         }
-      } else {
-        loadingError = true;
       }
-    } else {
-      loadingError = true;
     }
   } catch (error) {
     console.error("Failed to fetch chat details on server:", error);
     loadingError = true;
   }
-
+// console.log(activeUser, "activeUser")
   if (loadingError || !activeUser) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-[#F8FAFC] h-full p-8 text-center">
@@ -72,9 +65,6 @@ export default async function ChatDetailPage({ params }: PageProps) {
       </div>
     );
   }
-
-  const profile = await getProfile().catch(() => mockCurrentUser);
-
 
   return (
     <div className="flex flex-col h-full bg-[#F8FAFC] border-l border-gray-200">
