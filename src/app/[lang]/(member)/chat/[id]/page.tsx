@@ -39,6 +39,7 @@ export default async function ChatDetailPage({ params }: PageProps) {
         const msgRes = await myFetch(`/message/${id}?page=1`, {
           method: "GET",
           cache: "no-store",
+          tags:["message"]
         });
 
         if (msgRes?.success) {

@@ -35,7 +35,7 @@ export const myFetch = async <T = any>(
     tags,
     token,
     headers = {},
-    cache = "force-cache",
+    cache = "default",
   }: FetchOptions = {},
 ): Promise<FetchResponse<T>> => {
   const accessToken = await getAccessToken();
@@ -65,9 +65,9 @@ export const myFetch = async <T = any>(
       return {
         success: false,
         message: json?.message,
-        error: Array.isArray(json?.errorMessages) 
-          ? json.errorMessages.map((e: any) => e.message).join(", ") 
-          : (json?.errorMessages || "Request failed"),
+        error: Array.isArray(json?.errorMessages)
+          ? json.errorMessages.map((e: any) => e.message).join(", ")
+          : json?.errorMessages || "Request failed",
       };
     }
 
