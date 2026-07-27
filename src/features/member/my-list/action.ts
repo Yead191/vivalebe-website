@@ -138,9 +138,13 @@ export async function getViewedYouUsers(): Promise<User[]> {
   }
 }
 
-export async function getMutualMatches(): Promise<User[]> {
+export async function getMutualMatches(searchQuery?: string): Promise<User[]> {
   try {
-    const res = await myFetch("/user/matches", {
+    let url = "/user/matches";
+    if (searchQuery) {
+      url += `?name=${encodeURIComponent(searchQuery)}`;
+    }
+    const res = await myFetch(url, {
       method: "GET",
       cache: "no-store",
     });
