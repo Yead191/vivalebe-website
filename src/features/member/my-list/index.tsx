@@ -17,7 +17,13 @@ interface MyListFeatureProps {
   activeTab: string;
 }
 
-import { getYouLikedUsers } from "./action";
+import { 
+  getYouLikedUsers, 
+  getLikesYouUsers, 
+  getViewedYouUsers,
+  getMutualMatches,
+  getWinks
+} from "./action";
 
 export async function MyListFeature({ lang, dict, activeTab }: MyListFeatureProps) {
   const me = getCurrentUser();
@@ -27,6 +33,14 @@ export async function MyListFeature({ lang, dict, activeTab }: MyListFeatureProp
 
   if (tab === "you-likes") {
     tabUsers = await getYouLikedUsers();
+  } else if (tab === "likes-you") {
+    tabUsers = await getLikesYouUsers();
+  } else if (tab === "viewed-you") {
+    tabUsers = await getViewedYouUsers();
+  } else if (tab === "mutual") {
+    tabUsers = await getMutualMatches();
+  } else if (tab === "winked-at-you") {
+    tabUsers = await getWinks();
   } else {
     const ids = TAB_USER_IDS[tab];
     tabUsers = ids

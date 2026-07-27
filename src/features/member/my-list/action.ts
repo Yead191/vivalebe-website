@@ -7,6 +7,7 @@ export async function getYouLikedUsers(): Promise<User[]> {
   try {
     const res = await myFetch("/swipe/you-liked", {
       method: "GET",
+      cache: "no-store",
     });
 
     if (!res.success || !res.data) return [];
@@ -43,6 +44,187 @@ export async function getYouLikedUsers(): Promise<User[]> {
     });
   } catch (error) {
     console.error("Error fetching you-liked:", error);
+    return [];
+  }
+}
+
+export async function getLikesYouUsers(): Promise<User[]> {
+  try {
+    const res = await myFetch("/swipe/likes-you", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.success || !res.data) return [];
+
+    return res.data.map((item: any) => {
+      const from = item.fromUser;
+      return {
+        id: from._id,
+        username: from.name,
+        displayName: from.name,
+        age: 0,
+        gender: "M",
+        city: "",
+        state: "",
+        country: from.nationality || "",
+        image: from.profile,
+        avatarSeed: from.name,
+        coverSeed: from.name,
+        verified: false,
+        premium: false,
+        online: false,
+        willingToFly: false,
+        headline: from.bio || "",
+        bio: from.bio || "",
+        ethnicity: "",
+        height: from.height ? String(from.height) : "",
+        bodyType: "",
+        livingWith: "",
+        relationshipStatus: from.relationStatus || "",
+        religion: "",
+        photos: from.profile ? [from.profile] : [],
+        privatePhotosCount: 0,
+      } as User;
+    });
+  } catch (error) {
+    console.error("Error fetching likes-you:", error);
+    return [];
+  }
+}
+
+export async function getViewedYouUsers(): Promise<User[]> {
+  try {
+    const res = await myFetch("/view-me", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.success || !res.data) return [];
+
+    return res.data.map((item: any) => {
+      const u = item.viewedUser;
+      return {
+        id: u._id,
+        username: u.name,
+        displayName: u.name,
+        age: 0,
+        gender: "M",
+        city: "",
+        state: "",
+        country: u.nationality || "",
+        image: u.profile,
+        avatarSeed: u.name,
+        coverSeed: u.name,
+        verified: false,
+        premium: false,
+        online: false,
+        willingToFly: false,
+        headline: u.bio || "",
+        bio: u.bio || "",
+        ethnicity: "",
+        height: u.height ? String(u.height) : "",
+        bodyType: "",
+        livingWith: "",
+        relationshipStatus: u.relationStatus || "",
+        religion: "",
+        photos: u.profile ? [u.profile] : [],
+        privatePhotosCount: 0,
+      } as User;
+    });
+  } catch (error) {
+    console.error("Error fetching view-me:", error);
+    return [];
+  }
+}
+
+export async function getMutualMatches(): Promise<User[]> {
+  try {
+    const res = await myFetch("/user/matches", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.success || !res.data) return [];
+
+    return res.data.map((item: any) => {
+      const u =
+        item.matchedUser || item.user || item.toUser || item.fromUser || item;
+      return {
+        id: u._id || u.id,
+        username: u.name || u.username,
+        displayName: u.name || u.displayName,
+        age: 0,
+        gender: "M",
+        city: "",
+        state: "",
+        country: u.nationality || "",
+        image: u.profile || u.image,
+        avatarSeed: u.name || u.displayName || "user",
+        coverSeed: u.name || u.displayName || "user",
+        verified: false,
+        premium: false,
+        online: false,
+        willingToFly: false,
+        headline: u.bio || "",
+        bio: u.bio || "",
+        ethnicity: "",
+        height: u.height ? String(u.height) : "",
+        bodyType: "",
+        livingWith: "",
+        relationshipStatus: u.relationStatus || "",
+        religion: "",
+        photos: u.profile || u.image ? [u.profile || u.image] : [],
+        privatePhotosCount: 0,
+      } as User;
+    });
+  } catch (error) {
+    console.error("Error fetching mutual matches:", error);
+    return [];
+  }
+}
+
+export async function getWinks(): Promise<User[]> {
+  try {
+    const res = await myFetch("/winks", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.success || !res.data) return [];
+
+    return res.data.map((item: any) => {
+      const u = item.fromUser || item.user || item;
+      return {
+        id: u._id || u.id,
+        username: u.name || u.username,
+        displayName: u.name || u.displayName,
+        age: 0,
+        gender: "M",
+        city: "",
+        state: "",
+        country: u.nationality || "",
+        image: u.profile || u.image,
+        avatarSeed: u.name || u.displayName || "user",
+        coverSeed: u.name || u.displayName || "user",
+        verified: false,
+        premium: false,
+        online: false,
+        willingToFly: false,
+        headline: u.bio || "",
+        bio: u.bio || "",
+        ethnicity: "",
+        height: u.height ? String(u.height) : "",
+        bodyType: "",
+        livingWith: "",
+        relationshipStatus: u.relationStatus || "",
+        religion: "",
+        photos: u.profile || u.image ? [u.profile || u.image] : [],
+        privatePhotosCount: 0,
+      } as User;
+    });
+  } catch (error) {
+    console.error("Error fetching winks:", error);
     return [];
   }
 }
