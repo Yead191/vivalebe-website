@@ -57,7 +57,7 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
       } else {
         res = await sendWink(user.id);
       }
-      
+
       if (res.success) {
         setWinked(true);
         toast.success(res.message || "Wink sent successfully");
