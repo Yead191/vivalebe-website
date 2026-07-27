@@ -4,16 +4,10 @@ import { ChatSidebar } from "@/components/shared/message/ChatSidebar";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
-  mockChatRooms,
   mockCurrentUser,
-  mockGroupRooms,
 } from "@/constants/mockChatData";
 import Spinner from "@/components/shared/Spinner";
-
-// API LOGIC COMMENTED OUT FOR DEMO PURPOSES
-// import getProfile from "@/helpers/getProfile";
-// import { myFetch } from "@/helpers/myFetch";
-// import { io } from "socket.io-client";
+import { getChatList } from "@/features/member/chat/action";
 
 export default function MessageLayoutWrapper({
   children,
@@ -29,46 +23,37 @@ export default function MessageLayoutWrapper({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // MOCK DATA INITIALIZATION
-    // Simulating network fetch
     const fetchData = async () => {
-      setTimeout(() => {
-        setCurrentUserId(mockCurrentUser._id);
+      try {
+        const data = await getChatList();
+        setCurrentUserId(data.currentUserId || mockCurrentUser._id);
 
-        // Filter by search term if needed
-        const filteredChats = mockChatRooms.filter((room) =>
-          search
-            ? room.participants.some((p) =>
-                p.name.toLowerCase().includes(search.toLowerCase()),
+        const mappedChats = (data.chats || []).map((room: any) => ({
+          _id: room._id,
+          participants: room.participants || [],
+          lastMessage: room.lastMessage || null,
+          status: room.status,
+          chatType: room.chatType,
+        }));
+
+        const filtered = search
+          ? mappedChats.filter((room: any) =>
+              room.participants.some((p: any) =>
+                (p.name || p.id || "").toLowerCase().includes(search.toLowerCase())
               )
-            : true,
-        );
+            )
+          : mappedChats;
 
-        const filteredGroups = mockGroupRooms.filter((room) =>
-          search
-            ? room.name.toLowerCase().includes(search.toLowerCase())
-            : true,
-        );
-
-        setChatRooms(filteredChats);
-        setGroupRooms(filteredGroups);
+        setChatRooms(filtered);
+      } catch (error) {
+        console.error("Failed to fetch chat data:", error);
+        setCurrentUserId(mockCurrentUser._id);
+      } finally {
         setLoading(false);
-      }, 500);
+      }
     };
+
     fetchData();
-
-    /* --- OLD API LOGIC --- 
-        const fetchUser = async () => {
-            const user = await getProfile();
-            setCurrentUserId(user?._id);
-        };
-        fetchUser();
-
-        const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://68.178.164.48:5005");
-        socket.on(`chatList::${currentUserId}`, (data) => {
-            // ... update logic
-        });
-        ------------------------- */
   }, [search]);
 
   if (loading) {

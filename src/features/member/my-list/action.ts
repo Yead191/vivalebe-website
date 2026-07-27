@@ -232,3 +232,16 @@ export async function getWinks(): Promise<User[]> {
     return [];
   }
 }
+
+export async function createChatRoom(userId: string) {
+  try {
+    const res = await myFetch(`/chat/${userId}`, {
+      method: "POST",
+      body: { chatType: "single" },
+    });
+    return res;
+  } catch (error) {
+    console.error("Error creating chat room:", error);
+    return { success: false, data: null };
+  }
+}
