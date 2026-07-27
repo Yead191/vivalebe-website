@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "68.178.164.48" },
     ],
   },
+  allowedDevOrigins: ["10.10.26.175"],
 };
 
 export default nextConfig;
