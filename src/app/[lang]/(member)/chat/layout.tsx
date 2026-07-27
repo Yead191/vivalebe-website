@@ -3,9 +3,7 @@
 import { ChatSidebar } from "@/components/shared/message/ChatSidebar";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import {
-  mockCurrentUser,
-} from "@/constants/mockChatData";
+import { mockCurrentUser } from "@/constants/mockChatData";
 import Spinner from "@/components/shared/Spinner";
 import { getChatList } from "@/features/member/chat/action";
 
@@ -39,8 +37,10 @@ export default function MessageLayoutWrapper({
         const filtered = search
           ? mappedChats.filter((room: any) =>
               room.participants.some((p: any) =>
-                (p.name || p.id || "").toLowerCase().includes(search.toLowerCase())
-              )
+                (p.name || p.id || "")
+                  .toLowerCase()
+                  .includes(search.toLowerCase()),
+              ),
             )
           : mappedChats;
 
