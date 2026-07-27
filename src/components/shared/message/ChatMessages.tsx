@@ -368,7 +368,11 @@ export function ChatMessages({
                 <div className="w-8 h-8 shrink-0">
                   {showAvatar ? (
                     <Image
-                      src={getImageUrl(otherParticipant?.image) || "/user.png"}
+                      src={
+                        getImageUrl(
+                          otherParticipant?.profile || otherParticipant?.image,
+                        ) || "/user.png"
+                      }
                       alt=""
                       width={32}
                       height={32}
@@ -387,11 +391,10 @@ export function ChatMessages({
                   className={`px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed shadow-sm
                   ${
                     isMe
-                      ? "bg-indigo-600 text-white rounded-br-sm"
-                      : "bg-[#1a1b26] text-gray-200 border border-white/8 rounded-bl-sm"
+                      ? "bg-[#429CA8] text-white rounded-br-sm"
+                      : "bg-white text-gray-800 border border-gray-200 rounded-bl-sm"
                   }`}
                 >
-
                   {/* Render multiple docs/images */}
                   {msg.docs && msg.docs.length > 0 && (
                     <div
@@ -455,7 +458,7 @@ export function ChatMessages({
                       minute: "2-digit",
                     })}
                   </span>
-                  {isMe && <CheckCheck size={12} className="text-indigo-400" />}
+                  {isMe && <CheckCheck size={12} className="text-[#429CA8]" />}
                 </div>
               </div>
             </div>
@@ -463,12 +466,14 @@ export function ChatMessages({
         })}
         {messages?.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center gap-4 text-center">
-            <div className="w-16 h-16 rounded-3xl bg-[#1a1b26] border border-white/8 flex items-center justify-center">
-              <MessageSquare size={28} className="text-white/20" />
+            <div className="w-16 h-16 rounded-3xl bg-gray-50 border border-gray-200 flex items-center justify-center shadow-sm">
+              <MessageSquare size={28} className="text-[#429CA8]/40" />
             </div>
             <div>
-              <p className="text-white font-semibold">Start the conversation</p>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-900 font-semibold">
+                Start the conversation
+              </p>
+              <p className="text-gray-500 text-sm">
                 Send a message to start chatting with {otherParticipant?.name}
               </p>
             </div>
