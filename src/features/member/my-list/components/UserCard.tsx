@@ -29,20 +29,47 @@ interface UserCardProps {
 }
 
 import { useRouter } from "next/navigation";
-import { createChatRoom } from "../action";
+import { createChatRoom, sendWink, acceptWink } from "../action";
+import { toast } from "sonner";
 
 export function UserCard({ lang, dict, user }: UserCardProps) {
   const router = useRouter();
-  const [liked, setLiked] = useState(false);
-  const [winked, setWinked] = useState(false);
+  const [liked, setLiked] = useState(user.isLiked || false);
+  const [winked, setWinked] = useState(user.isWinked || false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [isSendingWink, setIsSendingWink] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const photo = user.photos[0] ?? avatarUrl(user.avatarSeed, 520);
   const photoCount = user.photos.length;
+
+  const handleWinkClick = async () => {
+    if (winked) return;
+    setIsSendingWink(true);
+    try {
+      let res;
+      if (user.winkId) {
+        // Double match if winkId is present
+        res = await acceptWink(user.winkId);
+      } else {
+        res = await sendWink(user.id);
+      }
+      
+      if (res.success) {
+        setWinked(true);
+        toast.success(res.message || "Wink sent successfully");
+      } else {
+        toast.error(res.message || "Failed to send wink");
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    } finally {
+      setIsSendingWink(false);
+    }
+  };
 
   const handleChatClick = async () => {
     try {
@@ -221,9 +248,10 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
               <button
                 type="button"
                 aria-label={dict.myList.wink}
-                onClick={() => setWinked((w) => !w)}
+                onClick={handleWinkClick}
+                disabled={isSendingWink || winked}
                 className={cn(
-                  "transition-colors",
+                  "transition-colors disabled:opacity-50",
                   winked
                     ? "text-brand"
                     : "text-muted-foreground hover:text-brand",

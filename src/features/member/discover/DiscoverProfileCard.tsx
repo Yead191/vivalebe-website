@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Camera, Heart, MessageCircle, Smile } from "lucide-react";
@@ -6,6 +9,8 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
 import { photoUrl } from "@/lib/image";
+import { sendWink, acceptWink } from "@/features/member/my-list/action";
+import { toast } from "sonner";
 
 interface Props {
   lang: Locale;
@@ -14,6 +19,32 @@ interface Props {
 }
 
 export function DiscoverProfileCard({ lang, dict, user }: Props) {
+  const [winked, setWinked] = useState(user.isWinked || false);
+  const [isSendingWink, setIsSendingWink] = useState(false);
+
+  const handleWinkClick = async () => {
+    if (winked) return;
+    setIsSendingWink(true);
+    try {
+      let res;
+      if (user.winkId) {
+        res = await acceptWink(user.winkId);
+      } else {
+        res = await sendWink(user.id);
+      }
+      
+      if (res.success) {
+        setWinked(true);
+        toast.success(res.message || "Wink sent successfully");
+      } else {
+        toast.error(res.message || "Failed to send wink");
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    } finally {
+      setIsSendingWink(false);
+    }
+  };
   const photoCount = user.photos.length;
 
   return (
@@ -86,13 +117,15 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
           </div>
 
           <div className="mt-auto flex items-center gap-4 pt-2">
-            <Link
-              href={`/${lang}/chat?to=${user.username}&kind=wink`}
+            <button
+              type="button"
               aria-label="Wink"
-              className="text-muted-foreground hover:text-brand transition-colors"
+              onClick={handleWinkClick}
+              disabled={isSendingWink || winked}
+              className={`transition-colors disabled:opacity-50 ${winked ? "text-brand" : "text-muted-foreground hover:text-brand"}`}
             >
               <Smile className="size-5" />
-            </Link>
+            </button>
             <Link
               href={`/${lang}/chat?to=${user.username}`}
               aria-label="Message"

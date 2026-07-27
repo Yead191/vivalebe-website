@@ -3,9 +3,7 @@
 import { ChatSidebar } from "@/components/shared/message/ChatSidebar";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import { mockCurrentUser } from "@/constants/mockChatData";
 import Spinner from "@/components/shared/Spinner";
-import { getChatList } from "@/features/member/chat/action";
 import { io } from "socket.io-client";
 import getProfile from "@/helpers/getProfile";
 import { myFetch } from "@/helpers/myFetch";
