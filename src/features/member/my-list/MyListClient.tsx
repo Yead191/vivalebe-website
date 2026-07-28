@@ -51,7 +51,13 @@ export function MyListClient({
       {sorted.length > 0 ? (
         <div className="space-y-4">
           {sorted.map((user) => (
-            <UserCard key={user.id} lang={lang} dict={dict} user={user} />
+            <UserCard
+              key={user.id}
+              lang={lang}
+              dict={dict}
+              user={user}
+              activeTab={activeTab}
+            />
           ))}
         </div>
       ) : (

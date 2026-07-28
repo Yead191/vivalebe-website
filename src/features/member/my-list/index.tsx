@@ -22,7 +22,8 @@ import {
   getLikesYouUsers, 
   getViewedYouUsers,
   getMutualMatches,
-  getWinks
+  getWinks,
+  getPrivateAlbumRequests
 } from "./action";
 
 export async function MyListFeature({ lang, dict, activeTab }: MyListFeatureProps) {
@@ -41,6 +42,8 @@ export async function MyListFeature({ lang, dict, activeTab }: MyListFeatureProp
     tabUsers = await getMutualMatches();
   } else if (tab === "winked-at-you") {
     tabUsers = await getWinks();
+  } else if (tab === "private-album-requests") {
+    tabUsers = await getPrivateAlbumRequests();
   } else {
     const ids = TAB_USER_IDS[tab];
     tabUsers = ids

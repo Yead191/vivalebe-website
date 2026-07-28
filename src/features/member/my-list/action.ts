@@ -284,3 +284,65 @@ export async function acceptWink(winkId: string) {
     return { success: false, message: "Failed to accept wink" };
   }
 }
+
+export async function getPrivateAlbumRequests(): Promise<User[]> {
+  try {
+    const res = await myFetch("/private-file-access", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.success || !res.data) return [];
+
+    return res.data.map((item: any) => {
+      // The user wants to show `providedUserId` in the list
+      const u = item.providedUserId;
+      return {
+        id: u._id || u.id,
+        username: u.name || u.username,
+        displayName: u.name || u.displayName,
+        age: 0,
+        gender: "M",
+        city: "",
+        state: "",
+        country: u.nationality || "",
+        image: u.profile || u.image || "",
+        avatarSeed: u.profile || u.image || u.name || u.displayName || "user",
+        coverSeed: u.profile || u.image || "/image.png",
+        verified: false,
+        premium: false,
+        online: false,
+        willingToFly: false,
+        headline: u.bio || "",
+        bio: u.bio || "",
+        ethnicity: "",
+        height: u.height ? String(u.height) : "",
+        bodyType: "",
+        livingWith: "",
+        relationshipStatus: u.relationStatus || "",
+        religion: "",
+        photos: u.profile || u.image ? [u.profile || u.image] : [],
+        privatePhotosCount: 0,
+        privateAlbumRequestId: item._id,
+      } as User;
+    });
+  } catch (error) {
+    console.error("Error fetching private album requests:", error);
+    return [];
+  }
+}
+
+export async function respondToPrivateAlbumRequest(requestId: string, isAccessGranted: boolean) {
+  try {
+    const res = await myFetch(`/private-file-access/${requestId}`, {
+      method: "PATCH",
+      body: {
+        isAccessGranted,
+      },
+    });
+    return res;
+  } catch (error) {
+    console.error("Error responding to private album request:", error);
+    return { success: false, message: "Failed to respond" };
+  }
+}

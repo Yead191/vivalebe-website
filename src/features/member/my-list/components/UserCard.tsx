@@ -26,13 +26,14 @@ interface UserCardProps {
   lang: Locale;
   dict: Dictionary;
   user: User;
+  activeTab?: string;
 }
 
 import { useRouter } from "next/navigation";
-import { createChatRoom, sendWink, acceptWink } from "../action";
+import { createChatRoom, sendWink, acceptWink, respondToPrivateAlbumRequest } from "../action";
 import { toast } from "sonner";
 
-export function UserCard({ lang, dict, user }: UserCardProps) {
+export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
   const router = useRouter();
   const [liked, setLiked] = useState(user.isLiked || false);
   const [winked, setWinked] = useState(user.isWinked || false);
@@ -41,7 +42,27 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
   const [reportOpen, setReportOpen] = useState(false);
   const [isCreatingChat, setIsCreatingChat] = useState(false);
   const [isSendingWink, setIsSendingWink] = useState(false);
+  const [isResponding, setIsResponding] = useState(false);
+  const [responseStatus, setResponseStatus] = useState<"accepted" | "rejected" | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const handleRespond = async (isGranted: boolean) => {
+    if (!user.privateAlbumRequestId) return;
+    setIsResponding(true);
+    try {
+      const res = await respondToPrivateAlbumRequest(user.privateAlbumRequestId, isGranted);
+      if (res.success) {
+        toast.success("Responded successfully");
+        setResponseStatus(isGranted ? "accepted" : "rejected");
+      } else {
+        toast.error(res.message || "Failed to respond");
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    } finally {
+      setIsResponding(false);
+    }
+  };
 
   const photo = user.photos[0] ?? avatarUrl(user.avatarSeed, 520);
   const photoCount = user.photos.length;
@@ -244,43 +265,74 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
             ) : null}
 
             {/* Action buttons */}
-            <div className="mt-auto flex items-center gap-6 lg:gap-8 pt-3 lg:pt-5">
-              <button
-                type="button"
-                aria-label={dict.myList.wink}
-                onClick={handleWinkClick}
-                disabled={isSendingWink || winked}
-                className={cn(
-                  "transition-colors disabled:opacity-50",
-                  winked
-                    ? "text-brand"
-                    : "text-muted-foreground hover:text-brand",
-                )}
-              >
-                <Smile className="size-5 lg:size-6" />
-              </button>
-              <button
-                type="button"
-                aria-label={dict.myList.message}
-                onClick={handleChatClick}
-                disabled={isCreatingChat}
-                className="text-muted-foreground hover:text-brand transition-colors disabled:opacity-50"
-              >
-                <MessageCircle className="size-5 lg:size-6" />
-              </button>
-              <button
-                type="button"
-                aria-label={dict.myList.like}
-                onClick={() => setLiked((l) => !l)}
-                className={cn(
-                  "transition-colors",
-                  liked
-                    ? "text-brand"
-                    : "text-muted-foreground hover:text-brand",
-                )}
-              >
-                <Heart className="size-5 lg:size-6" />
-              </button>
+            <div className="mt-auto flex items-center justify-between pt-3 lg:pt-5 w-full">
+              <div className="flex items-center gap-6 lg:gap-8">
+                <button
+                  type="button"
+                  aria-label={dict.myList.wink}
+                  onClick={handleWinkClick}
+                  disabled={isSendingWink || winked}
+                  className={cn(
+                    "transition-colors disabled:opacity-50",
+                    winked
+                      ? "text-brand"
+                      : "text-muted-foreground hover:text-brand",
+                  )}
+                >
+                  <Smile className="size-5 lg:size-6" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={dict.myList.message}
+                  onClick={handleChatClick}
+                  disabled={isCreatingChat}
+                  className="text-muted-foreground hover:text-brand transition-colors disabled:opacity-50"
+                >
+                  <MessageCircle className="size-5 lg:size-6" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={dict.myList.like}
+                  onClick={() => setLiked((l) => !l)}
+                  className={cn(
+                    "transition-colors",
+                    liked
+                      ? "text-brand"
+                      : "text-muted-foreground hover:text-brand",
+                  )}
+                >
+                  <Heart className="size-5 lg:size-6" />
+                </button>
+              </div>
+
+              {activeTab === "private-album-requests" && user.privateAlbumRequestId && (
+                <div className="flex items-center gap-2">
+                   {responseStatus ? (
+                     <span className="text-xs font-semibold text-muted-foreground px-2">
+                       {responseStatus === "accepted" ? "Accepted" : "Rejected"}
+                     </span>
+                   ) : (
+                     <>
+                       <button
+                         type="button"
+                         onClick={() => handleRespond(true)}
+                         disabled={isResponding}
+                         className="rounded-full bg-brand px-3 py-1 text-[10px] lg:text-xs font-semibold text-white hover:bg-brand/90 disabled:opacity-50"
+                       >
+                         Accept
+                       </button>
+                       <button
+                         type="button"
+                         onClick={() => handleRespond(false)}
+                         disabled={isResponding}
+                         className="rounded-full bg-muted px-3 py-1 text-[10px] lg:text-xs font-semibold text-foreground hover:bg-muted/80 disabled:opacity-50"
+                       >
+                         Reject
+                       </button>
+                     </>
+                   )}
+                </div>
+              )}
             </div>
           </div>
         </div>
