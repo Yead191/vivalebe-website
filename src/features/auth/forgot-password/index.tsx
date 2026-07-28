@@ -15,7 +15,12 @@ import { FormPassword } from "@/components/forms/form-password";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { forgotPasswordAction, resendOtpAction } from "./action";
+import {
+  forgotPasswordAction,
+  resendOtpAction,
+  resetPasswordAction,
+  verifyOtpAction,
+} from "./action";
 
 interface Props {
   dict: any;
@@ -25,6 +30,7 @@ interface Props {
 export default function ForgotPasswordFeature({ dict, lang }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [resetToken, setResetToken] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const inputRefs = [
@@ -102,7 +108,10 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text/plain").replace(/\D/g, "").slice(0, 6);
+    const pastedData = e.clipboardData
+      .getData("text/plain")
+      .replace(/\D/g, "")
+      .slice(0, 6);
     if (!pastedData) return;
 
     const currentCode = [...otpForm.getValues("code")];
@@ -119,23 +128,64 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
     }
   };
 
-  const handleOtpSubmit = async () => {
+  const handleOtpSubmit = async (values: any) => {
+    const email = emailForm.getValues("email");
+    if (!email) {
+      toast.error("Email not found.");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const otpString = values.code.join("");
+      const res = await verifyOtpAction({
+        email,
+        oneTimeCode: Number(otpString),
+      });
+
+      if (res.success) {
+        // The token could be in data.token, data.accessToken, or data itself.
+        const tokenToSave =
+          res.data?.token ||
+          res.data?.accessToken ||
+          (typeof res.data === "string" ? res.data : "");
+        setResetToken(tokenToSave);
+        toast.success(res.message || "Code verified successfully!");
+        setStep(3);
+      } else {
+        toast.error(res.error || res.message || "Invalid OTP code");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    } finally {
       setLoading(false);
-      setStep(3);
-    }, 1000);
+    }
   };
 
   const handleResetSubmit = async (values: any) => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await resetPasswordAction(
+        {
+          newPassword: values.password,
+          confirmPassword: values.confirmPassword,
+        },
+        resetToken,
+      );
+
+      if (res.success) {
+        toast.success(res.message || "Password updated successfully!");
+        const email = emailForm.getValues("email");
+        if (email) sessionStorage.setItem("prefillEmail", email);
+        sessionStorage.setItem("prefillPassword", values.password);
+        router.push(`/${lang}/auth/login`);
+      } else {
+        toast.error(res.error || res.message || "Failed to update password");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred");
+    } finally {
       setLoading(false);
-      const email = emailForm.getValues("email");
-      if (email) sessionStorage.setItem("prefillEmail", email);
-      sessionStorage.setItem("prefillPassword", values.password);
-      router.push(`/${lang}/auth/login`);
-    }, 1000);
+    }
   };
 
   const handleResendOtp = async () => {

@@ -19,3 +19,22 @@ export async function resendOtpAction(data: Record<string, any>) {
 
   return res;
 }
+
+export async function resetPasswordAction(data: Record<string, any>, token: string) {
+  const res = await myFetch("/auth/reset-password", {
+    method: "POST",
+    body: data,
+    token: token,
+  });
+
+  return res;
+}
+
+export async function verifyOtpAction(data: Record<string, any>) {
+  const res = await myFetch("/auth/verify-email", {
+    method: "POST",
+    body: data,
+  });
+
+  return res;
+}
