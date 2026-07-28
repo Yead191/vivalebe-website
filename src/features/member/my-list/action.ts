@@ -406,3 +406,22 @@ export async function getPrivateAlbumAccess(): Promise<User[]> {
     return [];
   }
 }
+
+export async function swipeUser(
+  toUser: string,
+  action: "like" | "dislike" = "like",
+) {
+  try {
+    const res = await myFetch("/swipe", {
+      method: "POST",
+      body: {
+        toUser,
+        action,
+      },
+    });
+    return res;
+  } catch (error) {
+    console.error("Error swiping user:", error);
+    return { success: false, message: "Failed to swipe" };
+  }
+}

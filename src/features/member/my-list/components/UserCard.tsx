@@ -35,6 +35,7 @@ import {
   sendWink,
   acceptWink,
   respondToPrivateAlbumRequest,
+  swipeUser,
 } from "../action";
 import { toast } from "sonner";
 
@@ -48,6 +49,7 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
   const [isCreatingChat, setIsCreatingChat] = useState(false);
   const [isSendingWink, setIsSendingWink] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
+  const [isSwiping, setIsSwiping] = useState(false);
   const [responseStatus, setResponseStatus] = useState<
     "accepted" | "rejected" | null
   >(null);
@@ -124,6 +126,31 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
       router.push(`/${lang}/chat`);
     } finally {
       setIsCreatingChat(false);
+    }
+  };
+
+  const handleLikeClick = async () => {
+    if (isSwiping) return;
+    setIsSwiping(true);
+
+    // Toggle the UI optimistically or just wait for the response
+    const action = liked ? "dislike" : "like";
+    setLiked(!liked);
+
+    try {
+      const res = await swipeUser(user.id, action);
+      if (res.success) {
+        toast.success(res.message || `User ${action}d successfully`);
+      } else {
+        // Revert on failure
+        setLiked(liked);
+        toast.error(res.message || "Failed to swipe");
+      }
+    } catch (error) {
+      setLiked(liked);
+      toast.error("An error occurred");
+    } finally {
+      setIsSwiping(false);
     }
   };
 
@@ -303,9 +330,10 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
                 <button
                   type="button"
                   aria-label={dict.myList.like}
-                  onClick={() => setLiked((l) => !l)}
+                  onClick={handleLikeClick}
+                  disabled={isSwiping}
                   className={cn(
-                    "transition-colors",
+                    "transition-colors disabled:opacity-50",
                     liked
                       ? "text-brand"
                       : "text-muted-foreground hover:text-brand",
