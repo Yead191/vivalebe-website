@@ -425,3 +425,33 @@ export async function swipeUser(
     return { success: false, message: "Failed to swipe" };
   }
 }
+
+export async function blockUser(blockerId: string) {
+  try {
+    const res = await myFetch("/block", {
+      method: "POST",
+      body: {
+        blockerId,
+      },
+    });
+    return res;
+  } catch (error) {
+    console.error("Error blocking user:", error);
+    return { success: false, message: "Failed to block user" };
+  }
+}
+
+export async function hideUser(userId: string) {
+  try {
+    const res = await myFetch("/block/hide", {
+      method: "POST",
+      body: {
+        userId,
+      },
+    });
+    return res;
+  } catch (error) {
+    console.error("Error hiding user:", error);
+    return { success: false, message: "Failed to hide user" };
+  }
+}

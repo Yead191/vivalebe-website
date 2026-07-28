@@ -36,6 +36,8 @@ import {
   acceptWink,
   respondToPrivateAlbumRequest,
   swipeUser,
+  blockUser,
+  hideUser,
 } from "../action";
 import { toast } from "sonner";
 
@@ -50,6 +52,8 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
   const [isSendingWink, setIsSendingWink] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
   const [responseStatus, setResponseStatus] = useState<
     "accepted" | "rejected" | null
   >(null);
@@ -154,6 +158,46 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
     }
   };
 
+  const handleBlock = async () => {
+    if (isBlocking) return;
+    setIsBlocking(true);
+    setMenuOpen(false);
+
+    try {
+      const res = await blockUser(user.id);
+      if (res.success) {
+        toast.success(res.message || "User blocked successfully");
+        // Optionally, refresh the list or remove the card optimistically
+      } else {
+        toast.error(res.message || "Failed to block user");
+      }
+    } catch (error) {
+      toast.error("An error occurred while blocking");
+    } finally {
+      setIsBlocking(false);
+    }
+  };
+
+  const handleHide = async () => {
+    if (isHiding) return;
+    setIsHiding(true);
+    setMenuOpen(false);
+
+    try {
+      const res = await hideUser(user.id);
+      if (res.success) {
+        toast.success(res.message || "User hidden successfully");
+        // Optionally, refresh the list or remove the card optimistically
+      } else {
+        toast.error(res.message || "Failed to hide user");
+      }
+    } catch (error) {
+      toast.error("An error occurred while hiding");
+    } finally {
+      setIsHiding(false);
+    }
+  };
+
   useEffect(() => {
     if (!menuOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
@@ -241,19 +285,21 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
                     </button>
                     <button
                       type="button"
-                      className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left hover:bg-muted transition-colors"
-                      onClick={() => setMenuOpen(false)}
+                      disabled={isBlocking}
+                      className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left hover:bg-muted transition-colors disabled:opacity-50"
+                      onClick={handleBlock}
                     >
                       <Ban className="size-3.5 lg:size-4 text-muted-foreground" />
-                      {dict.myList.block}
+                      {isBlocking ? "Blocking..." : dict.myList.block}
                     </button>
                     <button
                       type="button"
-                      className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left hover:bg-muted transition-colors"
-                      onClick={() => setMenuOpen(false)}
+                      disabled={isHiding}
+                      className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left hover:bg-muted transition-colors disabled:opacity-50"
+                      onClick={handleHide}
                     >
                       <EyeOff className="size-3.5 lg:size-4 text-muted-foreground" />
-                      {dict.myList.hide}
+                      {isHiding ? "Hiding..." : dict.myList.hide}
                     </button>
                   </div>
                 ) : null}
