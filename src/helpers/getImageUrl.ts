@@ -14,6 +14,6 @@ export function getImageUrl(imageurl: string | null | undefined) {
   return (
     (process.env.IMAGE_BASE_URL ||
       process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
-      "http://10.10.26.159:5000/images") + imageurl
+      "http://10.10.26.159:5000/files") + imageurl
   );
 }
