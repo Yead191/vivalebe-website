@@ -19,7 +19,7 @@ export function UsernameSearchForm({ lang, dict, initialQuery }: Props) {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams({ from: "username" });
-    if (q.trim()) params.set("q", q.trim());
+    if (q.trim()) params.set("name", q.trim());
     router.push(`/${lang}/discover?${params.toString()}`);
   };
 

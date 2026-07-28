@@ -11,7 +11,7 @@ export interface User {
   city: string;
   state: string;
   country: string;
-  image?: string
+  image?: string;
   avatarSeed: string;
   coverSeed: string;
   verified: boolean;
@@ -29,6 +29,9 @@ export interface User {
   photos: string[];
   privatePhotosCount: number;
   profile?: ProfileDetails;
+  isWinked?: boolean;
+  isLiked?: boolean;
+  winkId?: string;
 }
 
 export interface PhotoEntry {

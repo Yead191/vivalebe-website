@@ -32,7 +32,7 @@ export function NotificationsBell() {
       >
         <Bell className="size-5" />
         {unread > 0 ? (
-          <span className="absolute top-1 right-1 size-2 rounded-full bg-red-500" />
+          <span className="absolute top-1 right-1 size-2 rounded-full bg-green-300" />
         ) : null}
       </DropdownMenuTrigger>
       <DropdownMenuContent

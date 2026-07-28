@@ -28,16 +28,73 @@ interface UserCardProps {
   user: User;
 }
 
+import { useRouter } from "next/navigation";
+import { createChatRoom, sendWink, acceptWink } from "../action";
+import { toast } from "sonner";
+
 export function UserCard({ lang, dict, user }: UserCardProps) {
-  const [liked, setLiked] = useState(false);
-  const [winked, setWinked] = useState(false);
+  const router = useRouter();
+  const [liked, setLiked] = useState(user.isLiked || false);
+  const [winked, setWinked] = useState(user.isWinked || false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [isSendingWink, setIsSendingWink] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const photo = user.photos[0] ?? avatarUrl(user.avatarSeed, 520);
   const photoCount = user.photos.length;
+
+  const handleWinkClick = async () => {
+    if (winked) return;
+    setIsSendingWink(true);
+    try {
+      let res;
+      if (user.winkId) {
+        // Double match if winkId is present
+        res = await acceptWink(user.winkId);
+      } else {
+        res = await sendWink(user.id);
+      }
+
+      if (res.success) {
+        setWinked(true);
+        toast.success(res.message || "Wink sent successfully");
+      } else {
+        toast.error(res.message || "Failed to send wink");
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    } finally {
+      setIsSendingWink(false);
+    }
+  };
+
+  const handleChatClick = async () => {
+    try {
+      setIsCreatingChat(true);
+      const res = await createChatRoom(user.id);
+      if (res.success) {
+        // Proceed to chat page
+        const roomId = res.data?._id || res.data?.id;
+        if (roomId) {
+          router.push(`/${lang}/chat/${roomId}`);
+        } else {
+          router.push(`/${lang}/chat`);
+        }
+      } else {
+        console.error("Failed to create chat room", res);
+        // Fallback to chat if creation fails (maybe already exists)
+        router.push(`/${lang}/chat`);
+      }
+    } catch (error) {
+      console.error(error);
+      router.push(`/${lang}/chat`);
+    } finally {
+      setIsCreatingChat(false);
+    }
+  };
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -191,9 +248,10 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
               <button
                 type="button"
                 aria-label={dict.myList.wink}
-                onClick={() => setWinked((w) => !w)}
+                onClick={handleWinkClick}
+                disabled={isSendingWink || winked}
                 className={cn(
-                  "transition-colors",
+                  "transition-colors disabled:opacity-50",
                   winked
                     ? "text-brand"
                     : "text-muted-foreground hover:text-brand",
@@ -204,8 +262,9 @@ export function UserCard({ lang, dict, user }: UserCardProps) {
               <button
                 type="button"
                 aria-label={dict.myList.message}
-                onClick={() => setMessageOpen(true)}
-                className="text-muted-foreground hover:text-brand transition-colors"
+                onClick={handleChatClick}
+                disabled={isCreatingChat}
+                className="text-muted-foreground hover:text-brand transition-colors disabled:opacity-50"
               >
                 <MessageCircle className="size-5 lg:size-6" />
               </button>

@@ -25,10 +25,11 @@ type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 interface FetchOptions {
   method?: HttpMethod;
   body?: any;
-  tags?: string[];
   token?: string;
   headers?: Record<string, string>;
   cache?: RequestCache;
+  tags?: string[];
+  next?: NextFetchRequestConfig;
 }
 
 export const myFetch = async <T = any>(
@@ -39,7 +40,8 @@ export const myFetch = async <T = any>(
     tags,
     token,
     headers = {},
-    cache = "force-cache",
+    cache = "default",
+    next = {},
   }: FetchOptions = {},
 ): Promise<FetchResponse<T>> => {
   const accessToken = await getAccessToken();
@@ -58,9 +60,14 @@ export const myFetch = async <T = any>(
     const res = await fetch(`${process.env.BASE_URL}${url}`, {
       method,
       headers: reqHeaders,
-      ...(hasBody && { body: isFormData ? body : JSON.stringify(body) }),
-      ...(tags && { next: { tags } }),
-      ...(!(method === "GET") ? { cache: "no-store" } : { cache: cache }),
+      ...(hasBody && {
+        body: isFormData ? body : JSON.stringify(body),
+      }),
+      cache: method === "GET" ? cache : "no-store",
+      next: {
+        ...next,
+        ...(tags && { tags }),
+      },
     });
 
     const json = await res.json();
@@ -69,9 +76,9 @@ export const myFetch = async <T = any>(
       return {
         success: false,
         message: json?.message,
-        error: Array.isArray(json?.errorMessages) 
-          ? json.errorMessages.map((e: any) => e.message).join(", ") 
-          : (json?.errorMessages || "Request failed"),
+        error: Array.isArray(json?.errorMessages)
+          ? json.errorMessages.map((e: any) => e.message).join(", ")
+          : json?.errorMessages || "Request failed",
       };
     }
 
