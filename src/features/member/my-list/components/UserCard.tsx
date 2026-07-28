@@ -30,7 +30,12 @@ interface UserCardProps {
 }
 
 import { useRouter } from "next/navigation";
-import { createChatRoom, sendWink, acceptWink, respondToPrivateAlbumRequest } from "../action";
+import {
+  createChatRoom,
+  sendWink,
+  acceptWink,
+  respondToPrivateAlbumRequest,
+} from "../action";
 import { toast } from "sonner";
 
 export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
@@ -43,14 +48,19 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
   const [isCreatingChat, setIsCreatingChat] = useState(false);
   const [isSendingWink, setIsSendingWink] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
-  const [responseStatus, setResponseStatus] = useState<"accepted" | "rejected" | null>(null);
+  const [responseStatus, setResponseStatus] = useState<
+    "accepted" | "rejected" | null
+  >(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const handleRespond = async (isGranted: boolean) => {
     if (!user.privateAlbumRequestId) return;
     setIsResponding(true);
     try {
-      const res = await respondToPrivateAlbumRequest(user.privateAlbumRequestId, isGranted);
+      const res = await respondToPrivateAlbumRequest(
+        user.privateAlbumRequestId,
+        isGranted,
+      );
       if (res.success) {
         toast.success("Responded successfully");
         setResponseStatus(isGranted ? "accepted" : "rejected");
@@ -134,7 +144,7 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
         <div className="grid grid-cols-[260px_minmax(0,1fr)] sm:grid-cols-[480px_minmax(0,1fr)]">
           {/* Left: Photo */}
           <Link
-            href={`/${lang}/profile/${user.username}`}
+            href={`/${lang}/my-list/profile/${user.id}`}
             className="relative block overflow-hidden bg-muted min-h-70 lg:min-h-92 2xl:min-h-120 "
           >
             <Image
@@ -160,7 +170,7 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-1.5 lg:gap-2">
                   <Link
-                    href={`/${lang}/profile/${user.username}`}
+                    href={`/${lang}/my-list/profile/${user.id}`}
                     className="text-sm lg:text-base font-bold tracking-wide hover:text-brand transition-colors"
                   >
                     {user.displayName}
@@ -305,34 +315,37 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
                 </button>
               </div>
 
-              {activeTab === "private-album-requests" && user.privateAlbumRequestId && (
-                <div className="flex items-center gap-2">
-                   {responseStatus ? (
-                     <span className="text-xs font-semibold text-muted-foreground px-2">
-                       {responseStatus === "accepted" ? "Accepted" : "Rejected"}
-                     </span>
-                   ) : (
-                     <>
-                       <button
-                         type="button"
-                         onClick={() => handleRespond(true)}
-                         disabled={isResponding}
-                         className="rounded-full bg-brand px-3 py-1 text-[10px] lg:text-xs font-semibold text-white hover:bg-brand/90 disabled:opacity-50"
-                       >
-                         Accept
-                       </button>
-                       <button
-                         type="button"
-                         onClick={() => handleRespond(false)}
-                         disabled={isResponding}
-                         className="rounded-full bg-muted px-3 py-1 text-[10px] lg:text-xs font-semibold text-foreground hover:bg-muted/80 disabled:opacity-50"
-                       >
-                         Reject
-                       </button>
-                     </>
-                   )}
-                </div>
-              )}
+              {activeTab === "private-album-requests" &&
+                user.privateAlbumRequestId && (
+                  <div className="flex items-center gap-2">
+                    {responseStatus ? (
+                      <span className="text-xs font-semibold text-muted-foreground px-2">
+                        {responseStatus === "accepted"
+                          ? "Accepted"
+                          : "Rejected"}
+                      </span>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleRespond(true)}
+                          disabled={isResponding}
+                          className="rounded-full bg-brand px-3 py-1 text-[10px] lg:text-xs font-semibold text-white hover:bg-brand/90 disabled:opacity-50"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRespond(false)}
+                          disabled={isResponding}
+                          className="rounded-full bg-muted px-3 py-1 text-[10px] lg:text-xs font-semibold text-foreground hover:bg-muted/80 disabled:opacity-50"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
         </div>

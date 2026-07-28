@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { MoreHorizontal, Pencil, Send } from "lucide-react";
+import { MoreHorizontal, Pencil, Send, MessageCircle } from "lucide-react";
 import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/i18n/config";
@@ -10,6 +10,8 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
 import { photoUrl } from "@/lib/image";
 import { PhotoViewerOverlay } from "./modals/PhotoViewerOverlay";
+import { useRouter } from "next/navigation";
+import { createChatRoom } from "../my-list/action";
 
 interface Props {
   lang: Locale;
@@ -17,10 +19,11 @@ interface Props {
   user: User;
 }
 
-export function ProfileMain({ dict, user }: Props) {
+export function ProfileMain({ lang, dict, user }: Props) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"public" | "private">("public");
   const [expanded, setExpanded] = useState(false);
-  const [message, setMessage] = useState("");
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
   const [selectedPhotoIdx, setSelectedPhotoIdx] = useState<number | null>(null);
 
   const publicPhotos = user.photos.slice(0, 3);
@@ -28,6 +31,29 @@ export function ProfileMain({ dict, user }: Props) {
   const aboutPreview =
     user.bio.length > 320 ? user.bio.slice(0, 320) : user.bio;
   const hasMore = user.bio.length > 320;
+
+  const handleChatClick = async () => {
+    try {
+      setIsCreatingChat(true);
+      const res = await createChatRoom(user.id);
+      if (res.success) {
+        const roomId = res.data?._id || res.data?.id;
+        if (roomId) {
+          router.push(`/${lang}/chat/${roomId}`);
+        } else {
+          router.push(`/${lang}/chat`);
+        }
+      } else {
+        console.error("Failed to create chat room", res);
+        router.push(`/${lang}/chat`);
+      }
+    } catch (error) {
+      console.error(error);
+      router.push(`/${lang}/chat`);
+    } finally {
+      setIsCreatingChat(false);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -132,30 +158,15 @@ export function ProfileMain({ dict, user }: Props) {
         </button>
       </section>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setMessage("");
-        }}
-        className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 transition-shadow focus-within:shadow-sm"
+      <button
+        type="button"
+        onClick={handleChatClick}
+        disabled={isCreatingChat}
+        className="flex w-full items-center justify-center gap-2 rounded-md bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand-hover transition-colors disabled:opacity-50"
       >
-        <Pencil className="size-4 shrink-0 text-muted-foreground" />
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder={dict.profile.sendPrivateMessage}
-          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-        />
-        <button
-          type="submit"
-          disabled={!message.trim()}
-          aria-label="Send"
-          className="rounded-full p-1.5 text-brand hover:bg-brand-soft disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
-        >
-          <Send className="size-4" />
-        </button>
-      </form>
+        <MessageCircle className="size-5" />
+        {isCreatingChat ? "..." : dict.profile.sendPrivateMessage}
+      </button>
 
       <section id="more-about-me" className="space-y-2 scroll-mt-24">
         <h2 className="text-sm font-semibold">

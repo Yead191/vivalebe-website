@@ -26,7 +26,7 @@ interface Props {
 export function ProfileHoverCard({ user, lang, dict }: Props) {
   const router = useRouter();
   const [isCreatingChat, setIsCreatingChat] = useState(false);
-  const goToProfile = () => router.push(`/${lang}/profile/${user.username}`);
+  const goToProfile = () => router.push(`/${lang}/my-list/profile/${user.id}`);
 
   const handleChatClick = async () => {
     try {
