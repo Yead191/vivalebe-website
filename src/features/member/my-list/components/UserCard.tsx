@@ -386,7 +386,11 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
         dict={dict}
       />
 
-      <ReportContentModal open={reportOpen} onOpenChange={setReportOpen} />
+      <ReportContentModal
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        postId={user.id}
+      />
     </>
   );
 }
