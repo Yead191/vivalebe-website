@@ -32,6 +32,8 @@ export interface User {
   isWinked?: boolean;
   isLiked?: boolean;
   winkId?: string;
+  education?: string;
+  weight?: string;
 }
 
 export interface PhotoEntry {
