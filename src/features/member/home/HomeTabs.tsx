@@ -6,7 +6,6 @@ import { Video, Sparkles, Heart } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type {
-  Comment,
   ConnectionEvent,
   FeedSort,
   MomentPost,
@@ -19,13 +18,9 @@ import { ConnectionRow } from "./cards/ConnectionRow";
 import { SortDropdown } from "./SortDropdown";
 import { UploadVideoModal } from "./modals/UploadVideoModal";
 import { CreatePostModal } from "./modals/CreatePostModal";
+import type { PostMeta } from "./action";
 
-export interface PostMeta {
-  likeCount: number;
-  liked: boolean;
-  comments: Comment[];
-  popularity: number;
-}
+export type { PostMeta };
 
 interface HomeTabsProps {
   lang: Locale;
@@ -134,29 +129,35 @@ export function HomeTabs({
           <SortDropdown value={videoSort} onChange={setVideoSort} dict={dict} />
         </div>
         <div className="space-y-4">
-          {sortedVideos?.map((v) => {
-            const author = authors[v.authorId];
-            const meta = videoMeta[v.id] ?? {
-              likeCount: 0,
-              liked: false,
-              comments: [],
-              popularity: 0,
-            };
-            return author ? (
-              <VideoCard
-                key={v.id}
-                lang={lang}
-                dict={dict}
-                video={v}
-                author={author}
-                likeCount={meta.likeCount}
-                liked={meta.liked}
-                comments={meta.comments}
-                authors={authorMini}
-                currentUserAvatarSeed={currentUserAvatarSeed}
-              />
-            ) : null;
-          })}
+          {sortedVideos.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
+              No videos in your feed yet.
+            </p>
+          ) : (
+            sortedVideos.map((v) => {
+              const author = authors[v.authorId];
+              const meta = videoMeta[v.id] ?? {
+                likeCount: 0,
+                liked: false,
+                comments: [],
+                popularity: 0,
+              };
+              return author ? (
+                <VideoCard
+                  key={v.id}
+                  lang={lang}
+                  dict={dict}
+                  video={v}
+                  author={author}
+                  likeCount={meta.likeCount}
+                  liked={meta.liked}
+                  comments={meta.comments}
+                  authors={authorMini}
+                  currentUserAvatarSeed={currentUserAvatarSeed}
+                />
+              ) : null;
+            })
+          )}
         </div>
       </TabsContent>
 
@@ -173,29 +174,35 @@ export function HomeTabs({
           />
         </div>
         <div className="space-y-4">
-          {sortedMoments.map((m) => {
-            const author = authors[m.authorId];
-            const meta = momentMeta[m.id] ?? {
-              likeCount: 0,
-              liked: false,
-              comments: [],
-              popularity: 0,
-            };
-            return author ? (
-              <MomentCard
-                key={m.id}
-                lang={lang}
-                dict={dict}
-                moment={m}
-                author={author}
-                likeCount={meta.likeCount}
-                liked={meta.liked}
-                comments={meta.comments}
-                authors={authorMini}
-                currentUserAvatarSeed={currentUserAvatarSeed}
-              />
-            ) : null;
-          })}
+          {sortedMoments.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
+              No moments in your feed yet.
+            </p>
+          ) : (
+            sortedMoments.map((m) => {
+              const author = authors[m.authorId];
+              const meta = momentMeta[m.id] ?? {
+                likeCount: 0,
+                liked: false,
+                comments: [],
+                popularity: 0,
+              };
+              return author ? (
+                <MomentCard
+                  key={m.id}
+                  lang={lang}
+                  dict={dict}
+                  moment={m}
+                  author={author}
+                  likeCount={meta.likeCount}
+                  liked={meta.liked}
+                  comments={meta.comments}
+                  authors={authorMini}
+                  currentUserAvatarSeed={currentUserAvatarSeed}
+                />
+              ) : null;
+            })
+          )}
         </div>
       </TabsContent>
 

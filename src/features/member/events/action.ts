@@ -151,7 +151,7 @@ export async function getEventById(id: string): Promise<MemberEvent | null> {
 }
 
 export async function createEvent(values: EventFormValues) {
-  const res = await myFetch("/events-post", {
+  const res = await myFetch("/events", {
     method: "POST",
     body: toPayload(values),
   });
