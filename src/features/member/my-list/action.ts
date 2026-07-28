@@ -180,7 +180,14 @@ export async function getMutualMatches(searchQuery?: string): Promise<User[]> {
         religion: "",
         photos: u.profile || u.image ? [u.profile || u.image] : [],
         privatePhotosCount: 0,
-        isWinked: !!(item.isWink || item.isWinked || item.winked || u.isWink || u.isWinked || u.winked),
+        isWinked: !!(
+          item.isWink ||
+          item.isWinked ||
+          item.winked ||
+          u.isWink ||
+          u.isWinked ||
+          u.winked
+        ),
         isLiked: !!(item.isLiked || item.liked || u.isLiked || u.liked),
       } as User;
     });
@@ -269,15 +276,18 @@ export async function acceptWink(winkId: string) {
       method: "PATCH",
       body: { isMatch: true },
     });
-    
+
     // If PATCH fails due to method, try PUT
-    if (!res.success && res.message?.toLowerCase().includes("method not allowed")) {
+    if (
+      !res.success &&
+      res.message?.toLowerCase().includes("method not allowed")
+    ) {
       return await myFetch(`/winks/${winkId}`, {
         method: "PUT",
         body: { isMatch: true },
       });
     }
-    
+
     return res;
   } catch (error) {
     console.error("Error accepting wink:", error);
@@ -332,7 +342,10 @@ export async function getPrivateAlbumRequests(): Promise<User[]> {
   }
 }
 
-export async function respondToPrivateAlbumRequest(requestId: string, isAccessGranted: boolean) {
+export async function respondToPrivateAlbumRequest(
+  requestId: string,
+  isAccessGranted: boolean,
+) {
   try {
     const res = await myFetch(`/private-file-access/${requestId}`, {
       method: "PATCH",
@@ -344,5 +357,52 @@ export async function respondToPrivateAlbumRequest(requestId: string, isAccessGr
   } catch (error) {
     console.error("Error responding to private album request:", error);
     return { success: false, message: "Failed to respond" };
+  }
+}
+
+export async function getPrivateAlbumAccess(): Promise<User[]> {
+  try {
+    const res = await myFetch("/private-file-access/granted", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.success || !res.data) return [];
+
+    return res.data.map((item: any) => {
+      // The person who provided the access or the person who requested it
+      const u = item.providedUserId || item.requestedUserId;
+      return {
+        id: u._id || u.id,
+        username: u.name || u.username,
+        displayName: u.name || u.displayName,
+        age: 0,
+        gender: "M",
+        city: "",
+        state: "",
+        country: u.nationality || "",
+        image: u.profile || u.image || "",
+        avatarSeed: u.profile || u.image || u.name || u.displayName || "user",
+        coverSeed: u.profile || u.image || "/image.png",
+        verified: false,
+        premium: false,
+        online: false,
+        willingToFly: false,
+        headline: u.bio || "",
+        bio: u.bio || "",
+        ethnicity: "",
+        height: u.height ? String(u.height) : "",
+        bodyType: "",
+        livingWith: "",
+        relationshipStatus: u.relationStatus || "",
+        religion: "",
+        photos: u.profile || u.image ? [u.profile || u.image] : [],
+        privatePhotosCount: 0,
+        privateAlbumRequestId: item._id,
+      } as User;
+    });
+  } catch (error) {
+    console.error("Error fetching private album access:", error);
+    return [];
   }
 }
