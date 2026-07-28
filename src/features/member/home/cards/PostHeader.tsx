@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { MoreHorizontal } from "lucide-react";
@@ -17,6 +19,14 @@ export function PostHeader({
   lang,
   showAgeGender = false,
 }: PostHeaderProps) {
+  const location = [user.city, user.state, user.country]
+    .filter(Boolean)
+    .join(", ");
+  const meta =
+    showAgeGender && user.age > 0
+      ? `${user.age}, ${user.gender}${location ? `, ${location}` : ""}`
+      : location;
+
   return (
     <div className="flex items-start gap-3 px-4 pt-4">
       <Link href={`/${lang}/profile/${user.username}`} className="shrink-0">
@@ -37,10 +47,7 @@ export function PostHeader({
           {user.displayName}
           {user.verified ? <VerifiedBadge /> : null}
         </Link>
-        <p className="text-xs text-muted-foreground">
-          {showAgeGender && user.age > 0 ? `${user.age}, ${user.gender}, ` : ""}
-          {[user.city, user.state, user.country].filter(Boolean).join(", ")}
-        </p>
+        {meta ? <p className="text-xs text-muted-foreground">{meta}</p> : null}
       </div>
       <button
         type="button"

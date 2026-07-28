@@ -138,13 +138,110 @@ export async function getViewedYouUsers(): Promise<User[]> {
   }
 }
 
-export async function getMutualMatches(searchQuery?: string): Promise<User[]> {
-  try {
-    let url = "/user/matches";
-    if (searchQuery) {
-      url += `?name=${encodeURIComponent(searchQuery)}`;
+export interface MatchSearchFilters {
+  lookingFor?: string;
+  country?: string;
+  state?: string;
+  ageFrom?: number | string;
+  ageTo?: number | string;
+  name?: string;
+  displayName?: string;
+}
+
+function calcAge(dob?: string): number {
+  if (!dob) return 0;
+  const birth = new Date(dob);
+  if (Number.isNaN(birth.getTime())) return 0;
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const monthDiff = now.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) {
+    age -= 1;
+  }
+  return age > 0 ? age : 0;
+}
+
+function mapGender(value?: string): User["gender"] {
+  const v = (value || "").toUpperCase();
+  if (v === "FEMALE" || v === "W" || v === "WOMAN") return "W";
+  if (v === "COUPLE" || v === "C") return "C";
+  return "M";
+}
+
+function buildMatchesUrl(filters?: MatchSearchFilters | string): string {
+  const params = new URLSearchParams();
+
+  if (typeof filters === "string") {
+    if (filters.trim()) params.set("name", filters.trim());
+  } else if (filters) {
+    if (filters.lookingFor) params.set("lookingFor", filters.lookingFor);
+    if (filters.country) params.set("country", filters.country);
+    if (filters.state) params.set("state", filters.state);
+    if (filters.ageFrom != null && filters.ageFrom !== "") {
+      params.set("ageFrom", String(filters.ageFrom));
     }
-    const res = await myFetch(url, {
+    if (filters.ageTo != null && filters.ageTo !== "") {
+      params.set("ageTo", String(filters.ageTo));
+    }
+    if (filters.name) params.set("name", filters.name);
+    if (filters.displayName) params.set("displayName", filters.displayName);
+  }
+
+  const qs = params.toString();
+  return qs ? `/user/matches?${qs}` : "/user/matches";
+}
+
+function mapMatchUser(item: any): User {
+  const u =
+    item.matchedUser || item.user || item.toUser || item.fromUser || item;
+  const profile = u.profile || u.image || "";
+  const name = u.name || u.displayName || u.username || "User";
+
+  return {
+    id: u._id || u.id,
+    username: u.name || u.username || name,
+    displayName: u.displayName || u.name || name,
+    age: calcAge(u.DOB),
+    gender: mapGender(u.gender),
+    city: u.state || "",
+    state: u.state || "",
+    country: u.country || u.nationality || "",
+    image: profile,
+    avatarSeed: profile || name,
+    coverSeed: profile || "/image.png",
+    verified: !!(u.verified || u.isAdminVerified),
+    premium: !!(u.premiumMembership || u.premium),
+    online: false,
+    willingToFly: false,
+    headline: u.bio || "",
+    bio: u.bio || "",
+    ethnicity: "",
+    height: u.height != null ? String(u.height) : "",
+    bodyType: "",
+    livingWith: u.livingWith || "",
+    relationshipStatus: u.relationStatus || "",
+    religion: "",
+    photos: profile ? [profile] : [],
+    privatePhotosCount: 0,
+    education: u.education || "",
+    weight: u.weight != null ? String(u.weight) : "",
+    isWinked: !!(
+      item.isWink ||
+      item.isWinked ||
+      item.winked ||
+      u.isWink ||
+      u.isWinked ||
+      u.winked
+    ),
+    isLiked: !!(item.isLiked || item.liked || u.isLiked || u.liked),
+  } as User;
+}
+
+export async function getMutualMatches(
+  searchQuery?: MatchSearchFilters | string,
+): Promise<User[]> {
+  try {
+    const res = await myFetch(buildMatchesUrl(searchQuery), {
       method: "GET",
       cache: "no-store",
     });

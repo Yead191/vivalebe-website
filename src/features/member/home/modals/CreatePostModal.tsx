@@ -1,22 +1,30 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Pencil, Plus, X } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { cn } from "@/lib/utils";
+import { createPostAction, updatePostAction } from "../action";
 
 interface CreatePostModalProps {
   dict: Dictionary;
   trigger?: React.ReactNode;
+  mode?: "create" | "edit";
+  postId?: string;
+  initialDescription?: string;
+  initialImageUrls?: string[];
 }
+
+const EMPTY_IMAGES: string[] = [];
 
 const HASHTAGS = [
   "Pet",
@@ -46,34 +54,63 @@ const HASHTAGS = [
   "Hsv",
 ];
 
-export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
-  const [text, setText] = useState("");
+export function CreatePostModal({
+  dict,
+  trigger,
+  mode = "create",
+  postId,
+  initialDescription = "",
+  initialImageUrls = EMPTY_IMAGES,
+}: CreatePostModalProps) {
+  const router = useRouter();
+  const [text, setText] = useState(initialDescription);
   const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Generate previews when files change
   useEffect(() => {
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-    setPreviews(newPreviews);
-
-    // Cleanup URLs to avoid memory leaks
-    return () => newPreviews.forEach((url) => URL.revokeObjectURL(url));
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setFilePreviews(urls);
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
   }, [files]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setFiles((prev) => {
-        const combined = [...prev, ...newFiles];
-        return combined.slice(0, 9); // Max 9
-      });
+  const previews = useMemo(
+    () => [...initialImageUrls, ...filePreviews],
+    [initialImageUrls, filePreviews],
+  );
+
+  const resetForm = () => {
+    setText(initialDescription);
+    setFiles([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      setText(initialDescription);
+      setFiles([]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } else {
+      resetForm();
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const nextFiles = Array.from(e.target.files);
+    setFiles((prev) => [...prev, ...nextFiles].slice(0, 9));
+  };
+
   const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+    const existingCount = initialImageUrls.length;
+    if (index < existingCount) return;
+    const fileIndex = index - existingCount;
+    setFiles((prev) => prev.filter((_, i) => i !== fileIndex));
   };
 
   const toggleHashtag = (tag: string) => {
@@ -88,35 +125,50 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
   };
 
   const handleSubmit = () => {
-    const formData = new FormData();
-    formData.append("description", text);
-    files.forEach((file, i) => {
-      formData.append(`photo_${i}`, file);
-    });
-
-    console.log("--- SUBMITTING MOMENT ---");
-    console.log("Description:", text);
-    console.log("Files:", files);
-
-    // Log entries for verification
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(`${key}: File (${value.name}, ${value.size} bytes)`);
-      } else {
-        console.log(`${key}:`, value);
-      }
+    if (isPending) return;
+    if (!text.trim() && files.length === 0 && initialImageUrls.length === 0) {
+      return;
     }
 
-    setIsOpen(false);
-    // Reset state
-    setText("");
-    setFiles([]);
+    const formData = new FormData();
+    formData.append("description", text.trim());
+    formData.append("type", "IMAGE");
+
+    for (const file of files) {
+      formData.append("content", file);
+    }
+
+    startTransition(async () => {
+      const res =
+        mode === "edit" && postId
+          ? await updatePostAction(postId, formData)
+          : await createPostAction(formData);
+
+      if (!res.success) {
+        toast.error(res.message ?? res.error ?? "Failed to save post");
+        return;
+      }
+
+      toast.success(
+        res.message ??
+          (mode === "edit"
+            ? "Post updated successfully"
+            : "Post created successfully"),
+      );
+      setIsOpen(false);
+      resetForm();
+      router.refresh();
+    });
   };
 
-  const canPost = text.trim().length > 0 || files.length > 0;
+  const canPost =
+    (text.trim().length > 0 ||
+      files.length > 0 ||
+      initialImageUrls.length > 0) &&
+    !isPending;
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
           <button
@@ -131,18 +183,17 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide p-0 bg-white border-none rounded-none">
         <div className="relative p-8 space-y-8">
           <DialogTitle className="text-center text-2xl font-bold tracking-tight text-gray-900">
-            Add Moment
+            {mode === "edit" ? "Edit Moment" : "Add Moment"}
           </DialogTitle>
 
-          {/* Photo Section */}
           <div className="space-y-4">
             <label className="text-sm font-bold text-gray-900">
-              Add photos ({files.length}/9)*
+              Add photos ({Math.min(previews.length, 9)}/9)*
             </label>
             <div className="grid grid-cols-3 gap-4">
               {previews.map((src, i) => (
                 <div
-                  key={src}
+                  key={`${src}-${i}`}
                   className="group relative aspect-3/4 overflow-hidden bg-gray-100"
                 >
                   <Image
@@ -150,17 +201,21 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
                     alt={`Preview ${i}`}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
-                  <button
-                    onClick={() => removeFile(i)}
-                    className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="size-4" />
-                  </button>
+                  {i >= initialImageUrls.length ? (
+                    <button
+                      type="button"
+                      onClick={() => removeFile(i)}
+                      className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  ) : null}
                 </div>
               ))}
 
-              {files.length < 9 && (
+              {previews.length < 9 ? (
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -168,7 +223,7 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
                 >
                   <Plus className="size-10 text-gray-400" />
                 </button>
-              )}
+              ) : null}
             </div>
             <input
               type="file"
@@ -180,7 +235,6 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
             />
           </div>
 
-          {/* Description Section */}
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-900">
               Description
@@ -190,15 +244,15 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
                 value={text}
                 onChange={(e) => setText(e.target.value.slice(0, 2000))}
                 rows={6}
+                placeholder="e.g. Amar sonar bangla"
                 className="w-full border border-gray-200 p-4 text-sm focus:outline-none focus:border-gray-400 resize-none"
               />
               <div className="absolute bottom-4 right-4 text-[10px] font-medium text-gray-400">
-                {text.length.toLocaleString()}/2,000
+                {text.length.toLocaleString("en-US")}/2,000
               </div>
             </div>
           </div>
 
-          {/* Hashtags Section */}
           <div className="flex flex-wrap gap-2">
             {HASHTAGS.map((tag) => {
               const isActive = text.includes(`#${tag}`);
@@ -220,17 +274,21 @@ export function CreatePostModal({ dict, trigger }: CreatePostModalProps) {
             })}
           </div>
 
-          {/* Submit Button */}
           <button
             type="button"
             disabled={!canPost}
             onClick={handleSubmit}
             className="w-40 py-3 bg-brand text-white text-xs font-bold tracking-[0.2em] uppercase transition-colors hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            POST
+            {isPending
+              ? mode === "edit"
+                ? "Saving..."
+                : "Posting..."
+              : mode === "edit"
+                ? "SAVE"
+                : "POST"}
           </button>
 
-          {/* Policy Note */}
           <div className="space-y-2 pt-4">
             <p className="text-sm font-bold text-gray-900">Note:</p>
             <p className="text-xs text-gray-600 leading-relaxed">

@@ -23,9 +23,30 @@ interface FlameCardProps {
   user: User;
   canUndo: boolean;
   isPremium: boolean;
+  disabled?: boolean;
   onPass: () => void;
   onLike: () => void;
   onUndo: () => void;
+}
+
+function formatHeight(height: string) {
+  if (!height) return "";
+  return /^\d+(\.\d+)?$/.test(height) ? `${height} cm` : height;
+}
+
+function formatWeight(weight?: string) {
+  if (!weight) return "";
+  return /^\d+(\.\d+)?$/.test(weight) ? `${weight} kg` : weight;
+}
+
+function formatRelationStatus(status: string) {
+  if (!status) return "";
+  return status.charAt(0) + status.slice(1).toLowerCase();
+}
+
+function formatEducation(education?: string) {
+  if (!education) return "";
+  return education.charAt(0) + education.slice(1).toLowerCase();
 }
 
 export function FlameCard({
@@ -33,6 +54,7 @@ export function FlameCard({
   user,
   canUndo,
   isPremium,
+  disabled = false,
   onPass,
   onLike,
   onUndo,
@@ -42,10 +64,13 @@ export function FlameCard({
   useEffect(() => {
     setPhotoIdx(0);
   }, [user.id]);
+
   const photos = user.photos.length > 0 ? user.photos : [user.coverSeed];
   const photoCount = photos.length;
   const currentSeed = photos[photoIdx] ?? user.coverSeed;
-  const profileHref = `/${lang}/profile/${user.username}`;
+  const profileHref = `/${lang}/profile/${encodeURIComponent(user.username)}`;
+  const nameLabel =
+    user.age > 0 ? `${user.displayName}, ${user.age}` : user.displayName;
 
   const prevPhoto = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,7 +88,6 @@ export function FlameCard({
     <TooltipProvider>
       <article className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="grid gap-0 md:grid-cols-[minmax(0,520px)_minmax(0,1fr)] min-h-[calc(100vh-160px)]">
-          {/* Left Side: Image container */}
           <div className="group relative aspect-square w-full bg-muted md:aspect-auto md:h-full">
             <Link
               href={profileHref}
@@ -77,6 +101,7 @@ export function FlameCard({
                 sizes="(max-width: 768px) 100vw, 520px"
                 className="object-cover"
                 priority
+                unoptimized
               />
             </Link>
 
@@ -111,13 +136,13 @@ export function FlameCard({
                     <button
                       type="button"
                       onClick={onUndo}
-                      disabled={!isPremium}
+                      disabled={!isPremium || disabled}
                       aria-label={
                         isPremium ? "Undo last pass" : "Undo (premium required)"
                       }
                       className={cn(
                         "inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-transform",
-                        isPremium
+                        isPremium && !disabled
                           ? "text-foreground hover:scale-105"
                           : "cursor-not-allowed text-muted-foreground opacity-60",
                       )}
@@ -136,8 +161,9 @@ export function FlameCard({
                   <button
                     type="button"
                     onClick={onPass}
+                    disabled={disabled}
                     aria-label="Pass"
-                    className="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-white text-foreground shadow-md transition-transform hover:scale-105"
+                    className="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-white text-foreground shadow-md transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <X className="size-5" />
                   </button>
@@ -150,8 +176,9 @@ export function FlameCard({
                   <button
                     type="button"
                     onClick={onLike}
+                    disabled={disabled}
                     aria-label="Like"
-                    className="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-white text-brand shadow-md transition-transform hover:scale-105"
+                    className="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-white text-brand shadow-md transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Heart className="size-5 fill-brand" />
                   </button>
@@ -161,16 +188,14 @@ export function FlameCard({
             </div>
           </div>
 
-          {/* Right Side */}
           <div className="flex flex-col gap-8 p-8 justify-start">
-            {/* Header info */}
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2.5">
                 <Link
                   href={profileHref}
                   className="text-2xl font-extrabold tracking-wide hover:text-brand transition-colors"
                 >
-                  {user.displayName}, {user.age}
+                  {nameLabel}
                 </Link>
                 {user.premium ? (
                   <span className="rounded-sm border border-border px-1.5 py-0.5 text-[10px] font-semibold tracking-wider text-foreground">
@@ -179,10 +204,9 @@ export function FlameCard({
                 ) : null}
                 {user.verified ? <VerifiedBadge /> : null}
               </div>
-              <p className="text-base text-muted-foreground">
-                {user.city}
-                {user.state ? `, ${user.state}` : ""}, {user.country}
-              </p>
+              {user.country ? (
+                <p className="text-base text-muted-foreground">{user.country}</p>
+              ) : null}
               {user.willingToFly ? (
                 <p className="text-base font-semibold text-brand">
                   Willing to fly to meet
@@ -197,22 +221,24 @@ export function FlameCard({
               <dl className="space-y-2 text-base">
                 <Row
                   label="Relationship status"
-                  value={user.relationshipStatus}
+                  value={formatRelationStatus(user.relationshipStatus)}
                 />
-                <Row label="Height" value={user.height} />
-                <Row label="Body type" value={user.bodyType} />
-                <Row label="Living With" value={user.livingWith} />
+                <Row label="Height" value={formatHeight(user.height)} />
+                <Row label="Weight" value={formatWeight(user.weight)} />
+                <Row label="Education" value={formatEducation(user.education)} />
               </dl>
             </div>
 
-            <div className="space-y-2">
-              <h4 className="text-sm font-bold uppercase tracking-widest text-foreground/80">
-                Profile Headline
-              </h4>
-              <p className="text-base leading-relaxed text-foreground">
-                {user.headline}
-              </p>
-            </div>
+            {user.headline || user.bio ? (
+              <div className="space-y-2">
+                <h4 className="text-sm font-bold uppercase tracking-widest text-foreground/80">
+                  Profile Headline
+                </h4>
+                <p className="text-base leading-relaxed text-foreground">
+                  {user.headline || user.bio}
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
       </article>
@@ -220,8 +246,8 @@ export function FlameCard({
   );
 }
 
-// CHANGED: Row component updated to render crisp text-base elements dynamically
 function Row({ label, value }: { label: string; value: string }) {
+  if (!value) return null;
   return (
     <div className="text-foreground">
       <span className="font-semibold text-foreground/90">{label}:</span> {value}

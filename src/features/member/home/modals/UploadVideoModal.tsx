@@ -1,25 +1,42 @@
 "use client";
 
-import { useState } from "react";
-import { Video, X } from "lucide-react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Video } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { createPostAction, updatePostAction } from "../action";
 
 interface UploadVideoModalProps {
   dict: Dictionary;
   trigger?: React.ReactNode;
+  mode?: "create" | "edit";
+  postId?: string;
+  initialDescription?: string;
 }
 
-export function UploadVideoModal({ dict, trigger }: UploadVideoModalProps) {
+export function UploadVideoModal({
+  dict,
+  trigger,
+  mode = "create",
+  postId,
+  initialDescription = "",
+}: UploadVideoModalProps) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [description, setDescription] = useState("");
-  const canPost = !!file;
+  const [description, setDescription] = useState(initialDescription);
+  const [isPending, startTransition] = useTransition();
+
+  const canPost =
+    (mode === "edit" ? description.trim().length > 0 || !!file : !!file) &&
+    !isPending;
 
   const notes = [
     dict.myHome.modalNote1,
@@ -28,8 +45,51 @@ export function UploadVideoModal({ dict, trigger }: UploadVideoModalProps) {
     dict.myHome.modalNote4,
   ];
 
+  const reset = () => {
+    setFile(null);
+    setDescription(mode === "edit" ? initialDescription : "");
+  };
+
+  const handleSubmit = () => {
+    if (!canPost) return;
+
+    const formData = new FormData();
+    formData.append("description", description.trim());
+    formData.append("type", "VIDEO");
+    if (file) formData.append("content", file);
+
+    startTransition(async () => {
+      const res =
+        mode === "edit" && postId
+          ? await updatePostAction(postId, formData)
+          : await createPostAction(formData);
+
+      if (!res.success) {
+        toast.error(res.message ?? res.error ?? "Failed to save video");
+        return;
+      }
+
+      toast.success(
+        res.message ??
+          (mode === "edit"
+            ? "Video updated successfully"
+            : "Video posted successfully"),
+      );
+      setOpen(false);
+      reset();
+      router.refresh();
+    });
+  };
+
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) setDescription(initialDescription);
+        if (!next) reset();
+      }}
+    >
       <DialogTrigger asChild>
         {trigger ?? (
           <button
@@ -43,7 +103,7 @@ export function UploadVideoModal({ dict, trigger }: UploadVideoModalProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-xl">
         <DialogTitle className="text-center text-base font-semibold">
-          {dict.myHome.modalAddVideo}
+          {mode === "edit" ? "Edit Video" : dict.myHome.modalAddVideo}
         </DialogTitle>
         <div className="space-y-1">
           <p className="text-sm font-medium">{dict.myHome.modalUploadVideo}</p>
@@ -76,15 +136,20 @@ export function UploadVideoModal({ dict, trigger }: UploadVideoModalProps) {
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-brand"
           />
         </div>
-        <DialogClose asChild>
-          <button
-            type="button"
-            disabled={!canPost}
-            className="self-start rounded-md bg-brand px-6 py-2 text-xs font-semibold uppercase tracking-wider text-brand-foreground transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
-          >
-            {dict.myHome.modalPost}
-          </button>
-        </DialogClose>
+        <button
+          type="button"
+          disabled={!canPost}
+          onClick={handleSubmit}
+          className="self-start rounded-md bg-brand px-6 py-2 text-xs font-semibold uppercase tracking-wider text-brand-foreground transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+        >
+          {isPending
+            ? mode === "edit"
+              ? "Saving..."
+              : "Posting..."
+            : mode === "edit"
+              ? "SAVE"
+              : dict.myHome.modalPost}
+        </button>
         <div className="space-y-2 border-t border-border pt-4 text-xs text-muted-foreground">
           <p className="font-semibold text-foreground">
             {dict.myHome.modalNotes}

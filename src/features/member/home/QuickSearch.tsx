@@ -16,25 +16,44 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 
 interface Country {
-  code: string;
+  value: string;
   name: string;
   states: string[];
 }
 
 const countries: Country[] = [
   {
-    code: "BR",
+    value: "bangladesh",
+    name: "Bangladesh",
+    states: ["dhaka", "chittagong", "sylhet", "khulna", "rajshahi"],
+  },
+  {
+    value: "brazil",
     name: "Brazil",
     states: ["SP", "RJ", "MG", "BA", "PE", "PR", "SC", "DF"],
   },
   {
-    code: "PT",
+    value: "portugal",
     name: "Portugal",
     states: ["Lisbon", "Porto", "Coimbra", "Faro"],
   },
-  { code: "ES", name: "Spain", states: ["Madrid", "Catalonia", "Andalusia"] },
-  { code: "US", name: "USA", states: ["CA", "TX", "NY", "FL"] },
+  {
+    value: "spain",
+    name: "Spain",
+    states: ["Madrid", "Catalonia", "Andalusia"],
+  },
+  {
+    value: "usa",
+    name: "USA",
+    states: ["CA", "TX", "NY", "FL"],
+  },
 ];
+
+const LOOKING_FOR_MAP = {
+  Man: "MALE",
+  Woman: "FEMALE",
+  Couple: "COUPLE",
+} as const;
 
 interface QuickSearchProps {
   lang: Locale;
@@ -49,25 +68,26 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
     Couple: false,
   });
   const [ageRange, setAgeRange] = useState<number[]>([19, 24]);
-  const [countryCode, setCountryCode] = useState("BR");
-  const [stateCode, setStateCode] = useState("SP");
+  const [country, setCountry] = useState("bangladesh");
+  const [state, setState] = useState("dhaka");
 
-  const states = countries.find((c) => c.code === countryCode)?.states ?? [];
+  const states = countries.find((c) => c.value === country)?.states ?? [];
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const interests = Object.entries(interestedIn)
-      .filter(([, v]) => v)
-      .map(([k]) => k)
-      .join(",");
-    const params = new URLSearchParams({
-      from: "quick",
-      interestedIn: interests,
-      ageMin: String(ageRange[0]),
-      ageMax: String(ageRange[1]),
-      country: countryCode,
-      state: stateCode,
-    });
+
+    const lookingFor = (["Woman", "Man", "Couple"] as const)
+      .filter((key) => interestedIn[key])
+      .map((key) => LOOKING_FOR_MAP[key])[0];
+
+    const params = new URLSearchParams({ from: "quick" });
+
+    if (lookingFor) params.set("lookingFor", lookingFor);
+    params.set("ageFrom", String(ageRange[0]));
+    params.set("ageTo", String(ageRange[1]));
+    if (country) params.set("country", country);
+    if (state) params.set("state", state);
+
     router.push(`/${lang}/discover?${params.toString()}`);
   };
 
@@ -126,11 +146,11 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
           {dict.myHome.quickCountry}
         </Label>
         <Select
-          value={countryCode}
+          value={country}
           onValueChange={(v) => {
-            setCountryCode(v);
-            const first = countries.find((c) => c.code === v)?.states[0] ?? "";
-            setStateCode(first);
+            setCountry(v);
+            const first = countries.find((c) => c.value === v)?.states[0] ?? "";
+            setState(first);
           }}
         >
           <SelectTrigger className="flex-1">
@@ -138,7 +158,7 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
           </SelectTrigger>
           <SelectContent>
             {countries.map((c) => (
-              <SelectItem key={c.code} value={c.code}>
+              <SelectItem key={c.value} value={c.value}>
                 {c.name}
               </SelectItem>
             ))}
@@ -150,7 +170,7 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
         <Label className="sm:w-32 text-xs text-foreground">
           {dict.myHome.quickState}
         </Label>
-        <Select value={stateCode} onValueChange={setStateCode}>
+        <Select value={state} onValueChange={setState}>
           <SelectTrigger className="flex-1">
             <SelectValue />
           </SelectTrigger>

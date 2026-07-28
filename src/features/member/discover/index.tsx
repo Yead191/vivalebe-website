@@ -1,30 +1,37 @@
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { users } from "@/lib/mock/users";
 import { getCurrentUser } from "@/lib/mock/current-user";
 import { UsernameSearchForm } from "./UsernameSearchForm";
 import { DiscoverProfileCard } from "./DiscoverProfileCard";
+import {
+  getMutualMatches,
+  type MatchSearchFilters,
+} from "@/features/member/my-list/action";
 
 interface DiscoverFeatureProps {
   lang: Locale;
   dict: Dictionary;
   query: string;
+  filters?: MatchSearchFilters;
 }
 
-import { getMutualMatches } from "@/features/member/my-list/action";
-
-export async function DiscoverFeature({ lang, dict, query }: DiscoverFeatureProps) {
+export async function DiscoverFeature({
+  lang,
+  dict,
+  query,
+  filters = {},
+}: DiscoverFeatureProps) {
   const me = getCurrentUser();
-  const q = query.trim().toLowerCase();
-  
-  // Fetch real users from /user/matches API with the query param
-  let users = await getMutualMatches(q);
 
-  const matches = users.filter((u) => {
-    if (u.id === me.id) return false;
-    return true;
-  });
+  const searchFilters: MatchSearchFilters = {
+    ...filters,
+    ...(query.trim() && !filters.name ? { name: query.trim() } : {}),
+  };
+
+  const users = await getMutualMatches(searchFilters);
+
+  const matches = users.filter((u) => u.id !== me.id);
 
   return (
     <div className="container py-6">

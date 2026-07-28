@@ -189,11 +189,13 @@ export function MomentCard({
           document.body,
         )}
 
-      {/* Content Reporting Modal */}
-      <ReportContentModal
-        open={isReportModalOpen}
-        onOpenChange={setIsReportModalOpen}
-      />
+      {/* Content Reporting Modal — mount only when open to avoid Radix ID hydration mismatch */}
+      {isReportModalOpen ? (
+        <ReportContentModal
+          open={isReportModalOpen}
+          onOpenChange={setIsReportModalOpen}
+        />
+      ) : null}
     </>
   );
 }
