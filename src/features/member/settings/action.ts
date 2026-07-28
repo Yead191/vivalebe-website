@@ -28,3 +28,34 @@ export async function updateProfileAction(formData: FormData) {
 
   return res;
 }
+
+export async function getHiddenMembers() {
+  const res = await myFetch("/block/hide", {
+    method: "GET",
+    cache: "no-store",
+  });
+  return res;
+}
+
+export async function getBlockedMembers() {
+  const res = await myFetch("/block", {
+    method: "GET",
+    cache: "no-store",
+  });
+  return res;
+}
+
+export async function unhideUser(id: string) {
+  const res = await myFetch(`/block/hide/${id}`, {
+    method: "DELETE",
+  });
+  return res;
+}
+
+export async function unblockUser(id: string) {
+  const res = await myFetch(`/block/${id}`, {
+    method: "DELETE",
+  });
+  return res;
+}
+

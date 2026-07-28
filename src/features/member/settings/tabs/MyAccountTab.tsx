@@ -81,6 +81,7 @@ export default function MyAccountTab({ t }: { t: any }) {
             },
             image: {
               value:
+                res.data.profile ||
                 res.data.image ||
                 res.data.profileImage ||
                 res.data.avatarSeed ||

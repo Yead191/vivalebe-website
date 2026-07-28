@@ -1,4 +1,3 @@
-
 import type { User } from "@/lib/types";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -17,18 +16,24 @@ interface MyListFeatureProps {
   activeTab: string;
 }
 
-import { 
-  getYouLikedUsers, 
-  getLikesYouUsers, 
+import {
+  getYouLikedUsers,
+  getLikesYouUsers,
   getViewedYouUsers,
   getMutualMatches,
-  getWinks
+  getWinks,
+  getPrivateAlbumRequests,
+  getPrivateAlbumAccess,
 } from "./action";
 
-export async function MyListFeature({ lang, dict, activeTab }: MyListFeatureProps) {
+export async function MyListFeature({
+  lang,
+  dict,
+  activeTab,
+}: MyListFeatureProps) {
   const me = getCurrentUser();
   const tab = isValidTab(activeTab) ? activeTab : DEFAULT_TAB;
-  
+
   let tabUsers: User[] = [];
 
   if (tab === "you-likes") {
@@ -41,10 +46,14 @@ export async function MyListFeature({ lang, dict, activeTab }: MyListFeatureProp
     tabUsers = await getMutualMatches();
   } else if (tab === "winked-at-you") {
     tabUsers = await getWinks();
+  } else if (tab === "private-album-requests") {
+    tabUsers = await getPrivateAlbumRequests();
+  } else if (tab === "private-album-access") {
+    tabUsers = await getPrivateAlbumAccess();
   } else {
-    const ids = TAB_USER_IDS[tab];
+    const ids = (TAB_USER_IDS as Record<string, string[]>)[tab] || [];
     tabUsers = ids
-      .map((id) => users.find((u) => u.id === id))
+      .map((id: string) => users.find((u) => u.id === id))
       .filter(
         (u): u is NonNullable<typeof u> => u !== undefined && u.id !== me.id,
       );

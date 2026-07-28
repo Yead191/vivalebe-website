@@ -291,11 +291,11 @@ export function ChatMessages({
         </div>
 
         <div className="flex items-center gap-2">
-          {!isGroup && (
+          {/* {!isGroup && (
             <button className="w-9 h-9 rounded-xl bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-all border border-gray-200">
               <Phone size={16} />
             </button>
-          )}
+          )} */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

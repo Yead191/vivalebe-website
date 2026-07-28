@@ -281,6 +281,7 @@
       "notifications": "Notifications",
       "myAccount": "My Account",
       "hiddenMembers": "Hidden Members",
+      "deletedMembers": "Blocked Members",
       "autoReply": "Auto Reply Message",
       "resetPasses": "Reset Flame Passes"
     },
@@ -342,6 +343,12 @@
       "searchPlaceholder": "Search hidden connections...",
       "unhide": "Unhide",
       "empty": "No hidden members found."
+    },
+    "deleted": {
+      "title": "Blocked Members",
+      "searchPlaceholder": "Search blocked connections...",
+      "unblock": "Unblock",
+      "empty": "No blocked members found."
     },
     "common": {
       "edit": "Edit",

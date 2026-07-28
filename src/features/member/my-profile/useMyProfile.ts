@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { PhotoEntry, ProfileDetails, User, VideoEntry } from "@/lib/types";
+import { getPrivateAlbum } from "./action";
 
 const storageKey = (userId: string) => `viveleve:my-profile:${userId}`;
 
@@ -9,6 +10,7 @@ type Updater = (prev: ProfileDetails) => ProfileDetails;
 
 export interface MyProfileApi {
   hydrated: boolean;
+  albumId: string | null;
   displayName: string;
   avatarUrl: string;
   details: ProfileDetails;
@@ -23,6 +25,7 @@ export interface MyProfileApi {
 }
 
 interface PersistedState {
+  albumId: string | null;
   displayName: string;
   avatarUrl: string;
   details: ProfileDetails;
@@ -30,6 +33,7 @@ interface PersistedState {
 
 function buildInitial(user: User): PersistedState {
   return {
+    albumId: null,
     displayName: user.displayName,
     avatarUrl: user.image ?? user.avatarSeed,
     details: user.profile ?? {
@@ -100,7 +104,58 @@ export function useMyProfile(user: User): MyProfileApi {
     } catch {
       // ignore corrupt localStorage entries; fall back to defaults
     }
-    setHydrated(true);
+
+    // Fetch from backend
+    const fetchData = async () => {
+      try {
+        const res = await getPrivateAlbum();
+        if (res.success && res.data) {
+          setState((prev) => ({
+            ...prev,
+            albumId: res.data._id || prev.albumId,
+            details: {
+              ...prev.details,
+              aboutMe: res.data.aboutMe || prev.details.aboutMe,
+              bodyShapeStory: res.data.bodyShape || prev.details.bodyShapeStory,
+              inspirationalQuotes:
+                res.data.motivateMe || prev.details.inspirationalQuotes,
+              conditionExperience:
+                res.data.myCondition || prev.details.conditionExperience,
+              extras: {
+                ...prev.details.extras,
+                smoking: res.data.smoking || prev.details.extras.smoking,
+                drinking: res.data.drinking || prev.details.extras.drinking,
+                haveChildren:
+                  res.data.haveChildren || prev.details.extras.haveChildren,
+                wantChildren:
+                  res.data.wantChildren || prev.details.extras.wantChildren,
+                astrologicalSign:
+                  res.data.astrologicalSign ||
+                  prev.details.extras.astrologicalSign,
+                annualIncome:
+                  res.data.annualIncome || prev.details.extras.annualIncome,
+                politicalViews:
+                  res.data.politicalViews || prev.details.extras.politicalViews,
+                religion: res.data.religion || prev.details.extras.religion,
+                havePets: res.data.havePets || prev.details.extras.havePets,
+                hobbies:
+                  res.data.myHobbiesAndInterests?.join(", ") ||
+                  prev.details.extras.hobbies,
+                favoriteMusic:
+                  res.data.myFavoriteMusic?.join(", ") ||
+                  prev.details.extras.favoriteMusic,
+              },
+            },
+          }));
+        }
+      } catch (err) {
+        console.error("Error fetching private albums data", err);
+      } finally {
+        setHydrated(true);
+      }
+    };
+
+    fetchData();
   }, [user.id]);
 
   useEffect(() => {
@@ -170,6 +225,7 @@ export function useMyProfile(user: User): MyProfileApi {
 
   return {
     hydrated,
+    albumId: state.albumId,
     displayName: state.displayName,
     avatarUrl: state.avatarUrl,
     details: state.details,

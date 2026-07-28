@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Shield,
   Bell,
   User,
   EyeOff,
+  Ban,
   MessageSquare,
   RefreshCw,
 } from "lucide-react";
@@ -14,6 +16,7 @@ import PrivacyTab from "./tabs/PrivacyTab";
 import NotificationsTab from "./tabs/NotificationsTab";
 import MyAccountTab from "./tabs/MyAccountTab";
 import HiddenMembersTab from "./tabs/HiddenMembersTab";
+import DeletedMembersTab from "./tabs/DeletedMembersTab";
 import AutoReplyTab from "./tabs/AutoReplyTab";
 import ResetPassesTab from "./tabs/ResetPassesTab";
 
@@ -26,8 +29,27 @@ export default function SettingsPageFeature({
   lang,
   dict,
 }: SettingsPageFeatureProps) {
-  const [activeTab, setActiveTab] = useState("privacy");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const initialTab = searchParams.get("tab") || "privacy";
+  const [activeTab, setActiveTab] = useState(initialTab);
   const t = dict.settings;
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (id: string) => {
+    setActiveTab(id);
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set("tab", id);
+    router.replace(`${pathname}?${newParams.toString()}`);
+  };
 
   const menuItems = [
     { id: "group1", type: "heading", label: t.sections.account },
@@ -44,6 +66,12 @@ export default function SettingsPageFeature({
       type: "item",
       label: t.tabs.hiddenMembers,
       icon: EyeOff,
+    },
+    {
+      id: "deletedMembers",
+      type: "item",
+      label: t.tabs.deletedMembers,
+      icon: Ban,
     },
     { id: "group2", type: "heading", label: t.sections.customization },
     {
@@ -71,6 +99,8 @@ export default function SettingsPageFeature({
         return <MyAccountTab t={t} />;
       case "hiddenMembers":
         return <HiddenMembersTab t={t} />;
+      case "deletedMembers":
+        return <DeletedMembersTab t={t} />;
       case "autoReply":
         return <AutoReplyTab t={t} />;
       case "resetPasses":
@@ -108,7 +138,7 @@ export default function SettingsPageFeature({
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => handleTabChange(item.id)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 ease-out group relative",
                     isActive

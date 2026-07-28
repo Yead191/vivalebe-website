@@ -100,8 +100,7 @@ function mapFeedItem(item: Record<string, unknown>): {
   );
   const description =
     typeof post.description === "string" ? post.description : "";
-  const likeCount =
-    typeof post.likeCount === "number" ? post.likeCount : 0;
+  const likeCount = typeof post.likeCount === "number" ? post.likeCount : 0;
   const commentCount =
     typeof post.commentCount === "number" ? post.commentCount : 0;
 
@@ -211,4 +210,17 @@ export async function updatePostAction(id: string, formData: FormData) {
   }
 
   return res;
+}
+
+export async function reportPost(formData: FormData) {
+  try {
+    const res = await myFetch("/post-report", {
+      method: "POST",
+      body: formData, // passing FormData directly
+    });
+    return res;
+  } catch (error) {
+    console.error("Error reporting post:", error);
+    return { success: false, message: "Failed to report" };
+  }
 }
