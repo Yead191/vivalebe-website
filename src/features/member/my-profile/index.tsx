@@ -15,6 +15,7 @@ import { useMyProfile } from "./useMyProfile";
 import { ProfileSidebar, type NavItem } from "./components/ProfileSidebar";
 import { PhotosBlock } from "./components/PhotosBlock";
 import { VideosBlock } from "./components/VideosBlock";
+import { PrivateAlbumBlock } from "./components/PrivateAlbumBlock";
 import { EditableText } from "./components/EditableText";
 import {
   EditableRows,
@@ -45,6 +46,8 @@ import {
   SMOKING,
   WANT_CHILDREN,
 } from "./components/fieldOptions";
+import { patchPrivateAlbum } from "./action";
+import { toast } from "sonner";
 
 interface MyProfileFeatureProps {
   lang: Locale;
@@ -286,8 +289,71 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
   );
 
   const updateDetails = useCallback(
-    (patch: Partial<ProfileDetails>) => {
+    async (patch: Partial<ProfileDetails>) => {
       profile.update((prev) => ({ ...prev, ...patch }));
+
+      const payload: any = {};
+      if (patch.aboutMe !== undefined) payload.aboutMe = patch.aboutMe;
+      if (patch.bodyShapeStory !== undefined)
+        payload.bodyShape = patch.bodyShapeStory;
+      if (patch.inspirationalQuotes !== undefined)
+        payload.motivateMe = patch.inspirationalQuotes;
+      if (patch.conditionExperience !== undefined)
+        payload.myCondition = patch.conditionExperience;
+      if (patch.myFavorites !== undefined)
+        payload.favorites = patch.myFavorites;
+      if (patch.recommendations !== undefined)
+        payload.canEnjoyThem = patch.recommendations;
+      if (patch.personality !== undefined)
+        payload.personality = patch.personality;
+
+      if (patch.extras !== undefined) {
+        const e = patch.extras;
+        if (e.languages !== undefined) payload.languages = e.languages;
+        if (e.education !== undefined) payload.education = e.education;
+        if (e.occupation !== undefined) payload.occupation = e.occupation;
+        if (e.smoking !== undefined) payload.smoking = e.smoking;
+        if (e.drinking !== undefined) payload.drinking = e.drinking;
+        if (e.haveChildren !== undefined) payload.haveChildren = e.haveChildren;
+        if (e.wantChildren !== undefined) payload.wantChildren = e.wantChildren;
+        if (e.astrologicalSign !== undefined)
+          payload.astrologicalSign = e.astrologicalSign;
+        if (e.annualIncome !== undefined) payload.annualIncome = e.annualIncome;
+        if (e.politicalViews !== undefined)
+          payload.politicalViews = e.politicalViews;
+        if (e.religion !== undefined) payload.religion = e.religion;
+        if (e.havePets !== undefined) payload.havePets = e.havePets;
+        if (e.hobbies !== undefined)
+          payload.myHobbiesAndInterests = e.hobbies
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        if (e.favoriteMusic !== undefined)
+          payload.myFavoriteMusic = e.favoriteMusic
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+      }
+
+      if (Object.keys(payload).length > 0) {
+        if (!profile.albumId) {
+          toast.error("Could not save to private album: Album ID not found.");
+          return;
+        }
+        try {
+          const res = await patchPrivateAlbum(profile.albumId, payload);
+          if (!res.success) {
+            toast.error(res.message || "Failed to update profile.");
+          } else {
+            toast.success("Profile updated successfully!");
+          }
+        } catch (e) {
+          toast.error("An error occurred");
+        }
+      } else {
+        // Show success message for fields that only update local state
+        toast.success("Profile updated successfully!");
+      }
     },
     [profile],
   );
@@ -383,6 +449,8 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
               onAdd={profile.addVideo}
               onRemove={profile.removeVideo}
             />
+
+            <PrivateAlbumBlock />
 
             <button
               type="button"
