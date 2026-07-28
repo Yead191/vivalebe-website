@@ -426,12 +426,12 @@ export async function swipeUser(
   }
 }
 
-export async function blockUser(blockerId: string) {
+export async function blockUser(blockedUserId: string) {
   try {
     const res = await myFetch("/block", {
       method: "POST",
       body: {
-        blockerId,
+        blockedUserId,
       },
     });
     return res;

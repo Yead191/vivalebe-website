@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -24,8 +24,17 @@ export function MyListClient({
   users,
 }: MyListClientProps) {
   const [sort, setSort] = useState<SortMode>("newest");
+  const [localUsers, setLocalUsers] = useState<User[]>(users);
 
-  const sorted = sort === "newest" ? users : [...users].reverse();
+  useEffect(() => {
+    setLocalUsers(users);
+  }, [users]);
+
+  const handleRemove = (id: string) => {
+    setLocalUsers((prev) => prev.filter((u) => u.id !== id));
+  };
+
+  const sorted = sort === "newest" ? localUsers : [...localUsers].reverse();
 
   return (
     <div className="container py-6">
@@ -57,6 +66,7 @@ export function MyListClient({
               dict={dict}
               user={user}
               activeTab={activeTab}
+              onRemove={handleRemove}
             />
           ))}
         </div>

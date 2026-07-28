@@ -27,6 +27,7 @@ interface UserCardProps {
   dict: Dictionary;
   user: User;
   activeTab?: string;
+  onRemove?: (id: string) => void;
 }
 
 import { useRouter } from "next/navigation";
@@ -41,7 +42,7 @@ import {
 } from "../action";
 import { toast } from "sonner";
 
-export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
+export function UserCard({ lang, dict, user, activeTab, onRemove }: UserCardProps) {
   const router = useRouter();
   const [liked, setLiked] = useState(user.isLiked || false);
   const [winked, setWinked] = useState(user.isWinked || false);
@@ -167,7 +168,7 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
       const res = await blockUser(user.id);
       if (res.success) {
         toast.success(res.message || "User blocked successfully");
-        // Optionally, refresh the list or remove the card optimistically
+        if (onRemove) onRemove(user.id);
       } else {
         toast.error(res.message || "Failed to block user");
       }
@@ -187,7 +188,7 @@ export function UserCard({ lang, dict, user, activeTab }: UserCardProps) {
       const res = await hideUser(user.id);
       if (res.success) {
         toast.success(res.message || "User hidden successfully");
-        // Optionally, refresh the list or remove the card optimistically
+        if (onRemove) onRemove(user.id);
       } else {
         toast.error(res.message || "Failed to hide user");
       }
