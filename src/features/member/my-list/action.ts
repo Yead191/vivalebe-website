@@ -180,6 +180,8 @@ export async function getMutualMatches(searchQuery?: string): Promise<User[]> {
         religion: "",
         photos: u.profile || u.image ? [u.profile || u.image] : [],
         privatePhotosCount: 0,
+        isWinked: !!(item.isWink || item.isWinked || item.winked || u.isWink || u.isWinked || u.winked),
+        isLiked: !!(item.isLiked || item.liked || u.isLiked || u.liked),
       } as User;
     });
   } catch (error) {
@@ -198,7 +200,8 @@ export async function getWinks(): Promise<User[]> {
     if (!res.success || !res.data) return [];
 
     return res.data.map((item: any) => {
-      const u = item.fromUser || item.user || item;
+      // For 'Winked at you', the other person is the sender (senderId)
+      const u = item.senderId || item.fromUser || item.user || item;
       return {
         id: u._id || u.id,
         username: u.name || u.username,
@@ -225,6 +228,7 @@ export async function getWinks(): Promise<User[]> {
         religion: "",
         photos: u.profile || u.image ? [u.profile || u.image] : [],
         privatePhotosCount: 0,
+        winkId: item._id || item.id,
       } as User;
     });
   } catch (error) {
@@ -243,5 +247,40 @@ export async function createChatRoom(userId: string) {
   } catch (error) {
     console.error("Error creating chat room:", error);
     return { success: false, data: null };
+  }
+}
+
+export async function sendWink(receiverId: string) {
+  try {
+    const res = await myFetch("/winks", {
+      method: "POST",
+      body: { receiverId },
+    });
+    return res;
+  } catch (error) {
+    console.error("Error sending wink:", error);
+    return { success: false, message: "Failed to send wink" };
+  }
+}
+
+export async function acceptWink(winkId: string) {
+  try {
+    const res = await myFetch(`/winks/${winkId}`, {
+      method: "PATCH",
+      body: { isMatch: true },
+    });
+    
+    // If PATCH fails due to method, try PUT
+    if (!res.success && res.message?.toLowerCase().includes("method not allowed")) {
+      return await myFetch(`/winks/${winkId}`, {
+        method: "PUT",
+        body: { isMatch: true },
+      });
+    }
+    
+    return res;
+  } catch (error) {
+    console.error("Error accepting wink:", error);
+    return { success: false, message: "Failed to accept wink" };
   }
 }

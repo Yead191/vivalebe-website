@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Smile, Paperclip, Send, X, Plus, CreditCard } from "lucide-react";
+import { Smile, Paperclip, Send, X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { myFetch } from "@/helpers/myFetch";
 import { useRouter } from "next/navigation";
