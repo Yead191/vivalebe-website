@@ -3,10 +3,14 @@
 import { getAccessToken } from "./getAccessToken";
 
 interface Pagination {
-  total: number;
   limit: number;
-  page: number;
-  totalPage: number;
+  total?: number;
+  page?: number;
+  totalPage?: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+  nextCursor?: string | null;
+  prevCursor?: string | null;
 }
 export interface FetchResponse<T = any> {
   success: boolean;

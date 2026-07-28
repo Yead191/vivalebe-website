@@ -1,10 +1,15 @@
 import { notFound } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { getBlogById } from "@/constants/mockBlogData";
-import { getUserById, users } from "@/lib/mock/users";
-import { getLikes, getComments } from "@/lib/mock/store";
 import { getCurrentUser } from "@/lib/mock/current-user";
+import { myFetch } from "@/helpers/myFetch";
+import type { ApiBlog, ApiBlogComment } from "./types";
+import {
+  buildAuthorsFromBlogs,
+  buildAuthorsFromComments,
+  mapApiBlogToPost,
+  mapApiComment,
+} from "./mappers";
 import { BlogDetailClient } from "./BlogDetailClient";
 
 interface BlogDetailFeatureProps {
@@ -13,26 +18,38 @@ interface BlogDetailFeatureProps {
   blogId: string;
 }
 
-export function BlogDetailFeature({
+export async function BlogDetailFeature({
   lang,
   dict,
   blogId,
 }: BlogDetailFeatureProps) {
-  const blog = getBlogById(blogId);
-  if (!blog) notFound();
+  const [blogsRes, commentsRes] = await Promise.all([
+    myFetch<ApiBlog[]>("/blogs", { cache: "no-store", tags: ["blogs"] }),
+    myFetch<ApiBlogComment[]>(`/blog-comments/${blogId}`, {
+      cache: "no-store",
+      tags: [`blog-comments-${blogId}`],
+    }),
+  ]);
 
-  const author = getUserById(blog.authorId);
+  const apiBlog = (blogsRes.data ?? []).find((b) => b._id === blogId);
+  if (!apiBlog) notFound();
+
+  const blog = mapApiBlogToPost(apiBlog);
+  const authorsMap = {
+    ...buildAuthorsFromBlogs([apiBlog]),
+    ...buildAuthorsFromComments(commentsRes.data ?? []),
+  };
+  const author = authorsMap[apiBlog.userId._id];
   if (!author) notFound();
 
+  const comments = (commentsRes.data ?? []).map(mapApiComment);
   const me = getCurrentUser();
-  const likes = getLikes("blog", blog.id);
-  const comments = getComments("blog", blog.id, blog.comments);
 
-  const authorsMap: Record<
+  const authorInfoMap: Record<
     string,
     { displayName: string; avatarSeed: string }
   > = Object.fromEntries(
-    users.map((u) => [
+    Object.values(authorsMap).map((u) => [
       u.id,
       { displayName: u.displayName, avatarSeed: u.avatarSeed },
     ]),
@@ -44,9 +61,9 @@ export function BlogDetailFeature({
       dict={dict}
       blog={blog}
       author={author}
-      authorsMap={authorsMap}
-      likeCount={likes.count}
-      liked={likes.byCurrentUser}
+      authorsMap={authorInfoMap}
+      likeCount={apiBlog.totalLikes}
+      liked={false}
       comments={comments}
       currentUserAvatarSeed={me.avatarSeed}
     />

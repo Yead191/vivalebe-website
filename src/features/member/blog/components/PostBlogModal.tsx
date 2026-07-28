@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useTransition } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { createBlogAction } from "../actions";
 
 interface PostBlogModalProps {
   open: boolean;
@@ -17,12 +20,13 @@ export function PostBlogModal({
   onOpenChange,
   dict,
 }: PostBlogModalProps) {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -43,41 +47,49 @@ export function PostBlogModal({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!title.trim() || !description.trim() || isSubmitting) return;
-
-    setIsSubmitting(true);
-
-    const formData = new FormData();
-    formData.append("title", title.trim());
-    formData.append("description", description.trim());
-    if (youtubeUrl.trim()) formData.append("youtubeUrl", youtubeUrl.trim());
-    if (imageFile) formData.append("image", imageFile);
-
-    // Log FormData entries (replace with real API call)
-    console.log("--- SUBMITTING BLOG ---");
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(`${key}: File (${value.name}, ${value.size} bytes)`);
-      } else {
-        console.log(`${key}:`, value);
-      }
-    }
-
-    await new Promise((r) => setTimeout(r, 800));
-
-    setIsSubmitting(false);
-    handleClose();
-  };
-
-  const handleClose = () => {
-    if (isSubmitting) return;
+  const resetForm = () => {
     setTitle("");
     setDescription("");
     setYoutubeUrl("");
     setImageFile(null);
     setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!title.trim() || !description.trim() || isPending) return;
+
+    const formData = new FormData();
+    formData.append("title", title.trim());
+    formData.append("description", description.trim());
+    if (youtubeUrl.trim()) formData.append("youtubeUrl", youtubeUrl.trim());
+    if (imageFile) formData.append("imageUrl", imageFile);
+
+    const tags =
+      description.match(/#([A-Za-z0-9_]+)/g)?.map((t) => t.slice(1)) ?? [];
+    if (tags.length > 0) {
+      for (const tag of tags) formData.append("tags[]", tag);
+    } else {
+      formData.append("tags[]", "general");
+    }
+
+    startTransition(async () => {
+      const res = await createBlogAction(formData);
+      if (!res.success) {
+        toast.error(res.message ?? res.error ?? "Failed to post blog");
+        return;
+      }
+      toast.success(res.message ?? "Blog posted successfully");
+      resetForm();
+      onOpenChange(false);
+      router.refresh();
+    });
+  };
+
+  const handleClose = () => {
+    if (isPending) return;
+    resetForm();
     onOpenChange(false);
   };
 
@@ -91,7 +103,12 @@ export function PostBlogModal({
   ];
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) handleClose();
+      }}
+    >
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto scrollbar-hide p-0 bg-white border-none rounded-none">
         <div className="p-8 space-y-6">
           <DialogTitle className="text-center text-lg font-bold tracking-tight text-gray-900">
@@ -99,7 +116,6 @@ export function PostBlogModal({
           </DialogTitle>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Title */}
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-900">
                 {dict.blog.modalFieldTitle}
@@ -114,7 +130,6 @@ export function PostBlogModal({
               />
             </div>
 
-            {/* Description */}
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-900">
                 {dict.blog.modalFieldDescription}
@@ -135,7 +150,6 @@ export function PostBlogModal({
               </div>
             </div>
 
-            {/* YouTube URL */}
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-900">
                 {dict.blog.modalFieldYoutubeUrl}
@@ -149,7 +163,6 @@ export function PostBlogModal({
               />
             </div>
 
-            {/* Photo upload */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-900">
                 {dict.blog.modalFieldPhoto}
@@ -190,28 +203,24 @@ export function PostBlogModal({
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex items-center justify-center gap-4 pt-2">
               <button
                 type="button"
                 onClick={handleClose}
-                disabled={isSubmitting}
+                disabled={isPending}
                 className="px-8 py-2.5 border border-gray-300 text-sm font-bold tracking-wide text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
                 {dict.blog.modalCancel}
               </button>
               <button
                 type="submit"
-                disabled={!isValid || isSubmitting}
+                disabled={!isValid || isPending}
                 className="px-8 py-2.5 bg-brand text-white text-sm font-bold tracking-wide hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {isSubmitting
-                  ? dict.blog.modalPosting
-                  : dict.blog.modalPostBlog}
+                {isPending ? dict.blog.modalPosting : dict.blog.modalPostBlog}
               </button>
             </div>
 
-            {/* Community guidelines */}
             <div className="pt-1 space-y-2">
               <p className="text-sm text-brand font-medium leading-snug">
                 {dict.blog.modalGuidelinesTitle}
