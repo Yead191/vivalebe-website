@@ -20,13 +20,13 @@ export const TAB_USER_IDS: Record<MyListTab, string[]> = {
   "likes-you": ["u_maya", "u_beatriz", "u_olivia", "u_camila"],
   "viewed-you": ["u_camila", "u_sofia", "u_helena", "u_larissa", "u_aurora"],
   "winked-at-you": ["u_maya", "u_sofia", "u_aurora"],
-  "mutual": ["u_beatriz", "u_olivia"],
+  mutual: ["u_beatriz", "u_olivia"],
   "you-likes": ["u_aurora", "u_camila", "u_beatriz", "u_olivia", "u_maya"],
   "private-album-access": ["u_maya", "u_larissa"],
   "private-album-requests": ["u_sofia", "u_helena", "u_camila"],
 };
 
 export const TAB_BADGE_COUNTS: Record<string, number> = {
-  "viewed-you": 4,
-  "likes-you": 2,
+  // "viewed-you": 4,
+  // "likes-you": 2,
 };
