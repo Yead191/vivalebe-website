@@ -72,7 +72,7 @@ export function ChatSidebar({
               className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-2 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#429CA8]/40 focus:ring-1 focus:ring-[#429CA8]/40 transition-all font-normal"
             />
           </div>
-          <button
+          {/* <button
             onClick={() => setShowFilter(!showFilter)}
             className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
           >
@@ -83,11 +83,11 @@ export function ChatSidebar({
             title="Mass Message"
           >
             <Users size={15} />
-          </button>
+          </button> */}
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
+        {/* <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
           <button
             onClick={() => setActiveTab('chats')}
             className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${activeTab === 'chats' ? 'bg-white text-[#429CA8] shadow-sm' : 'text-gray-500 hover:text-gray-700'
@@ -102,7 +102,7 @@ export function ChatSidebar({
           >
             Public Groups
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Conversations List */}
