@@ -13,6 +13,7 @@ import {
   sendWink,
   acceptWink,
   createChatRoom,
+  swipeUser,
 } from "@/features/member/my-list/action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,34 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
   const [winked, setWinked] = useState(user.isWinked || false);
   const [isSendingWink, setIsSendingWink] = useState(false);
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [liked, setLiked] = useState(user.isLiked || false);
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  const handleLikeClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isSwiping) return;
+    setIsSwiping(true);
+
+    const action = liked ? "dislike" : "like";
+    setLiked(!liked);
+
+    try {
+      const res = await swipeUser(user.id, action);
+      if (res.success) {
+        toast.success(res.message || `User ${action}d successfully`);
+      } else {
+        setLiked(liked);
+        toast.error(res.message || "Failed to swipe");
+      }
+    } catch (error) {
+      setLiked(liked);
+      toast.error("An error occurred");
+    } finally {
+      setIsSwiping(false);
+    }
+  };
+
 
   const handleChatClick = async () => {
     try {
@@ -54,7 +83,9 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
     }
   };
 
-  const handleWinkClick = async () => {
+  const handleWinkClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (winked) return;
     setIsSendingWink(true);
     try {
@@ -83,7 +114,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
     <article className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="grid gap-0 sm:grid-cols-[300px_minmax(0,1fr)] lg:grid-cols-[400px_minmax(0,1fr)] 2xl:grid-cols-[500px_minmax(0,1fr)]">
         <Link
-          href={`/${lang}/profile/${user.username}`}
+          href={`/${lang}/my-list/profile/${user.id}`}
           className="relative block aspect-square w-full overflow-hidden bg-muted sm:aspect-auto"
         >
           <Image
@@ -106,7 +137,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <Link
-                href={`/${lang}/profile/${user.username}`}
+                href={`/${lang}/my-list/profile/${user.id}`}
                 className="text-base font-semibold tracking-wide hover:text-brand transition-colors"
               >
                 {user.displayName}
@@ -167,13 +198,15 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
             >
               <MessageCircle className="size-5" />
             </button>
-            <Link
-              href={`/${lang}/profile/${user.username}?action=like`}
+            <button
+              type="button"
               aria-label="Like"
-              className="text-muted-foreground hover:text-brand transition-colors"
+              onClick={handleLikeClick}
+              disabled={isSwiping}
+              className={`transition-colors disabled:opacity-50 ${liked ? "text-brand" : "text-muted-foreground hover:text-brand"}`}
             >
               <Heart className="size-5" />
-            </Link>
+            </button>
           </div>
         </div>
       </div>
