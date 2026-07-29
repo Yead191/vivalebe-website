@@ -16,11 +16,13 @@ export function StoryComments({
   return (
     <div className={cn("space-y-3", compact && "space-y-2")}>
       {comments.map((comment) => {
-        const author = mockCommentAuthors[comment.authorId] ?? {
-          name: "Community member",
-          username: "member",
-          image: avatarUrl(comment.authorId, 96),
-        };
+        const author =
+          comment.author ??
+          mockCommentAuthors[comment.authorId] ?? {
+            name: "Community member",
+            username: "member",
+            image: avatarUrl(comment.authorId, 96),
+          };
 
         return (
           <div
