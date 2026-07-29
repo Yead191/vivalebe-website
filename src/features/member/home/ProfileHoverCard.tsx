@@ -15,7 +15,9 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
 import { avatarUrl, photoUrl } from "@/lib/image";
-import { createChatRoom } from "../my-list/action";
+import { createChatRoom, swipeUser } from "../my-list/action";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Props {
   user: User;
@@ -26,6 +28,34 @@ interface Props {
 export function ProfileHoverCard({ user, lang, dict }: Props) {
   const router = useRouter();
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [liked, setLiked] = useState(user.isLiked || false);
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  const handleLikeClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isSwiping) return;
+    setIsSwiping(true);
+
+    const action = liked ? "dislike" : "like";
+    setLiked(!liked);
+
+    try {
+      const res = await swipeUser(user.id, action);
+      if (res.success) {
+        toast.success(res.message || `User ${action}d successfully`);
+      } else {
+        setLiked(liked);
+        toast.error(res.message || "Failed to swipe");
+      }
+    } catch (error) {
+      setLiked(liked);
+      toast.error("An error occurred");
+    } finally {
+      setIsSwiping(false);
+    }
+  };
+
   const goToProfile = () => router.push(`/${lang}/my-list/profile/${user.id}`);
 
   const handleChatClick = async () => {
@@ -117,13 +147,16 @@ export function ProfileHoverCard({ user, lang, dict }: Props) {
         <div className="grid grid-cols-2 gap-2 border-t border-border p-3">
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              goToProfile();
-            }}
-            className="inline-flex items-center justify-center gap-1.5 rounded-md border border-brand px-3 py-2 text-xs font-semibold text-brand hover:bg-brand-soft transition-colors"
+            onClick={handleLikeClick}
+            disabled={isSwiping}
+            className={cn(
+              "inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50",
+              liked
+                ? "border-red-500 text-red-500 hover:bg-red-50"
+                : "border-brand text-brand hover:bg-brand-soft",
+            )}
           >
-            <Heart className="size-3.5" />
+            <Heart className={cn("size-3.5", liked && "fill-current")} />
             {dict.myHome.actionLike}
           </button>
           <button
