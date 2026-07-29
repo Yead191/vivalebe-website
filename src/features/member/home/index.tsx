@@ -46,8 +46,8 @@ export async function HomeFeature({
   }
 
   const [videoFeed, imageFeed, suggestionsRaw] = await Promise.all([
-    getFeed("VIDEO"),
-    getFeed("IMAGE"),
+    getFeed("VIDEO", 1, 20),
+    getFeed("IMAGE", 1, 20),
     getMutualMatches(),
   ]);
 
@@ -85,8 +85,10 @@ export async function HomeFeature({
             activeTab={activeTab}
             videos={videoFeed.videos}
             videoMeta={videoFeed.videoMeta}
+            videoHasNextPage={videoFeed.pagination.hasNextPage}
             moments={imageFeed.moments}
             momentMeta={imageFeed.momentMeta}
+            momentHasNextPage={imageFeed.pagination.hasNextPage}
             connections={connectionEvents}
             authors={authors}
             currentUserAvatarSeed={me.avatarSeed}
