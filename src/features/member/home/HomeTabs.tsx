@@ -40,6 +40,7 @@ interface HomeTabsProps {
   connections: ConnectionEvent[];
   authors: Record<string, User>;
   currentUserAvatarSeed: string;
+  isPremium?: boolean;
 }
 
 function sortByDate<T extends { createdAt: string }>(items: T[]): T[] {
@@ -79,6 +80,7 @@ export function HomeTabs({
   connections,
   authors: initialAuthors,
   currentUserAvatarSeed,
+  isPremium = false,
 }: HomeTabsProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -381,6 +383,7 @@ export function HomeTabs({
                   dict={dict}
                   event={c}
                   user={user}
+                  isPremium={isPremium}
                 />
               ) : null;
             })

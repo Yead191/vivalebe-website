@@ -37,6 +37,7 @@ export async function HomeFeature({
         displayName: p.name || p.displayName || mockMe.displayName,
         avatarSeed: p.profile || p.image || mockMe.avatarSeed,
         coverSeed: p.profile || p.image || mockMe.coverSeed,
+        premium: !!(p.premiumMembership ?? p.premium),
       };
     }
   } catch (error) {
@@ -92,6 +93,7 @@ export async function HomeFeature({
             connections={viewMe.connections}
             authors={authors}
             currentUserAvatarSeed={me.avatarSeed}
+            isPremium={me.premium}
           />
         </div>
 
