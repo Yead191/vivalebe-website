@@ -19,7 +19,7 @@ export function ProfileFeature({ lang, dict, user }: Props) {
         <div>
           <div className="lg:sticky lg:top-22">
             <BackButton />
-            <ProfileSidebar dict={dict} user={user} />
+            <ProfileSidebar lang={lang} dict={dict} user={user} />
           </div>
         </div>
         <ProfileMain lang={lang} dict={dict} user={user} />

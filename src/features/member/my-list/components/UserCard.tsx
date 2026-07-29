@@ -42,7 +42,13 @@ import {
 } from "../action";
 import { toast } from "sonner";
 
-export function UserCard({ lang, dict, user, activeTab, onRemove }: UserCardProps) {
+export function UserCard({
+  lang,
+  dict,
+  user,
+  activeTab,
+  onRemove,
+}: UserCardProps) {
   const router = useRouter();
   const [liked, setLiked] = useState(user.isLiked || false);
   const [winked, setWinked] = useState(user.isWinked || false);
@@ -212,7 +218,7 @@ export function UserCard({ lang, dict, user, activeTab, onRemove }: UserCardProp
 
   return (
     <>
-      <article className="overflow-hidden border border-border bg-card">
+      <article className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
         <div className="grid grid-cols-[260px_minmax(0,1fr)] sm:grid-cols-[480px_minmax(0,1fr)]">
           {/* Left: Photo */}
           <Link
@@ -351,20 +357,27 @@ export function UserCard({ lang, dict, user, activeTab, onRemove }: UserCardProp
             {/* Action buttons */}
             <div className="mt-auto flex items-center justify-between pt-3 lg:pt-5 w-full">
               <div className="flex items-center gap-6 lg:gap-8">
-                <button
-                  type="button"
-                  aria-label={dict.myList.wink}
-                  onClick={handleWinkClick}
-                  disabled={isSendingWink || winked}
-                  className={cn(
-                    "transition-colors disabled:opacity-50",
-                    winked
-                      ? "text-brand"
-                      : "text-muted-foreground hover:text-brand",
-                  )}
-                >
-                  <Smile className="size-5 lg:size-6" />
-                </button>
+                {activeTab === "you-likes" && (
+                  <button
+                    type="button"
+                    aria-label={dict.myList.wink}
+                    onClick={handleWinkClick}
+                    disabled={isSendingWink || winked}
+                    className={cn(
+                      "transition-colors disabled:opacity-50",
+                      winked
+                        ? "text-brand"
+                        : "text-muted-foreground hover:text-brand",
+                    )}
+                  >
+                    <Smile
+                      className={cn(
+                        "size-5 lg:size-6 transition-transform",
+                        winked && "fill-current stroke-card scale-110",
+                      )}
+                    />
+                  </button>
+                )}
                 <button
                   type="button"
                   aria-label={dict.myList.message}
@@ -382,11 +395,13 @@ export function UserCard({ lang, dict, user, activeTab, onRemove }: UserCardProp
                   className={cn(
                     "transition-colors disabled:opacity-50",
                     liked
-                      ? "text-brand"
+                      ? "text-red-500"
                       : "text-muted-foreground hover:text-brand",
                   )}
                 >
-                  <Heart className="size-5 lg:size-6" />
+                  <Heart
+                    className={cn("size-5 lg:size-6", liked && "fill-current")}
+                  />
                 </button>
               </div>
 
