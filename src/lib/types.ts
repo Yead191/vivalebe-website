@@ -32,12 +32,9 @@ export interface User {
   isWinked?: boolean;
   isLiked?: boolean;
   winkId?: string;
-<<<<<<< HEAD
   privateAlbumRequestId?: string;
-=======
   education?: string;
   weight?: string;
->>>>>>> 3b5d2177040712b74402db517e036e71ade11f16
 }
 
 export interface PhotoEntry {
