@@ -115,8 +115,8 @@ export default function LoginFeature({ dict, lang }: Props) {
           />
         </div>
 
-        <div className="flex items-center justify-between text-sm">
-          <FormField
+        <div className="flex items-center justify-end text-sm">
+          {/* <FormField
             control={form.control}
             name="rememberMe"
             render={({ field }) => (
@@ -133,7 +133,7 @@ export default function LoginFeature({ dict, lang }: Props) {
                 </FormLabel>
               </FormItem>
             )}
-          />
+          /> */}
           <Link
             href={`/${lang}/auth/forgot-password`}
             className="text-xs font-bold text-[#429CA8] hover:underline"

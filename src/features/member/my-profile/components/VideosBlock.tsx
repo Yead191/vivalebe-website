@@ -74,12 +74,11 @@ export function VideosBlock({ videos, onAdd, onRemove }: VideosBlockProps) {
             key={video.id}
             className="group relative aspect-square overflow-hidden bg-muted"
           >
-            <Image
+            <video
               src={video.thumbnail}
-              alt="Video thumbnail"
-              fill
-              className="object-cover"
-              unoptimized
+              className="size-full object-cover"
+              muted
+              playsInline
             />
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <span className="inline-flex size-10 items-center justify-center rounded-full bg-white/90 text-foreground shadow">
@@ -114,6 +113,7 @@ interface AddVideoTileProps {
 function AddVideoTile({ defaultVisibility, onAdd }: AddVideoTileProps) {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [base64Data, setBase64Data] = useState<string | null>(null);
   const [visibility, setVisibility] = useState<Tab>(defaultVisibility);
   const [duration, setDuration] = useState<number>(0);
   const [thumb, setThumb] = useState<string | null>(null);
@@ -122,11 +122,18 @@ function AddVideoTile({ defaultVisibility, onAdd }: AddVideoTileProps) {
   useEffect(() => {
     if (!file) {
       setThumb(null);
+      setBase64Data(null);
       setDuration(0);
       return;
     }
+
     const url = URL.createObjectURL(file);
     setThumb(url);
+
+    const reader = new FileReader();
+    reader.onload = (e) => setBase64Data(e.target?.result as string);
+    reader.readAsDataURL(file);
+
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
@@ -144,11 +151,11 @@ function AddVideoTile({ defaultVisibility, onAdd }: AddVideoTileProps) {
   };
 
   const handleSubmit = () => {
-    if (!file || !thumb) return;
+    if (!file || !base64Data) return;
     onAdd({
       id: `v_${Date.now()}`,
-      url: thumb,
-      thumbnail: thumb,
+      url: base64Data,
+      thumbnail: base64Data,
       durationSeconds: duration,
       visibility,
     });

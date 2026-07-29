@@ -69,7 +69,7 @@ export function ConnectionRow({
   if (isPremium) {
     return (
       <Link
-        href={`/${lang}/profile/${user.username}`}
+        href={`/${lang}/my-list/profile/${user.id}`}
         className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/50"
       >
         {content}

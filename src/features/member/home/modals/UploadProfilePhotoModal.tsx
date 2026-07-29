@@ -38,9 +38,26 @@ export function UploadProfilePhotoModal({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const urls = files.map((f) => URL.createObjectURL(f));
-    setPreviews(urls);
-    return () => urls.forEach((u) => URL.revokeObjectURL(u));
+    let active = true;
+    const processFiles = async () => {
+      const urls = await Promise.all(
+        files.map((file) => {
+          return new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(file);
+          });
+        })
+      );
+      if (active) {
+        setPreviews(urls);
+      }
+    };
+    processFiles();
+    
+    return () => {
+      active = false;
+    };
   }, [files]);
 
   useEffect(() => {

@@ -9,6 +9,7 @@ import {
   isValidTab,
 } from "@/constants/mockMyListData";
 import { MyListClient } from "./MyListClient";
+import getProfile from "@/helpers/getProfile";
 
 interface MyListFeatureProps {
   lang: Locale;
@@ -32,6 +33,9 @@ export async function MyListFeature({
   activeTab,
 }: MyListFeatureProps) {
   const me = getCurrentUser();
+  const profile = await getProfile();
+  const isPremium =
+    profile?.premiumMembership === true || profile?.premium === true;
   const tab = isValidTab(activeTab) ? activeTab : DEFAULT_TAB;
 
   let tabUsers: User[] = [];
@@ -60,6 +64,12 @@ export async function MyListFeature({
   }
 
   return (
-    <MyListClient lang={lang} dict={dict} activeTab={tab} users={tabUsers} />
+    <MyListClient
+      lang={lang}
+      dict={dict}
+      activeTab={tab}
+      users={tabUsers}
+      isPremium={isPremium}
+    />
   );
 }
