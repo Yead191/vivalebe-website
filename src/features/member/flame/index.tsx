@@ -86,9 +86,9 @@ export function FlameFeature({
     if (!current || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const res = await swipeAction(current.id, "pass");
+      const res = await swipeAction(current.id, "reject");
       if (!res.success) {
-        toast.error(res.message || "Failed to pass");
+        toast.error(res.message || "Failed to reject");
         return;
       }
       setLastPassed(current);
