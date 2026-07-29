@@ -3,9 +3,14 @@
 import { myFetch } from "@/helpers/myFetch";
 import { getImageUrl } from "@/helpers/getImageUrl";
 import { revalidateTags } from "@/helpers/revalidateTags";
-import type { Comment } from "@/lib/types";
+import type { BlogPost, Comment, User } from "@/lib/types";
 import type { ApiBlog, ApiBlogComment } from "./types";
-import { mapApiComment } from "./mappers";
+import {
+  buildAuthorsFromBlogs,
+  buildAuthorsFromComments,
+  mapApiBlogToPost,
+  mapApiComment,
+} from "./mappers";
 
 function commentAuthorsMap(comments: ApiBlogComment[]) {
   return Object.fromEntries(
@@ -32,6 +37,90 @@ export async function createBlogAction(formData: FormData) {
   }
 
   return res;
+}
+
+export async function getMyBlogsAction() {
+  const res = await myFetch<ApiBlog[]>("/blogs/my", {
+    method: "GET",
+    cache: "no-store",
+    tags: ["blogs", "blogs-my"],
+  });
+
+  if (!res.success || !Array.isArray(res.data)) {
+    return {
+      success: false as const,
+      message: res.message ?? res.error ?? "Failed to fetch my blogs",
+      blogs: [] as BlogPost[],
+      authorsMap: {} as Record<string, User>,
+      authorInfoMap: {} as Record<
+        string,
+        { displayName: string; avatarSeed: string }
+      >,
+      likeMetaMap: {} as Record<string, { count: number; liked: boolean }>,
+      commentMap: {} as Record<string, Comment[]>,
+      commentCountMap: {} as Record<string, number>,
+    };
+  }
+
+  const blogs = res.data;
+  const commentEntries = await Promise.all(
+    blogs.map(async (blog) => {
+      if (!blog.totalComments) {
+        return [blog._id, [] as ApiBlogComment[]] as const;
+      }
+      const commentsRes = await myFetch<ApiBlogComment[]>(
+        `/blog-comments/${blog._id}`,
+        {
+          cache: "no-store",
+          tags: [`blog-comments-${blog._id}`],
+        },
+      );
+      return [blog._id, commentsRes.data ?? []] as const;
+    }),
+  );
+
+  const mappedBlogs = blogs.map(mapApiBlogToPost);
+  const authorsMap: Record<string, User> = {
+    ...buildAuthorsFromBlogs(blogs),
+  };
+  const likeMetaMap: Record<string, { count: number; liked: boolean }> = {};
+  const commentCountMap: Record<string, number> = {};
+  const commentMap: Record<string, Comment[]> = {};
+
+  for (const blog of blogs) {
+    likeMetaMap[blog._id] = { count: blog.totalLikes, liked: false };
+    commentCountMap[blog._id] = blog.totalComments;
+  }
+
+  for (const [blogId, apiComments] of commentEntries) {
+    commentMap[blogId] = apiComments.map(mapApiComment);
+    Object.assign(authorsMap, buildAuthorsFromComments(apiComments));
+    commentCountMap[blogId] = Math.max(
+      commentCountMap[blogId] ?? 0,
+      apiComments.length,
+    );
+  }
+
+  const authorInfoMap: Record<
+    string,
+    { displayName: string; avatarSeed: string }
+  > = Object.fromEntries(
+    Object.values(authorsMap).map((u) => [
+      u.id,
+      { displayName: u.displayName, avatarSeed: u.avatarSeed },
+    ]),
+  );
+
+  return {
+    success: true as const,
+    message: res.message,
+    blogs: mappedBlogs,
+    authorsMap,
+    authorInfoMap,
+    likeMetaMap,
+    commentMap,
+    commentCountMap,
+  };
 }
 
 export async function createBlogCommentAction(blogId: string, comment: string) {

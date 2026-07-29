@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { ChevronDown, PenLine } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState, useMemo, useTransition } from "react";
+import { ChevronDown, Loader2, PenLine } from "lucide-react";
+import { toast } from "sonner";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { BlogPost, Comment, User } from "@/lib/types";
 import { BlogCard } from "./components/BlogCard";
 import { BlogSidebar, type BlogTab } from "./components/BlogSidebar";
 import { PostBlogModal } from "./components/PostBlogModal";
+import { getMyBlogsAction } from "./actions";
 
 type SortMode = "newest" | "popular";
 
@@ -45,24 +46,80 @@ export function BlogPageClient({
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [activeTab, setActiveTab] = useState<BlogTab>("all");
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const [myBlogs, setMyBlogs] = useState<BlogPost[] | null>(null);
+  const [myAuthorsMap, setMyAuthorsMap] = useState<Record<string, User>>({});
+  const [myAuthorInfoMap, setMyAuthorInfoMap] = useState<
+    Record<string, { displayName: string; avatarSeed: string }>
+  >({});
+  const [myLikeMetaMap, setMyLikeMetaMap] = useState<
+    Record<string, { count: number; liked: boolean }>
+  >({});
+  const [myCommentMap, setMyCommentMap] = useState<Record<string, Comment[]>>(
+    {},
+  );
+  const [myCommentCountMap, setMyCommentCountMap] = useState<
+    Record<string, number>
+  >({});
+
+  const activeBlogs = activeTab === "my" && myBlogs ? myBlogs : blogs;
+  const activeAuthorsMap =
+    activeTab === "my" && myBlogs
+      ? { ...authorsMap, ...myAuthorsMap }
+      : authorsMap;
+  const activeAuthorInfoMap =
+    activeTab === "my" && myBlogs
+      ? { ...authorInfoMap, ...myAuthorInfoMap }
+      : authorInfoMap;
+  const activeLikeMetaMap =
+    activeTab === "my" && myBlogs
+      ? { ...likeMetaMap, ...myLikeMetaMap }
+      : likeMetaMap;
+  const activeCommentMap =
+    activeTab === "my" && myBlogs
+      ? { ...commentMap, ...myCommentMap }
+      : commentMap;
+  const activeCommentCountMap =
+    activeTab === "my" && myBlogs
+      ? { ...commentCountMap, ...myCommentCountMap }
+      : commentCountMap;
+
+  const handleTabChange = (tab: BlogTab) => {
+    setActiveTab(tab);
+
+    if (tab !== "my") return;
+
+    startTransition(async () => {
+      const res = await getMyBlogsAction();
+      if (!res.success) {
+        toast.error(res.message ?? "Failed to load my blogs");
+        return;
+      }
+      setMyBlogs(res.blogs);
+      setMyAuthorsMap(res.authorsMap);
+      setMyAuthorInfoMap(res.authorInfoMap);
+      setMyLikeMetaMap(res.likeMetaMap);
+      setMyCommentMap(res.commentMap);
+      setMyCommentCountMap(res.commentCountMap);
+    });
+  };
 
   const visibleBlogs = useMemo(() => {
-    let list = [...blogs];
+    let list = [...activeBlogs];
 
-    if (activeTab === "my") {
-      list = list.filter((b) => b.authorId === currentUserId);
-    } else if (activeTab === "liked") {
-      list = list.filter((b) => likeMetaMap[b.id]?.liked);
+    if (activeTab === "liked") {
+      list = list.filter((b) => activeLikeMetaMap[b.id]?.liked);
     } else if (activeTab === "commented") {
       list = list.filter((b) =>
-        (commentMap[b.id] ?? []).some((c) => c.authorId === currentUserId),
+        (activeCommentMap[b.id] ?? []).some((c) => c.authorId === currentUserId),
       );
     }
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter((b) => {
-        const author = authorsMap[b.authorId];
+        const author = activeAuthorsMap[b.authorId];
         return (
           b.title.toLowerCase().includes(q) ||
           (author?.displayName.toLowerCase().includes(q) ?? false)
@@ -78,34 +135,35 @@ export function BlogPageClient({
     } else {
       list.sort((a, b) => {
         const scoreA =
-          (likeMetaMap[a.id]?.count ?? 0) * 2 +
-          (commentCountMap[a.id] ?? commentMap[a.id]?.length ?? 0);
+          (activeLikeMetaMap[a.id]?.count ?? 0) * 2 +
+          (activeCommentCountMap[a.id] ?? activeCommentMap[a.id]?.length ?? 0);
         const scoreB =
-          (likeMetaMap[b.id]?.count ?? 0) * 2 +
-          (commentCountMap[b.id] ?? commentMap[b.id]?.length ?? 0);
+          (activeLikeMetaMap[b.id]?.count ?? 0) * 2 +
+          (activeCommentCountMap[b.id] ?? activeCommentMap[b.id]?.length ?? 0);
         return scoreB - scoreA;
       });
     }
 
     return list;
   }, [
-    blogs,
+    activeBlogs,
     activeTab,
     searchQuery,
     sortMode,
     currentUserId,
-    likeMetaMap,
-    commentMap,
-    commentCountMap,
-    authorsMap,
+    activeLikeMetaMap,
+    activeCommentMap,
+    activeCommentCountMap,
+    activeAuthorsMap,
   ]);
+
+  const displayedTotal =
+    activeTab === "my" && myBlogs ? myBlogs.length : totalBlogs;
 
   return (
     <div className="container py-6">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        {/* Main feed */}
         <div className="space-y-5 min-w-0">
-          {/* Header */}
           <div>
             <h1 className="text-xs font-bold tracking-widest text-foreground uppercase">
               {dict.blog.title}
@@ -123,12 +181,11 @@ export function BlogPageClient({
             </button>
           </div>
 
-          {/* Sort bar */}
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               {dict.blog.totalBlogs}{" "}
               <span className="font-semibold text-foreground">
-                {totalBlogs.toLocaleString()}
+                {displayedTotal.toLocaleString()}
               </span>
             </p>
             <div className="flex items-center gap-1.5">
@@ -148,11 +205,14 @@ export function BlogPageClient({
             </div>
           </div>
 
-          {/* Blog feed */}
-          {visibleBlogs.length > 0 ? (
+          {activeTab === "my" && isPending && !myBlogs ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : visibleBlogs.length > 0 ? (
             <div className="space-y-4">
               {visibleBlogs.map((blog) => {
-                const author = authorsMap[blog.authorId];
+                const author = activeAuthorsMap[blog.authorId];
                 if (!author) return null;
                 return (
                   <BlogCard
@@ -161,11 +221,11 @@ export function BlogPageClient({
                     dict={dict}
                     blog={blog}
                     author={author}
-                    likeCount={likeMetaMap[blog.id]?.count ?? 0}
-                    liked={likeMetaMap[blog.id]?.liked ?? false}
-                    comments={commentMap[blog.id] ?? []}
-                    commentCount={commentCountMap[blog.id]}
-                    authors={authorInfoMap}
+                    likeCount={activeLikeMetaMap[blog.id]?.count ?? 0}
+                    liked={activeLikeMetaMap[blog.id]?.liked ?? false}
+                    comments={activeCommentMap[blog.id] ?? []}
+                    commentCount={activeCommentCountMap[blog.id]}
+                    authors={activeAuthorInfoMap}
                     currentUserAvatarSeed={currentUserAvatarSeed}
                   />
                 );
@@ -178,7 +238,6 @@ export function BlogPageClient({
           )}
         </div>
 
-        {/* Sidebar */}
         <div className="hidden lg:block">
           <div className="sticky top-22">
             <BlogSidebar
@@ -187,7 +246,7 @@ export function BlogPageClient({
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               activeTab={activeTab}
-              onTabChange={setActiveTab}
+              onTabChange={handleTabChange}
               recentBlogs={recentBlogs}
             />
           </div>
