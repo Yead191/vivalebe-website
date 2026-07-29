@@ -278,7 +278,7 @@ export function CreatePostModal({
             type="button"
             disabled={!canPost}
             onClick={handleSubmit}
-            className="w-40 py-3 bg-brand text-white text-xs font-bold tracking-[0.2em] uppercase transition-colors hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-brand text-white text-xs font-bold tracking-[0.2em] uppercase transition-colors hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending
               ? mode === "edit"

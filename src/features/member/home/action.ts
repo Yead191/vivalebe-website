@@ -32,12 +32,19 @@ export interface PostMeta {
   popularity: number;
 }
 
+export interface FeedPagination {
+  page: number;
+  limit: number;
+  hasNextPage: boolean;
+}
+
 export interface FeedResult {
   videos: VideoPost[];
   moments: MomentPost[];
   videoMeta: Record<string, PostMeta>;
   momentMeta: Record<string, PostMeta>;
   authors: Record<string, User>;
+  pagination: FeedPagination;
 }
 
 function resolveMedia(url?: string | null): string {
@@ -298,13 +305,28 @@ export async function createPostCommentAction(postId: string, comment: string) {
   };
 }
 
-export async function getFeed(type: FeedType = "ALL"): Promise<FeedResult> {
-  const url = type === "ALL" ? "/feed/" : `/feed/?type=${type}`;
-  const res = await myFetch(url, {
+export async function getFeed(
+  type: FeedType = "ALL",
+  page = 1,
+  limit = 20,
+): Promise<FeedResult> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+  if (type !== "ALL") params.set("type", type);
+
+  const res = await myFetch(`/feed/?${params.toString()}`, {
     method: "GET",
     cache: "no-store",
     tags: ["feed", `feed-${type}`],
   });
+
+  const emptyPagination: FeedPagination = {
+    page,
+    limit,
+    hasNextPage: false,
+  };
 
   const videos: VideoPost[] = [];
   const moments: MomentPost[] = [];
@@ -313,7 +335,14 @@ export async function getFeed(type: FeedType = "ALL"): Promise<FeedResult> {
   const authors: Record<string, User> = {};
 
   if (!res.success || !Array.isArray(res.data)) {
-    return { videos, moments, videoMeta, momentMeta, authors };
+    return {
+      videos,
+      moments,
+      videoMeta,
+      momentMeta,
+      authors,
+      pagination: emptyPagination,
+    };
   }
 
   const postIds: string[] = [];
@@ -326,13 +355,13 @@ export async function getFeed(type: FeedType = "ALL"): Promise<FeedResult> {
     if (mapped.type === "VIDEO" && mapped.video) {
       videos.push(mapped.video);
       videoMeta[mapped.video.id] = mapped.meta;
-      postIds.push(mapped.video.id);
+      if (mapped.meta.commentCount > 0) postIds.push(mapped.video.id);
     }
 
     if (mapped.type === "IMAGE" && mapped.moment) {
       moments.push(mapped.moment);
       momentMeta[mapped.moment.id] = mapped.meta;
-      postIds.push(mapped.moment.id);
+      if (mapped.meta.commentCount > 0) postIds.push(mapped.moment.id);
     }
   }
 
@@ -375,7 +404,18 @@ export async function getFeed(type: FeedType = "ALL"): Promise<FeedResult> {
     }
   }
 
-  return { videos, moments, videoMeta, momentMeta, authors };
+  return {
+    videos,
+    moments,
+    videoMeta,
+    momentMeta,
+    authors,
+    pagination: {
+      page: res.pagination?.page ?? page,
+      limit: res.pagination?.limit ?? limit,
+      hasNextPage: res.pagination?.hasNextPage ?? false,
+    },
+  };
 }
 
 export async function togglePostLikeAction(postId: string) {

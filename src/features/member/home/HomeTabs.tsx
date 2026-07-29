@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Video, Sparkles, Heart } from "lucide-react";
+import { Video, Sparkles, Heart, Loader2 } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type {
@@ -19,11 +19,13 @@ import { ConnectionRow } from "./cards/ConnectionRow";
 import { SortDropdown } from "./SortDropdown";
 import { UploadVideoModal } from "./modals/UploadVideoModal";
 import { CreatePostModal } from "./modals/CreatePostModal";
-import type { PostMeta } from "./action";
+import { getFeed, type PostMeta } from "./action";
 import { parseHomeTab, type HomeTab } from "./tabs";
 
 export type { PostMeta, HomeTab };
 export { parseHomeTab };
+
+const PAGE_LIMIT = 20;
 
 interface HomeTabsProps {
   lang: Locale;
@@ -31,8 +33,10 @@ interface HomeTabsProps {
   activeTab?: HomeTab;
   videos: VideoPost[];
   videoMeta: Record<string, PostMeta>;
+  videoHasNextPage?: boolean;
   moments: MomentPost[];
   momentMeta: Record<string, PostMeta>;
+  momentHasNextPage?: boolean;
   connections: ConnectionEvent[];
   authors: Record<string, User>;
   currentUserAvatarSeed: string;
@@ -51,22 +55,138 @@ function sortByPopularity<T extends { id: string }>(
   );
 }
 
+function mergeById<T extends { id: string }>(existing: T[], incoming: T[]): T[] {
+  const seen = new Set(existing.map((item) => item.id));
+  const next = [...existing];
+  for (const item of incoming) {
+    if (seen.has(item.id)) continue;
+    seen.add(item.id);
+    next.push(item);
+  }
+  return next;
+}
+
 export function HomeTabs({
   lang,
   dict,
   activeTab = "videos",
-  videos,
-  videoMeta,
-  moments,
-  momentMeta,
+  videos: initialVideos,
+  videoMeta: initialVideoMeta,
+  videoHasNextPage: initialVideoHasNext = false,
+  moments: initialMoments,
+  momentMeta: initialMomentMeta,
+  momentHasNextPage: initialMomentHasNext = false,
   connections,
-  authors,
+  authors: initialAuthors,
   currentUserAvatarSeed,
 }: HomeTabsProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [videoSort, setVideoSort] = useState<FeedSort>("newest");
   const [momentSort, setMomentSort] = useState<FeedSort>("popular");
+
+  const [videos, setVideos] = useState(initialVideos);
+  const [videoMeta, setVideoMeta] = useState(initialVideoMeta);
+  const [videoPage, setVideoPage] = useState(1);
+  const [videoHasNext, setVideoHasNext] = useState(initialVideoHasNext);
+  const [loadingVideos, setLoadingVideos] = useState(false);
+
+  const [moments, setMoments] = useState(initialMoments);
+  const [momentMeta, setMomentMeta] = useState(initialMomentMeta);
+  const [momentPage, setMomentPage] = useState(1);
+  const [momentHasNext, setMomentHasNext] = useState(initialMomentHasNext);
+  const [loadingMoments, setLoadingMoments] = useState(false);
+
+  const [authors, setAuthors] = useState(initialAuthors);
+
+  const videoSentinelRef = useRef<HTMLDivElement | null>(null);
+  const momentSentinelRef = useRef<HTMLDivElement | null>(null);
+  const loadingVideosRef = useRef(false);
+  const loadingMomentsRef = useRef(false);
+
+  useEffect(() => {
+    setVideos(initialVideos);
+    setVideoMeta(initialVideoMeta);
+    setVideoPage(1);
+    setVideoHasNext(initialVideoHasNext);
+  }, [initialVideos, initialVideoMeta, initialVideoHasNext]);
+
+  useEffect(() => {
+    setMoments(initialMoments);
+    setMomentMeta(initialMomentMeta);
+    setMomentPage(1);
+    setMomentHasNext(initialMomentHasNext);
+  }, [initialMoments, initialMomentMeta, initialMomentHasNext]);
+
+  useEffect(() => {
+    setAuthors((prev) => ({ ...prev, ...initialAuthors }));
+  }, [initialAuthors]);
+
+  const loadMoreVideos = useCallback(async () => {
+    if (loadingVideosRef.current || !videoHasNext) return;
+    loadingVideosRef.current = true;
+    setLoadingVideos(true);
+    try {
+      const nextPage = videoPage + 1;
+      const res = await getFeed("VIDEO", nextPage, PAGE_LIMIT);
+      setVideos((prev) => mergeById(prev, res.videos));
+      setVideoMeta((prev) => ({ ...prev, ...res.videoMeta }));
+      setAuthors((prev) => ({ ...prev, ...res.authors }));
+      setVideoPage(res.pagination.page);
+      setVideoHasNext(res.pagination.hasNextPage);
+    } finally {
+      loadingVideosRef.current = false;
+      setLoadingVideos(false);
+    }
+  }, [videoHasNext, videoPage]);
+
+  const loadMoreMoments = useCallback(async () => {
+    if (loadingMomentsRef.current || !momentHasNext) return;
+    loadingMomentsRef.current = true;
+    setLoadingMoments(true);
+    try {
+      const nextPage = momentPage + 1;
+      const res = await getFeed("IMAGE", nextPage, PAGE_LIMIT);
+      setMoments((prev) => mergeById(prev, res.moments));
+      setMomentMeta((prev) => ({ ...prev, ...res.momentMeta }));
+      setAuthors((prev) => ({ ...prev, ...res.authors }));
+      setMomentPage(res.pagination.page);
+      setMomentHasNext(res.pagination.hasNextPage);
+    } finally {
+      loadingMomentsRef.current = false;
+      setLoadingMoments(false);
+    }
+  }, [momentHasNext, momentPage]);
+
+  useEffect(() => {
+    if (activeTab !== "videos" || !videoHasNext) return;
+    const node = videoSentinelRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void loadMoreVideos();
+      },
+      { rootMargin: "240px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [activeTab, videoHasNext, loadMoreVideos]);
+
+  useEffect(() => {
+    if (activeTab !== "moments" || !momentHasNext) return;
+    const node = momentSentinelRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void loadMoreMoments();
+      },
+      { rootMargin: "240px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [activeTab, momentHasNext, loadMoreMoments]);
 
   const sortedVideos = useMemo(
     () =>
@@ -136,8 +256,11 @@ export function HomeTabs({
       </TabsList>
 
       <TabsContent value="videos" className="space-y-4 pt-4">
-        <div className="flex items-center justify-between px-1">
+        <div className="px-1">
           <UploadVideoModal dict={dict} />
+        </div>
+        <div className="flex items-center justify-between px-1">
+          <span />
           <SortDropdown value={videoSort} onChange={setVideoSort} dict={dict} />
         </div>
         <div className="space-y-4">
@@ -172,6 +295,16 @@ export function HomeTabs({
               ) : null;
             })
           )}
+          {videoHasNext ? (
+            <div
+              ref={videoSentinelRef}
+              className="flex items-center justify-center py-4"
+            >
+              {loadingVideos ? (
+                <Loader2 className="size-5 animate-spin text-muted-foreground" />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </TabsContent>
 
@@ -219,6 +352,16 @@ export function HomeTabs({
               ) : null;
             })
           )}
+          {momentHasNext ? (
+            <div
+              ref={momentSentinelRef}
+              className="flex items-center justify-center py-4"
+            >
+              {loadingMoments ? (
+                <Loader2 className="size-5 animate-spin text-muted-foreground" />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </TabsContent>
 
