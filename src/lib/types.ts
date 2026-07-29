@@ -134,6 +134,11 @@ export interface Comment {
   authorId: string;
   text: string;
   createdAt: string;
+  author?: {
+    name: string;
+    username: string;
+    image: string;
+  };
 }
 
 export interface ConnectionEvent {

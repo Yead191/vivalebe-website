@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Camera, Play, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
-import { avatarUrl } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,23 +25,37 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { brandButtonClass, brandSoftClass } from "./shared";
+import {
+  createSuccessStoryAction,
+  updateSuccessStoryAction,
+} from "./action";
+import type { SuccessStory } from "./types";
 
 type PreviewItem = {
   id: string;
-  file: File;
+  file?: File;
   url: string;
   type: "image" | "video";
 };
+
+interface AddSuccessStoryDialogProps {
+  title: string;
+  description: string;
+  userAvatar: string;
+  mode?: "create" | "edit";
+  story?: SuccessStory;
+  trigger?: React.ReactNode;
+}
 
 export function AddSuccessStoryDialog({
   title,
   description,
   userAvatar,
-}: {
-  title: string;
-  description: string;
-  userAvatar: string;
-}) {
+  mode = "create",
+  story,
+  trigger,
+}: AddSuccessStoryDialogProps) {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [open, setOpen] = useState(false);
   const [media, setMedia] = useState<PreviewItem[]>([]);
@@ -50,6 +64,7 @@ export function AddSuccessStoryDialog({
     "DATING" | "ENGAGED" | "OTHER"
   >("DATING");
   const [storyText, setStoryText] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const imageCount = useMemo(
     () => media.filter((item) => item.type === "image").length,
@@ -102,18 +117,86 @@ export function AddSuccessStoryDialog({
     }
   };
 
+  const resetForm = () => {
+    for (const item of media) {
+      if (item.file) URL.revokeObjectURL(item.url);
+    }
+    setStoryTitle(story?.title ?? "");
+    setRelationshipStatus(story?.relationshipStatus ?? "DATING");
+    setStoryText(story?.story ?? "");
+    setMedia(
+      story?.media.map((item) => ({
+        id: item.id,
+        url: item.url,
+        type: item.type,
+      })) ?? [],
+    );
+    if (inputRef.current) inputRef.current.value = "";
+  };
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    resetForm();
+  };
+
+  const removeMedia = (id: string) => {
+    setMedia((previous) => {
+      const item = previous.find((current) => current.id === id);
+      if (item?.file) URL.revokeObjectURL(item.url);
+      return previous.filter((current) => current.id !== id);
+    });
+  };
+
+  const handleSubmit = () => {
+    if (!storyTitle.trim() || !storyText.trim() || isPending) return;
+
+    const formData = new FormData();
+    formData.append("relationshipStatus", relationshipStatus.toLowerCase());
+    formData.append("title", storyTitle.trim());
+    formData.append("description", storyText.trim());
+    for (const item of media) {
+      if (item.file) formData.append("media", item.file);
+    }
+
+    startTransition(async () => {
+      const result =
+        mode === "edit" && story
+          ? await updateSuccessStoryAction(story.id, formData)
+          : await createSuccessStoryAction(formData);
+
+      if (!result.success) {
+        toast.error(result.message ?? "Failed to save success story");
+        return;
+      }
+
+      toast.success(
+        result.message ??
+          (mode === "edit"
+            ? "Success story updated"
+            : "Success story created"),
+      );
+      setOpen(false);
+      resetForm();
+      router.refresh();
+    });
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className={brandButtonClass}>
-          <UploadCloud className="size-4" />
-          Add success story
-        </Button>
+        {trigger ?? (
+          <Button className={brandButtonClass}>
+            <UploadCloud className="size-4" />
+            Add success story
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] min-w-xl overflow-hidden p-0 ">
         <div className="max-h-[90vh] overflow-y-auto p-6">
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle>
+              {mode === "edit" ? "Edit success story" : title}
+            </DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
 
@@ -185,7 +268,7 @@ export function AddSuccessStoryDialog({
                     {item.type === "image" ? (
                       <Image
                         src={item.url}
-                        alt={item.file.name}
+                        alt={item.file?.name ?? storyTitle}
                         width={320}
                         height={240}
                         className="h-36 w-full object-cover"
@@ -199,11 +282,7 @@ export function AddSuccessStoryDialog({
                     <button
                       type="button"
                       className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white"
-                      onClick={() =>
-                        setMedia((prev) =>
-                          prev.filter((current) => current.id !== item.id),
-                        )
-                      }
+                      onClick={() => removeMedia(item.id)}
                     >
                       <X className="size-4" />
                     </button>
@@ -229,8 +308,18 @@ export function AddSuccessStoryDialog({
           </div>
 
           <DialogFooter>
-            <Button variant="outline">Save draft</Button>
-            <Button className={brandButtonClass}>Post story</Button>
+            <Button
+              type="button"
+              className={brandButtonClass}
+              disabled={!storyTitle.trim() || !storyText.trim() || isPending}
+              onClick={handleSubmit}
+            >
+              {isPending
+                ? "Saving..."
+                : mode === "edit"
+                  ? "Save changes"
+                  : "Post story"}
+            </Button>
           </DialogFooter>
         </div>
       </DialogContent>

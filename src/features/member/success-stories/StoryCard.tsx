@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Heart, MessageCircle, MoreHorizontal, Share2 } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  MoreHorizontal,
+  Pencil,
+  Share2,
+} from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { avatarUrl } from "@/lib/image";
@@ -25,6 +31,7 @@ import {
   StoryReactions,
 } from "./shared";
 import { StoryComments } from "./StoryComments";
+import { AddSuccessStoryDialog } from "./AddSuccessStoryDialog";
 
 const relationMap: Record<
   SuccessStory["relationshipStatus"],
@@ -57,6 +64,7 @@ export function StoryCard({
   story,
   currentUser,
   dict,
+  liked,
   onLike,
   onComment,
 }: {
@@ -64,11 +72,11 @@ export function StoryCard({
   story: SuccessStory;
   currentUser: { id: string; username: string; avatarSeed: string };
   dict: Dictionary;
-  onLike: (id: string) => void;
-  onComment: (id: string, text: string) => void;
+  liked: boolean;
+  onLike: (id: string) => Promise<void>;
+  onComment: (id: string, text: string) => Promise<void>;
 }) {
   const [comment, setComment] = useState("");
-  const [liked, setLiked] = useState(false);
   const commentInputId = `story-comment-${story.id}`;
   const mediaCount = countMedia(story);
   const storyHref = `/${lang}/success-stories/details/${story.id}`;
@@ -100,27 +108,51 @@ export function StoryCard({
             </div>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon-sm" className="rounded-full">
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href={storyHref}>Open details</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() =>
-                  toast.message("Report sent", {
-                    description: "Thanks for helping keep the community safe.",
-                  })
+          <div className="flex items-center gap-1">
+            {story.user.id === currentUser.id ? (
+              <AddSuccessStoryDialog
+                mode="edit"
+                story={story}
+                title="Edit success story"
+                description="Update your story and optionally upload new media."
+                userAvatar={avatarUrl(currentUser.avatarSeed, 96)}
+                trigger={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="rounded-full"
+                    aria-label="Edit story"
+                  >
+                    <Pencil className="size-4" />
+                  </Button>
                 }
-              >
-                Report
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              />
+            ) : null}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon-sm" className="rounded-full">
+                  <MoreHorizontal className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={storyHref}>Open details</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() =>
+                    toast.message("Report sent", {
+                      description:
+                        "Thanks for helping keep the community safe.",
+                    })
+                  }
+                >
+                  Report
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -173,10 +205,7 @@ export function StoryCard({
                 ? "bg-[#429CA8] text-[#429CA8]! hover:bg-[#388994]"
                 : "text-slate-900",
             )}
-            onClick={() => {
-              setLiked((prev) => !prev);
-              onLike(story.id);
-            }}
+            onClick={() => void onLike(story.id)}
           >
             <Heart className={cn("size-4", liked && "fill-current")} />
             <span>{story.likesCount}</span>
@@ -214,10 +243,10 @@ export function StoryCard({
 
         <form
           className="mt-5 flex items-start gap-3 rounded-[1.5rem] border border-[#429CA8]/12 bg-[#429CA8]/6 p-4"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!comment.trim()) return;
-            onComment(story.id, comment.trim());
+            await onComment(story.id, comment.trim());
             setComment("");
           }}
         >

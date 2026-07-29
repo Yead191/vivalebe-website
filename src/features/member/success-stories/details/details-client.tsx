@@ -10,11 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Locale } from "@/i18n/config";
-import type { Comment } from "@/lib/types";
 import type { SuccessStory } from "../types";
 import { brandButtonClass, brandSoftClass } from "../shared";
 import { StoryComments } from "../StoryComments";
 import { StoryMediaStrip } from "../shared";
+import {
+  createSuccessStoryCommentAction,
+  toggleSuccessStoryLikeAction,
+} from "../action";
 
 export function SuccessStoryDetailsClient({
   lang,
@@ -29,32 +32,59 @@ export function SuccessStoryDetailsClient({
 }) {
   const [story, setStory] = useState(initialStory);
   const [comment, setComment] = useState("");
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(initialStory.isLiked === true);
 
-  const handleLike = () => {
-    setLiked((prev) => {
+  const handleLike = async () => {
+    const previousLiked = liked;
+    const previousCount = story.likesCount;
+    const nextLiked = !previousLiked;
+    setLiked(nextLiked);
+    setStory((current) => ({
+      ...current,
+      isLiked: nextLiked,
+      likesCount: Math.max(current.likesCount + (nextLiked ? 1 : -1), 0),
+    }));
+
+    const result = await toggleSuccessStoryLikeAction(story.id);
+    if (!result.success) {
+      setLiked(previousLiked);
       setStory((current) => ({
         ...current,
-        likesCount: Math.max(current.likesCount + (prev ? -1 : 1), 0),
+        isLiked: previousLiked,
+        likesCount: previousCount,
       }));
-      return !prev;
-    });
+      toast.error(result.message ?? "Failed to update like");
+      return;
+    }
+
+    const confirmedLiked =
+      typeof result.data?.liked === "boolean"
+        ? result.data.liked
+        : typeof result.data?.isLiked === "boolean"
+          ? result.data.isLiked
+          : nextLiked;
+    setLiked(confirmedLiked);
+    const count = result.data?.totalLikes ?? result.data?.likesCount;
+    setStory((current) => ({
+      ...current,
+      isLiked: confirmedLiked,
+      likesCount: typeof count === "number" ? count : current.likesCount,
+    }));
   };
 
-  const handleComment = (text: string) => {
-    const newComment: Comment = {
-      id: `${story.id}-${Date.now()}`,
-      authorId: currentUser.id,
-      text,
-      createdAt: new Date().toISOString(),
-    };
+  const handleComment = async (text: string) => {
+    const result = await createSuccessStoryCommentAction(story.id, text);
+    if (!result.success) {
+      toast.error(result.message ?? "Failed to post comment");
+      return;
+    }
 
-    setStory((prev) => ({
-      ...prev,
-      commentsCount: prev.commentsCount + 1,
-      comments: [newComment, ...prev.comments],
+    setStory((previous) => ({
+      ...previous,
+      commentsCount: result.comments.length,
+      comments: result.comments,
     }));
-    toast.success("Comment posted");
+    toast.success(result.message ?? "Comment posted");
     setComment("");
   };
 
@@ -120,7 +150,10 @@ export function SuccessStoryDetailsClient({
             </div>
 
             <div className="mt-6 flex items-center gap-2">
-              <Button onClick={handleLike} className={brandButtonClass}>
+              <Button
+                onClick={() => void handleLike()}
+                className={brandButtonClass}
+              >
                 <Heart className="size-4" />
                 {liked ? "Liked" : dict.successStories.like}
                 <span className="ml-1">{story.likesCount}</span>
@@ -142,10 +175,10 @@ export function SuccessStoryDetailsClient({
             {dict.successStories.commentsTitle}
           </p>
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               if (!comment.trim()) return;
-              handleComment(comment.trim());
+              await handleComment(comment.trim());
             }}
             className="space-y-3 rounded-[1.5rem] border border-[#429CA8]/12 bg-[#429CA8]/6 p-4"
           >
