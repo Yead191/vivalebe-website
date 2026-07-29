@@ -8,6 +8,9 @@ import {
   getMutualMatches,
   type MatchSearchFilters,
 } from "@/features/member/my-list/action";
+import { getSearchHistory } from "./action";
+import { getProfileAction } from "@/features/member/settings/action";
+import { SavedSearches } from "./SavedSearches";
 
 interface DiscoverFeatureProps {
   lang: Locale;
@@ -22,16 +25,35 @@ export async function DiscoverFeature({
   query,
   filters = {},
 }: DiscoverFeatureProps) {
-  const me = getCurrentUser();
+  const mockMe = getCurrentUser();
+
+  let isPremium = !!mockMe.premium;
+  let meId = mockMe.id;
+
+  try {
+    const profileRes = await getProfileAction();
+    if (profileRes?.success && profileRes?.data) {
+      isPremium = !!(
+        profileRes.data.premiumMembership ?? profileRes.data.premium
+      );
+      meId = profileRes.data._id || profileRes.data.id || mockMe.id;
+    }
+  } catch (err) {
+    console.error("Error fetching profile in discover:", err);
+  }
 
   const searchFilters: MatchSearchFilters = {
     ...filters,
     ...(query.trim() && !filters.name ? { name: query.trim() } : {}),
   };
 
-  const users = await getMutualMatches(searchFilters);
+  const [users, historyRes] = await Promise.all([
+    getMutualMatches(searchFilters),
+    getSearchHistory().catch(() => ({ success: false, data: [] })),
+  ]);
 
-  const matches = users.filter((u) => u.id !== me.id);
+  const searches = historyRes?.success ? historyRes.data : [];
+  const matches = users.filter((u) => u.id !== meId);
 
   return (
     <div className="container py-6">
@@ -51,6 +73,13 @@ export async function DiscoverFeature({
       <div className="mb-6 max-w-3xl">
         <UsernameSearchForm lang={lang} dict={dict} initialQuery={query} />
       </div>
+
+      <SavedSearches
+        lang={lang}
+        dict={dict}
+        searches={searches}
+        isPremium={isPremium}
+      />
 
       <h2 className="mb-3 text-xs font-semibold tracking-wider text-foreground">
         {dict.discover.youMightLike}

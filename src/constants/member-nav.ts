@@ -19,7 +19,7 @@ export const memberNav: MemberNavItem[] = [
     href: "/discover",
     children: [
       { labelKey: "discoverUserName", href: "/discover?from=username" },
-      { labelKey: "discoverSavedSearch", href: "/discover?from=saved", premiumLocked: true },
+      // { labelKey: "discoverSavedSearch", href: "/discover?from=saved", premiumLocked: true },
     ],
   },
   {
