@@ -15,26 +15,27 @@ const columns: FooterColumn[] = [
   {
     headingKey: "sectionProduct",
     links: [
-      { labelKey: "productFeatures", href: "/features" },
-      { labelKey: "productSafety", href: "/safety" },
-      { labelKey: "productPricing", href: "/pricing" },
-      { labelKey: "productSubscription", href: "/subscription" },
-      { labelKey: "productCommunity", href: "/community" },
+      // { labelKey: "productFeatures", href: "/features" },
+      // { labelKey: "productSafety", href: "/safety" },
+      { labelKey: "productPricing", href: "/subscription" },
+      // { labelKey: "productSubscription", href: "/subscription" },
+      { labelKey: "productCommunity", href: "/flame" },
+      { labelKey: "productMyList", href: "/my-list" },
     ],
   },
   {
     headingKey: "sectionCompany",
     links: [
       { labelKey: "companyAbout", href: "/about" },
-      { labelKey: "companyResources", href: "/resources" },
-      { labelKey: "companyPress", href: "/press" },
-      { labelKey: "companyCareers", href: "/careers" },
+      // { labelKey: "companyResources", href: "/resources" },
+      // { labelKey: "companyPress", href: "/press" },
+      // { labelKey: "companyCareers", href: "/careers" },
     ],
   },
   {
     headingKey: "sectionSupport",
     links: [
-      { labelKey: "supportHelp", href: "/help" },
+      // { labelKey: "supportHelp", href: "/help" },
       { labelKey: "supportPrivacy", href: "/privacy" },
       { labelKey: "supportTerms", href: "/terms" },
       { labelKey: "supportContact", href: "/contact" },
