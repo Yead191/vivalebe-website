@@ -8,6 +8,16 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
 import { photoUrl } from "@/lib/image";
 
+import type { Locale } from "@/i18n/config";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  sendWink,
+  acceptWink,
+  createChatRoom,
+  swipeUser,
+} from "@/features/member/my-list/action";
+
 const sections = [
   { id: "summary", labelKey: "navSummary" as const },
   { id: "more-about-me", labelKey: "navMoreAboutMe" as const },
@@ -17,12 +27,93 @@ const sections = [
 ];
 
 interface Props {
+  lang: Locale;
   dict: Dictionary;
   user: User;
 }
 
-export function ProfileSidebar({ dict, user }: Props) {
+export function ProfileSidebar({ lang, dict, user }: Props) {
+  const router = useRouter();
   const [active, setActive] = useState<string>("summary");
+  const [winked, setWinked] = useState(user.isWinked || false);
+  const [isSendingWink, setIsSendingWink] = useState(false);
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [liked, setLiked] = useState(user.isLiked || false);
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  const handleWinkClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (winked) return;
+    setIsSendingWink(true);
+    try {
+      let res;
+      if (user.winkId) {
+        res = await acceptWink(user.winkId);
+      } else {
+        res = await sendWink(user.id);
+      }
+
+      if (res.success) {
+        setWinked(true);
+        toast.success(res.message || "Wink sent successfully");
+      } else {
+        toast.error(res.message || "Failed to send wink");
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    } finally {
+      setIsSendingWink(false);
+    }
+  };
+
+  const handleLikeClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isSwiping) return;
+    setIsSwiping(true);
+
+    const action = liked ? "dislike" : "like";
+    setLiked(!liked);
+
+    try {
+      const res = await swipeUser(user.id, action);
+      if (res.success) {
+        toast.success(res.message || `User ${action}d successfully`);
+      } else {
+        setLiked(liked);
+        toast.error(res.message || "Failed to swipe");
+      }
+    } catch (error) {
+      setLiked(liked);
+      toast.error("An error occurred");
+    } finally {
+      setIsSwiping(false);
+    }
+  };
+
+  const handleChatClick = async () => {
+    try {
+      setIsCreatingChat(true);
+      const res = await createChatRoom(user.id);
+      if (res.success) {
+        const roomId = res.data?._id || res.data?.id;
+        if (roomId) {
+          router.push(`/${lang}/chat/${roomId}`);
+        } else {
+          router.push(`/${lang}/chat`);
+        }
+      } else {
+        console.error("Failed to create chat room", res);
+        router.push(`/${lang}/chat`);
+      }
+    } catch (error) {
+      console.error(error);
+      router.push(`/${lang}/chat`);
+    } finally {
+      setIsCreatingChat(false);
+    }
+  };
 
   useEffect(() => {
     const handler = () => {
@@ -61,21 +152,38 @@ export function ProfileSidebar({ dict, user }: Props) {
         <button
           type="button"
           aria-label="Wink"
-          className="hover:text-brand transition-colors"
+          onClick={handleWinkClick}
+          disabled={isSendingWink || winked}
+          className={cn(
+            "transition-colors disabled:opacity-50",
+            winked ? "text-brand" : "text-muted-foreground hover:text-brand"
+          )}
         >
-          <Smile className="size-5" />
+          <Smile 
+            className={cn(
+              "size-5 transition-transform", 
+              winked && "fill-current stroke-card scale-110"
+            )} 
+          />
         </button>
         <button
           type="button"
           aria-label="Like"
-          className="hover:text-brand transition-colors"
+          onClick={handleLikeClick}
+          disabled={isSwiping}
+          className={cn(
+            "transition-colors disabled:opacity-50",
+            liked ? "text-red-500" : "text-muted-foreground hover:text-brand"
+          )}
         >
-          <Heart className="size-5" />
+          <Heart className={cn("size-5", liked && "fill-current")} />
         </button>
         <button
           type="button"
           aria-label="Message"
-          className="hover:text-brand transition-colors"
+          onClick={handleChatClick}
+          disabled={isCreatingChat}
+          className="hover:text-brand transition-colors disabled:opacity-50"
         >
           <MessageCircle className="size-5" />
         </button>

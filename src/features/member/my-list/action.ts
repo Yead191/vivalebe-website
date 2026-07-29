@@ -40,6 +40,16 @@ export async function getYouLikedUsers(): Promise<User[]> {
         religion: "",
         photos: to.profile ? [to.profile] : [],
         privatePhotosCount: 0,
+        winkId: item.winkId || item._id, // _id might be the swipe id, but just in case
+        isWinked: !!(
+          item.isWink ||
+          item.isWinked ||
+          item.winked ||
+          to.isWink ||
+          to.isWinked ||
+          to.winked
+        ),
+        isLiked: true,
       } as User;
     });
   } catch (error) {
@@ -304,8 +314,8 @@ export async function getWinks(): Promise<User[]> {
     if (!res.success || !res.data) return [];
 
     return res.data.map((item: any) => {
-      // For 'Winked at you', the other person is the sender (senderId)
-      const u = item.senderId || item.fromUser || item.user || item;
+      // Based on user feedback, show the receiverId
+      const u = item.receiverId || item.fromUser || item.user || item;
       return {
         id: u._id || u.id,
         username: u.name || u.username,
@@ -333,6 +343,7 @@ export async function getWinks(): Promise<User[]> {
         photos: u.profile || u.image ? [u.profile || u.image] : [],
         privatePhotosCount: 0,
         winkId: item._id || item.id,
+        isWinked: item.isWinked || item.isMatch || false,
       } as User;
     });
   } catch (error) {

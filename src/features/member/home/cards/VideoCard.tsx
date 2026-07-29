@@ -67,6 +67,7 @@ export const VideoCard = memo(function VideoCard({
         authors={authors}
         currentUserAvatarSeed={currentUserAvatarSeed}
         commentPlaceholder={dict.myHome.composerPlaceholder}
+        lang={lang}
       />
     </article>
   );
