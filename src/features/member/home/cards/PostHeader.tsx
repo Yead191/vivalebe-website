@@ -29,7 +29,7 @@ export function PostHeader({
 
   return (
     <div className="flex items-start gap-3 px-4 pt-4">
-      <Link href={`/${lang}/profile/${user.username}`} className="shrink-0">
+      <Link href={`/${lang}/my-list/profile/${user.id}`} className="shrink-0">
         <Image
           src={avatarUrl(user.avatarSeed, 80)}
           alt={user.displayName}
@@ -41,7 +41,7 @@ export function PostHeader({
       </Link>
       <div className="min-w-0 flex-1">
         <Link
-          href={`/${lang}/profile/${user.username}`}
+          href={`/${lang}/my-list/profile/${user.id}`}
           className="inline-flex items-center gap-1.5 text-sm font-semibold tracking-wide hover:text-brand transition-colors"
         >
           {user.displayName}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ThumbsUp, MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
 import { toggleLikeAction, addCommentAction } from "@/lib/actions/feed";
@@ -32,7 +33,8 @@ export function PostActions({
   authors: initialAuthors,
   currentUserAvatarSeed,
   commentPlaceholder = "Write a comment...",
-}: PostActionsProps) {
+  lang = "en",
+}: PostActionsProps & { lang?: string }) {
   const [likes, setLikes] = useState({
     count: initialLikeCount,
     liked: initialLiked,
@@ -54,10 +56,7 @@ export function PostActions({
     }
   }, [initialComments, initialAuthors]);
 
-  const commentCount = Math.max(
-    initialCommentCount ?? 0,
-    comments.length,
-  );
+  const commentCount = Math.max(initialCommentCount ?? 0, comments.length);
 
   const onLike = () => {
     setLikes((prev) =>
@@ -129,18 +128,27 @@ export function PostActions({
             const author = authors[c.authorId];
             return (
               <div key={c.id} className="flex gap-2 text-sm">
-                <Image
-                  src={avatarUrl(author?.avatarSeed ?? c.authorId, 48)}
-                  alt={author?.displayName ?? ""}
-                  width={28}
-                  height={28}
-                  className="size-7 shrink-0 rounded-full object-cover"
-                  unoptimized
-                />
+                <Link
+                  href={`/${lang}/my-list/profile/${c.authorId}`}
+                  className="shrink-0"
+                >
+                  <Image
+                    src={avatarUrl(author?.avatarSeed ?? c.authorId, 48)}
+                    alt={author?.displayName ?? ""}
+                    width={28}
+                    height={28}
+                    className="size-7 rounded-full object-cover"
+                    unoptimized
+                  />
+                </Link>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold">
-                    {author?.displayName ?? "USER"}
-                  </p>
+                  <Link
+                    href={`/${lang}/my-list/profile/${c.authorId}`}
+                  >
+                    <p className="text-xs font-semibold hover:text-brand transition-colors">
+                      {author?.displayName ?? "USER"}
+                    </p>
+                  </Link>
                   <p className="text-sm text-foreground">{c.text}</p>
                 </div>
               </div>
