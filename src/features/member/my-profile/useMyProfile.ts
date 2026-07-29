@@ -113,6 +113,10 @@ export function useMyProfile(user: User): MyProfileApi {
       if (raw) {
         const parsed = JSON.parse(raw) as PersistedState;
 
+        // Always trust the API for name and photo over cached localStorage
+        parsed.displayName = user.displayName;
+        parsed.avatarUrl = user.image ?? user.avatarSeed;
+
         // Sync photos if localStorage has no photos but user does
         if (
           parsed.details &&

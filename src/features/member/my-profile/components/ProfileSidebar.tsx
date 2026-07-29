@@ -42,8 +42,12 @@ export function ProfileSidebar({
   const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    onAvatarChange(url);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      if (base64) onAvatarChange(base64);
+    };
+    reader.readAsDataURL(file);
     e.target.value = "";
   };
 
@@ -63,7 +67,7 @@ export function ProfileSidebar({
           className="object-cover"
           unoptimized
         />
-        <button
+        {/* <button
           type="button"
           onClick={() => avatarInputRef.current?.click()}
           className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-1.5 bg-black/55 py-2 text-xs font-semibold uppercase tracking-wider text-white opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer"
@@ -77,7 +81,7 @@ export function ProfileSidebar({
           accept="image/*"
           className="hidden"
           onChange={handleAvatarFile}
-        />
+        /> */}
       </div>
 
       <div className="flex items-center gap-2">
@@ -103,24 +107,24 @@ export function ProfileSidebar({
             <span className="text-sm font-semibold uppercase tracking-wider">
               {displayName}, {age}
             </span>
-            <button
+            {/* <button
               type="button"
               onClick={() => setEditingName(true)}
               aria-label="Edit name"
               className="text-muted-foreground hover:text-brand transition-colors cursor-pointer"
             >
               <Pencil className="size-3.5" />
-            </button>
+            </button> */}
           </>
         )}
       </div>
 
-      <a
+      {/* <a
         href="#verify"
         className="block text-sm font-semibold uppercase tracking-wider text-brand underline underline-offset-4 hover:opacity-80"
       >
         Verify my photo
-      </a>
+      </a> */}
 
       <nav className="flex flex-col gap-3 pt-2">
         {navItems.map((item) => (
