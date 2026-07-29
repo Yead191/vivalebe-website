@@ -3,7 +3,7 @@
 import { myFetch } from "@/helpers/myFetch";
 import type { User } from "@/lib/types";
 
-export type SwipeActionType = "like" | "pass";
+export type SwipeActionType = "like" | "reject";
 
 export interface SwipeFeedResult {
   users: User[];

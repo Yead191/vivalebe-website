@@ -16,6 +16,7 @@ interface VideoCardProps {
   likeCount: number;
   liked: boolean;
   comments: Comment[];
+  commentCount?: number;
   authors: Record<string, { displayName: string; avatarSeed: string }>;
   currentUserAvatarSeed: string;
 }
@@ -28,6 +29,7 @@ export const VideoCard = memo(function VideoCard({
   likeCount,
   liked,
   comments,
+  commentCount,
   authors,
   currentUserAvatarSeed,
 }: VideoCardProps) {
@@ -61,6 +63,7 @@ export const VideoCard = memo(function VideoCard({
         initialLikeCount={likeCount}
         initialLiked={liked}
         initialComments={comments}
+        initialCommentCount={commentCount}
         authors={authors}
         currentUserAvatarSeed={currentUserAvatarSeed}
         commentPlaceholder={dict.myHome.composerPlaceholder}

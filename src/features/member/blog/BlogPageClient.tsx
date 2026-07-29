@@ -1,16 +1,31 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { ChevronDown, PenLine } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState, useMemo, useTransition } from "react";
+import { ChevronDown, Loader2, PenLine } from "lucide-react";
+import { toast } from "sonner";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { BlogPost, Comment, User } from "@/lib/types";
 import { BlogCard } from "./components/BlogCard";
 import { BlogSidebar, type BlogTab } from "./components/BlogSidebar";
 import { PostBlogModal } from "./components/PostBlogModal";
+import {
+  getMyBlogsAction,
+  getMyCommentedBlogsAction,
+  getMyLikedBlogsAction,
+} from "./actions";
 
 type SortMode = "newest" | "popular";
+type RemoteBlogTab = Exclude<BlogTab, "all">;
+
+interface BlogTabPayload {
+  blogs: BlogPost[];
+  authorsMap: Record<string, User>;
+  authorInfoMap: Record<string, { displayName: string; avatarSeed: string }>;
+  likeMetaMap: Record<string, { count: number; liked: boolean }>;
+  commentMap: Record<string, Comment[]>;
+  commentCountMap: Record<string, number>;
+}
 
 interface BlogPageClientProps {
   lang: Locale;
@@ -37,7 +52,6 @@ export function BlogPageClient({
   commentMap,
   commentCountMap = {},
   currentUserAvatarSeed,
-  currentUserId,
   recentBlogs,
   totalBlogs,
 }: BlogPageClientProps) {
@@ -45,24 +59,70 @@ export function BlogPageClient({
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [activeTab, setActiveTab] = useState<BlogTab>("all");
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const [tabPayloads, setTabPayloads] = useState<
+    Partial<Record<RemoteBlogTab, BlogTabPayload>>
+  >({});
+
+  const activePayload =
+    activeTab === "all" ? undefined : tabPayloads[activeTab];
+  const activeBlogs = activePayload?.blogs ?? blogs;
+  const activeAuthorsMap = activePayload
+    ? { ...activePayload.authorsMap, ...authorsMap }
+    : authorsMap;
+  const activeAuthorInfoMap = activePayload
+    ? { ...activePayload.authorInfoMap, ...authorInfoMap }
+    : authorInfoMap;
+  const activeLikeMetaMap = activePayload
+    ? { ...likeMetaMap, ...activePayload.likeMetaMap }
+    : likeMetaMap;
+  const activeCommentMap = activePayload
+    ? { ...commentMap, ...activePayload.commentMap }
+    : commentMap;
+  const activeCommentCountMap = activePayload
+    ? { ...commentCountMap, ...activePayload.commentCountMap }
+    : commentCountMap;
+
+  const handleTabChange = (tab: BlogTab) => {
+    setActiveTab(tab);
+
+    if (tab === "all") return;
+
+    startTransition(async () => {
+      const res =
+        tab === "my"
+          ? await getMyBlogsAction()
+          : tab === "liked"
+            ? await getMyLikedBlogsAction()
+            : await getMyCommentedBlogsAction();
+
+      if (!res.success) {
+        toast.error(res.message ?? "Failed to load blogs");
+        return;
+      }
+
+      setTabPayloads((previous) => ({
+        ...previous,
+        [tab]: {
+          blogs: res.blogs,
+          authorsMap: res.authorsMap,
+          authorInfoMap: res.authorInfoMap,
+          likeMetaMap: res.likeMetaMap,
+          commentMap: res.commentMap,
+          commentCountMap: res.commentCountMap,
+        },
+      }));
+    });
+  };
 
   const visibleBlogs = useMemo(() => {
-    let list = [...blogs];
-
-    if (activeTab === "my") {
-      list = list.filter((b) => b.authorId === currentUserId);
-    } else if (activeTab === "liked") {
-      list = list.filter((b) => likeMetaMap[b.id]?.liked);
-    } else if (activeTab === "commented") {
-      list = list.filter((b) =>
-        (commentMap[b.id] ?? []).some((c) => c.authorId === currentUserId),
-      );
-    }
+    let list = [...activeBlogs];
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter((b) => {
-        const author = authorsMap[b.authorId];
+        const author = activeAuthorsMap[b.authorId];
         return (
           b.title.toLowerCase().includes(q) ||
           (author?.displayName.toLowerCase().includes(q) ?? false)
@@ -78,34 +138,33 @@ export function BlogPageClient({
     } else {
       list.sort((a, b) => {
         const scoreA =
-          (likeMetaMap[a.id]?.count ?? 0) * 2 +
-          (commentCountMap[a.id] ?? commentMap[a.id]?.length ?? 0);
+          (activeLikeMetaMap[a.id]?.count ?? 0) * 2 +
+          (activeCommentCountMap[a.id] ?? activeCommentMap[a.id]?.length ?? 0);
         const scoreB =
-          (likeMetaMap[b.id]?.count ?? 0) * 2 +
-          (commentCountMap[b.id] ?? commentMap[b.id]?.length ?? 0);
+          (activeLikeMetaMap[b.id]?.count ?? 0) * 2 +
+          (activeCommentCountMap[b.id] ?? activeCommentMap[b.id]?.length ?? 0);
         return scoreB - scoreA;
       });
     }
 
     return list;
   }, [
-    blogs,
+    activeBlogs,
     activeTab,
     searchQuery,
     sortMode,
-    currentUserId,
-    likeMetaMap,
-    commentMap,
-    commentCountMap,
-    authorsMap,
+    activeLikeMetaMap,
+    activeCommentMap,
+    activeCommentCountMap,
+    activeAuthorsMap,
   ]);
+
+  const displayedTotal = activePayload?.blogs.length ?? totalBlogs;
 
   return (
     <div className="container py-6">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        {/* Main feed */}
         <div className="space-y-5 min-w-0">
-          {/* Header */}
           <div>
             <h1 className="text-xs font-bold tracking-widest text-foreground uppercase">
               {dict.blog.title}
@@ -123,12 +182,11 @@ export function BlogPageClient({
             </button>
           </div>
 
-          {/* Sort bar */}
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               {dict.blog.totalBlogs}{" "}
               <span className="font-semibold text-foreground">
-                {totalBlogs.toLocaleString()}
+                {displayedTotal.toLocaleString()}
               </span>
             </p>
             <div className="flex items-center gap-1.5">
@@ -148,11 +206,14 @@ export function BlogPageClient({
             </div>
           </div>
 
-          {/* Blog feed */}
-          {visibleBlogs.length > 0 ? (
+          {activeTab !== "all" && isPending ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : visibleBlogs.length > 0 ? (
             <div className="space-y-4">
               {visibleBlogs.map((blog) => {
-                const author = authorsMap[blog.authorId];
+                const author = activeAuthorsMap[blog.authorId];
                 if (!author) return null;
                 return (
                   <BlogCard
@@ -161,11 +222,11 @@ export function BlogPageClient({
                     dict={dict}
                     blog={blog}
                     author={author}
-                    likeCount={likeMetaMap[blog.id]?.count ?? 0}
-                    liked={likeMetaMap[blog.id]?.liked ?? false}
-                    comments={commentMap[blog.id] ?? []}
-                    commentCount={commentCountMap[blog.id]}
-                    authors={authorInfoMap}
+                    likeCount={activeLikeMetaMap[blog.id]?.count ?? 0}
+                    liked={activeLikeMetaMap[blog.id]?.liked ?? false}
+                    comments={activeCommentMap[blog.id] ?? []}
+                    commentCount={activeCommentCountMap[blog.id]}
+                    authors={activeAuthorInfoMap}
                     currentUserAvatarSeed={currentUserAvatarSeed}
                   />
                 );
@@ -178,7 +239,6 @@ export function BlogPageClient({
           )}
         </div>
 
-        {/* Sidebar */}
         <div className="hidden lg:block">
           <div className="sticky top-22">
             <BlogSidebar
@@ -187,7 +247,7 @@ export function BlogPageClient({
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               activeTab={activeTab}
-              onTabChange={setActiveTab}
+              onTabChange={handleTabChange}
               recentBlogs={recentBlogs}
             />
           </div>

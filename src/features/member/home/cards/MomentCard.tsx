@@ -21,6 +21,7 @@ interface MomentCardProps {
   likeCount: number;
   liked: boolean;
   comments: Comment[];
+  commentCount?: number;
   authors: Record<string, { displayName: string; avatarSeed: string }>;
   currentUserAvatarSeed: string;
 }
@@ -33,6 +34,7 @@ export function MomentCard({
   likeCount,
   liked,
   comments,
+  commentCount,
   authors,
   currentUserAvatarSeed,
 }: MomentCardProps) {
@@ -108,6 +110,7 @@ export function MomentCard({
           initialLikeCount={likeCount}
           initialLiked={liked}
           initialComments={comments}
+          initialCommentCount={commentCount}
           authors={authors}
           currentUserAvatarSeed={currentUserAvatarSeed}
           commentPlaceholder={dict.myHome.composerPlaceholder}
