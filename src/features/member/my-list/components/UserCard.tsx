@@ -66,6 +66,10 @@ export function UserCard({
   >(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    setLiked(user.isLiked || false);
+  }, [user.isLiked]);
+
   const handleRespond = async (isGranted: boolean) => {
     if (!user.privateAlbumRequestId) return;
     setIsResponding(true);

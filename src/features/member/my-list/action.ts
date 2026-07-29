@@ -295,7 +295,7 @@ export async function getMutualMatches(
           u.isWinked ||
           u.winked
         ),
-        isLiked: !!(item.isLiked || item.liked || u.isLiked || u.liked),
+        isLiked: true, // Mutual matches implies you liked them
       } as User;
     });
   } catch (error) {
