@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { LocaleLink } from "@/components/shared/locale-link";
@@ -18,6 +18,7 @@ const columns: FooterColumn[] = [
       { labelKey: "productFeatures", href: "/features" },
       { labelKey: "productSafety", href: "/safety" },
       { labelKey: "productPricing", href: "/pricing" },
+      { labelKey: "productSubscription", href: "/subscription" },
       { labelKey: "productCommunity", href: "/community" },
     ],
   },
@@ -49,7 +50,7 @@ interface FooterProps {
 export function Footer({ lang, dict }: FooterProps) {
   const year = new Date().getFullYear();
   const pathname = usePathname();
-  if (pathname?.includes('/chat')) {
+  if (pathname?.includes("/chat")) {
     return null;
   }
   return (
@@ -91,7 +92,9 @@ export function Footer({ lang, dict }: FooterProps) {
       </div>
       <div className="border-t border-white/10">
         <div className="container py-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs text-white/70">
-          <span>© {year} Viva Leve. {dict.footer.copyright}</span>
+          <span>
+            © {year} Viva Leve. {dict.footer.copyright}
+          </span>
           <span className="flex items-center gap-1.5">
             {dict.footer.builtWith}
             <Heart className="size-3.5 fill-white/80 text-white/80" />
