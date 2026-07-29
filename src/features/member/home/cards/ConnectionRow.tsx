@@ -1,6 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
-import { ChevronRight, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { ConnectionEvent, User } from "@/lib/types";
@@ -13,13 +12,14 @@ interface ConnectionRowProps {
   user: User;
 }
 
-export function ConnectionRow({ lang, dict, event, user }: ConnectionRowProps) {
+export function ConnectionRow({ dict, event, user }: ConnectionRowProps) {
   const verb =
     event.kind === "viewed"
       ? dict.myHome.viewedYourProfile
       : event.kind === "liked"
         ? dict.myHome.linkLikesYou
         : dict.myHome.linkWinkedAtYou;
+
   return (
     <div className="flex items-center gap-3 rounded-md px-2 py-2 bg-muted/50 opacity-75 cursor-not-allowed">
       <Image
@@ -31,9 +31,13 @@ export function ConnectionRow({ lang, dict, event, user }: ConnectionRowProps) {
         unoptimized
       />
 
-      <span className="flex-1 text-sm text-foreground">{verb}</span>
+      <span className="flex-1 text-sm text-foreground">
+        <span className="font-semibold uppercase tracking-wide">
+          {user.displayName}
+        </span>{" "}
+        {verb}
+      </span>
 
-      {/* Lock Icon */}
       <Lock className="size-4 text-muted-foreground" />
     </div>
   );
