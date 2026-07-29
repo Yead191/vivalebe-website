@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, ChevronDown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,11 @@ import { StoryCard } from "./StoryCard";
 import { countMedia } from "./shared";
 import { sortOptions } from "../../../lib/mock/success-stories-mock";
 import type { SuccessStory, SuccessStoriesSortKey } from "./types";
-import type { Comment } from "@/lib/types";
 import { toast } from "sonner";
+import {
+  createSuccessStoryCommentAction,
+  toggleSuccessStoryLikeAction,
+} from "./action";
 
 const sortKeyMap: Record<string, SuccessStoriesSortKey> = {
   Newest: "newest",
@@ -99,7 +102,16 @@ export function SuccessStoriesPageClient({
   const [stories, setStories] = useState(initialStories);
   const [sortKey, setSortKey] = useState<SuccessStoriesSortKey>("newest");
   const [isPending, startTransition] = useTransition();
-  const [, setLikedStoryIds] = useState<string[]>([]);
+  const [likedStoryIds, setLikedStoryIds] = useState<string[]>(() =>
+    initialStories.filter((story) => story.isLiked).map((story) => story.id),
+  );
+
+  useEffect(() => {
+    setStories(initialStories);
+    setLikedStoryIds(
+      initialStories.filter((story) => story.isLiked).map((story) => story.id),
+    );
+  }, [initialStories]);
 
   const visibleStories = useMemo(() => {
     const list = [...stories];
@@ -132,43 +144,72 @@ export function SuccessStoriesPageClient({
     });
   }, [stories, sortKey, currentUser.username]);
 
-  const handleLike = (storyId: string) => {
-    setLikedStoryIds((prev) => {
-      const isLiked = prev.includes(storyId);
+  const handleLike = async (storyId: string) => {
+    const wasLiked = likedStoryIds.includes(storyId);
+    const nextLiked = !wasLiked;
+    const updateLike = (liked: boolean, count?: number) => {
+      setLikedStoryIds((previous) =>
+        liked
+          ? Array.from(new Set([...previous, storyId]))
+          : previous.filter((id) => id !== storyId),
+      );
       setStories((current) =>
         current.map((story) =>
           story.id === storyId
             ? {
                 ...story,
-                likesCount: Math.max(story.likesCount + (isLiked ? -1 : 1), 0),
+                isLiked: liked,
+                likesCount:
+                  count ??
+                  Math.max(story.likesCount + (liked ? 1 : -1), 0),
               }
             : story,
         ),
       );
-      return isLiked ? prev.filter((id) => id !== storyId) : [...prev, storyId];
-    });
-  };
-
-  const handleComment = (storyId: string, text: string) => {
-    const comment: Comment = {
-      id: `${storyId}-${Date.now()}`,
-      authorId: currentUser.id,
-      text,
-      createdAt: new Date().toISOString(),
     };
 
-    setStories((prev) =>
-      prev.map((story) =>
+    updateLike(nextLiked);
+    const result = await toggleSuccessStoryLikeAction(storyId);
+    if (!result.success) {
+      updateLike(wasLiked);
+      toast.error(result.message ?? "Failed to update like");
+      return;
+    }
+
+    const liked =
+      typeof result.data?.liked === "boolean"
+        ? result.data.liked
+        : typeof result.data?.isLiked === "boolean"
+          ? result.data.isLiked
+          : nextLiked;
+    const count =
+      typeof result.data?.totalLikes === "number"
+        ? result.data.totalLikes
+        : result.data?.likesCount;
+    if (liked !== nextLiked || typeof count === "number") {
+      updateLike(liked, count);
+    }
+  };
+
+  const handleComment = async (storyId: string, text: string) => {
+    const result = await createSuccessStoryCommentAction(storyId, text);
+    if (!result.success) {
+      toast.error(result.message ?? "Failed to post comment");
+      return;
+    }
+
+    setStories((previous) =>
+      previous.map((story) =>
         story.id === storyId
           ? {
               ...story,
-              commentsCount: story.commentsCount + 1,
-              comments: [comment, ...story.comments],
+              commentsCount: result.comments.length,
+              comments: result.comments,
             }
           : story,
       ),
     );
-    toast.success("Comment posted");
+    toast.success(result.message ?? "Comment posted");
   };
 
   return (
@@ -225,6 +266,7 @@ export function SuccessStoriesPageClient({
                 key={story.id}
                 lang={lang}
                 story={story}
+                liked={likedStoryIds.includes(story.id)}
                 onLike={handleLike}
                 onComment={handleComment}
                 currentUser={currentUser}
