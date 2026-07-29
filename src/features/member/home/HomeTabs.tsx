@@ -136,8 +136,11 @@ export function HomeTabs({
       </TabsList>
 
       <TabsContent value="videos" className="space-y-4 pt-4">
-        <div className="flex items-center justify-between px-1">
+        <div className="px-1">
           <UploadVideoModal dict={dict} />
+        </div>
+        <div className="flex items-center justify-between px-1">
+          <span />
           <SortDropdown value={videoSort} onChange={setVideoSort} dict={dict} />
         </div>
         <div className="space-y-4">
