@@ -4,8 +4,10 @@ import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import { ThumbsUp, MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
-import { toggleLikeAction } from "@/lib/actions/feed";
-import { createBlogCommentAction } from "@/features/member/blog/actions";
+import {
+  createBlogCommentAction,
+  toggleBlogLikeAction,
+} from "@/features/member/blog/actions";
 import {
   createPostCommentAction,
   togglePostLikeAction,
@@ -75,8 +77,27 @@ export function PostActions({
 
     startTransition(async () => {
       if (kind === "blog") {
-        const next = await toggleLikeAction(kind, postId);
-        setLikes({ count: next.count, liked: next.byCurrentUser });
+        const res = await toggleBlogLikeAction(postId);
+        if (!res.success) {
+          setLikes(prev);
+          toast.error(res.message ?? "Failed to update blog like");
+          return;
+        }
+
+        setLikes({
+          liked:
+            typeof res.data?.liked === "boolean"
+              ? res.data.liked
+              : typeof res.data?.isLiked === "boolean"
+                ? res.data.isLiked
+                : nextLiked,
+          count:
+            typeof res.data?.likeCount === "number"
+              ? res.data.likeCount
+              : typeof res.data?.totalLikes === "number"
+                ? res.data.totalLikes
+                : nextCount,
+        });
         return;
       }
 

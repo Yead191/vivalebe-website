@@ -9,9 +9,23 @@ import type { BlogPost, Comment, User } from "@/lib/types";
 import { BlogCard } from "./components/BlogCard";
 import { BlogSidebar, type BlogTab } from "./components/BlogSidebar";
 import { PostBlogModal } from "./components/PostBlogModal";
-import { getMyBlogsAction } from "./actions";
+import {
+  getMyBlogsAction,
+  getMyCommentedBlogsAction,
+  getMyLikedBlogsAction,
+} from "./actions";
 
 type SortMode = "newest" | "popular";
+type RemoteBlogTab = Exclude<BlogTab, "all">;
+
+interface BlogTabPayload {
+  blogs: BlogPost[];
+  authorsMap: Record<string, User>;
+  authorInfoMap: Record<string, { displayName: string; avatarSeed: string }>;
+  likeMetaMap: Record<string, { count: number; liked: boolean }>;
+  commentMap: Record<string, Comment[]>;
+  commentCountMap: Record<string, number>;
+}
 
 interface BlogPageClientProps {
   lang: Locale;
@@ -38,7 +52,6 @@ export function BlogPageClient({
   commentMap,
   commentCountMap = {},
   currentUserAvatarSeed,
-  currentUserId,
   recentBlogs,
   totalBlogs,
 }: BlogPageClientProps) {
@@ -48,73 +61,63 @@ export function BlogPageClient({
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const [myBlogs, setMyBlogs] = useState<BlogPost[] | null>(null);
-  const [myAuthorsMap, setMyAuthorsMap] = useState<Record<string, User>>({});
-  const [myAuthorInfoMap, setMyAuthorInfoMap] = useState<
-    Record<string, { displayName: string; avatarSeed: string }>
-  >({});
-  const [myLikeMetaMap, setMyLikeMetaMap] = useState<
-    Record<string, { count: number; liked: boolean }>
-  >({});
-  const [myCommentMap, setMyCommentMap] = useState<Record<string, Comment[]>>(
-    {},
-  );
-  const [myCommentCountMap, setMyCommentCountMap] = useState<
-    Record<string, number>
+  const [tabPayloads, setTabPayloads] = useState<
+    Partial<Record<RemoteBlogTab, BlogTabPayload>>
   >({});
 
-  const activeBlogs = activeTab === "my" && myBlogs ? myBlogs : blogs;
-  const activeAuthorsMap =
-    activeTab === "my" && myBlogs
-      ? { ...authorsMap, ...myAuthorsMap }
-      : authorsMap;
-  const activeAuthorInfoMap =
-    activeTab === "my" && myBlogs
-      ? { ...authorInfoMap, ...myAuthorInfoMap }
-      : authorInfoMap;
-  const activeLikeMetaMap =
-    activeTab === "my" && myBlogs
-      ? { ...likeMetaMap, ...myLikeMetaMap }
-      : likeMetaMap;
-  const activeCommentMap =
-    activeTab === "my" && myBlogs
-      ? { ...commentMap, ...myCommentMap }
-      : commentMap;
-  const activeCommentCountMap =
-    activeTab === "my" && myBlogs
-      ? { ...commentCountMap, ...myCommentCountMap }
-      : commentCountMap;
+  const activePayload =
+    activeTab === "all" ? undefined : tabPayloads[activeTab];
+  const activeBlogs = activePayload?.blogs ?? blogs;
+  const activeAuthorsMap = activePayload
+    ? { ...activePayload.authorsMap, ...authorsMap }
+    : authorsMap;
+  const activeAuthorInfoMap = activePayload
+    ? { ...activePayload.authorInfoMap, ...authorInfoMap }
+    : authorInfoMap;
+  const activeLikeMetaMap = activePayload
+    ? { ...likeMetaMap, ...activePayload.likeMetaMap }
+    : likeMetaMap;
+  const activeCommentMap = activePayload
+    ? { ...commentMap, ...activePayload.commentMap }
+    : commentMap;
+  const activeCommentCountMap = activePayload
+    ? { ...commentCountMap, ...activePayload.commentCountMap }
+    : commentCountMap;
 
   const handleTabChange = (tab: BlogTab) => {
     setActiveTab(tab);
 
-    if (tab !== "my") return;
+    if (tab === "all") return;
 
     startTransition(async () => {
-      const res = await getMyBlogsAction();
+      const res =
+        tab === "my"
+          ? await getMyBlogsAction()
+          : tab === "liked"
+            ? await getMyLikedBlogsAction()
+            : await getMyCommentedBlogsAction();
+
       if (!res.success) {
-        toast.error(res.message ?? "Failed to load my blogs");
+        toast.error(res.message ?? "Failed to load blogs");
         return;
       }
-      setMyBlogs(res.blogs);
-      setMyAuthorsMap(res.authorsMap);
-      setMyAuthorInfoMap(res.authorInfoMap);
-      setMyLikeMetaMap(res.likeMetaMap);
-      setMyCommentMap(res.commentMap);
-      setMyCommentCountMap(res.commentCountMap);
+
+      setTabPayloads((previous) => ({
+        ...previous,
+        [tab]: {
+          blogs: res.blogs,
+          authorsMap: res.authorsMap,
+          authorInfoMap: res.authorInfoMap,
+          likeMetaMap: res.likeMetaMap,
+          commentMap: res.commentMap,
+          commentCountMap: res.commentCountMap,
+        },
+      }));
     });
   };
 
   const visibleBlogs = useMemo(() => {
     let list = [...activeBlogs];
-
-    if (activeTab === "liked") {
-      list = list.filter((b) => activeLikeMetaMap[b.id]?.liked);
-    } else if (activeTab === "commented") {
-      list = list.filter((b) =>
-        (activeCommentMap[b.id] ?? []).some((c) => c.authorId === currentUserId),
-      );
-    }
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -150,15 +153,13 @@ export function BlogPageClient({
     activeTab,
     searchQuery,
     sortMode,
-    currentUserId,
     activeLikeMetaMap,
     activeCommentMap,
     activeCommentCountMap,
     activeAuthorsMap,
   ]);
 
-  const displayedTotal =
-    activeTab === "my" && myBlogs ? myBlogs.length : totalBlogs;
+  const displayedTotal = activePayload?.blogs.length ?? totalBlogs;
 
   return (
     <div className="container py-6">
@@ -205,7 +206,7 @@ export function BlogPageClient({
             </div>
           </div>
 
-          {activeTab === "my" && isPending && !myBlogs ? (
+          {activeTab !== "all" && isPending ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="size-5 animate-spin text-muted-foreground" />
             </div>
