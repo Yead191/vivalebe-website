@@ -7,6 +7,7 @@ import type { User } from "@/lib/types";
 import { LeftSidebar } from "./LeftSidebar";
 import { QuickSearch } from "./QuickSearch";
 import { HomeTabs } from "./HomeTabs";
+import type { HomeTab } from "./tabs";
 import { RightSidebar } from "./RightSidebar";
 import { getFeed } from "./action";
 import { getMutualMatches } from "@/features/member/my-list/action";
@@ -15,9 +16,14 @@ import { getProfileAction } from "@/features/member/settings/action";
 interface HomeFeatureProps {
   lang: Locale;
   dict: Dictionary;
+  activeTab?: HomeTab;
 }
 
-export async function HomeFeature({ lang, dict }: HomeFeatureProps) {
+export async function HomeFeature({
+  lang,
+  dict,
+  activeTab = "videos",
+}: HomeFeatureProps) {
   const mockMe = getCurrentUser();
   const viewedCount = getCurrentViewedCount();
 
@@ -76,6 +82,7 @@ export async function HomeFeature({ lang, dict }: HomeFeatureProps) {
           <HomeTabs
             lang={lang}
             dict={dict}
+            activeTab={activeTab}
             videos={videoFeed.videos}
             videoMeta={videoFeed.videoMeta}
             moments={imageFeed.moments}

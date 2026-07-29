@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Video, Sparkles, Heart } from "lucide-react";
 import type { Locale } from "@/i18n/config";
@@ -19,12 +20,15 @@ import { SortDropdown } from "./SortDropdown";
 import { UploadVideoModal } from "./modals/UploadVideoModal";
 import { CreatePostModal } from "./modals/CreatePostModal";
 import type { PostMeta } from "./action";
+import { parseHomeTab, type HomeTab } from "./tabs";
 
-export type { PostMeta };
+export type { PostMeta, HomeTab };
+export { parseHomeTab };
 
 interface HomeTabsProps {
   lang: Locale;
   dict: Dictionary;
+  activeTab?: HomeTab;
   videos: VideoPost[];
   videoMeta: Record<string, PostMeta>;
   moments: MomentPost[];
@@ -50,6 +54,7 @@ function sortByPopularity<T extends { id: string }>(
 export function HomeTabs({
   lang,
   dict,
+  activeTab = "videos",
   videos,
   videoMeta,
   moments,
@@ -58,6 +63,8 @@ export function HomeTabs({
   authors,
   currentUserAvatarSeed,
 }: HomeTabsProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [videoSort, setVideoSort] = useState<FeedSort>("newest");
   const [momentSort, setMomentSort] = useState<FeedSort>("popular");
 
@@ -91,8 +98,13 @@ export function HomeTabs({
     [authors],
   );
 
+  const onTabChange = (value: string) => {
+    const tab = parseHomeTab(value);
+    router.replace(`${pathname}?tab=${tab}`, { scroll: false });
+  };
+
   return (
-    <Tabs defaultValue="videos" className="w-full">
+    <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <TabsList className="grid h-14 w-full grid-cols-3 gap-1 rounded-[20px] bg-muted/40 p-1.5">
         <TabsTrigger
           value="videos"
@@ -140,6 +152,7 @@ export function HomeTabs({
                 likeCount: 0,
                 liked: false,
                 comments: [],
+                commentCount: 0,
                 popularity: 0,
               };
               return author ? (
@@ -152,6 +165,7 @@ export function HomeTabs({
                   likeCount={meta.likeCount}
                   liked={meta.liked}
                   comments={meta.comments}
+                  commentCount={meta.commentCount}
                   authors={authorMini}
                   currentUserAvatarSeed={currentUserAvatarSeed}
                 />
@@ -185,6 +199,7 @@ export function HomeTabs({
                 likeCount: 0,
                 liked: false,
                 comments: [],
+                commentCount: 0,
                 popularity: 0,
               };
               return author ? (
@@ -197,6 +212,7 @@ export function HomeTabs({
                   likeCount={meta.likeCount}
                   liked={meta.liked}
                   comments={meta.comments}
+                  commentCount={meta.commentCount}
                   authors={authorMini}
                   currentUserAvatarSeed={currentUserAvatarSeed}
                 />

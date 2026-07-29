@@ -4,8 +4,12 @@ import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import { ThumbsUp, MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
-import { toggleLikeAction, addCommentAction } from "@/lib/actions/feed";
+import { toggleLikeAction } from "@/lib/actions/feed";
 import { createBlogCommentAction } from "@/features/member/blog/actions";
+import {
+  createPostCommentAction,
+  togglePostLikeAction,
+} from "@/features/member/home/action";
 import { avatarUrl } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import type { Comment } from "@/lib/types";
@@ -47,12 +51,13 @@ export function PostActions({
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    setLikes({ count: initialLikeCount, liked: initialLiked });
     setComments(initialComments);
     setAuthors(initialAuthors);
     if (initialComments.length > 0) {
       setShowComments(true);
     }
-  }, [initialComments, initialAuthors]);
+  }, [initialLikeCount, initialLiked, initialComments, initialAuthors]);
 
   const commentCount = Math.max(
     initialCommentCount ?? 0,
@@ -60,14 +65,40 @@ export function PostActions({
   );
 
   const onLike = () => {
-    setLikes((prev) =>
-      prev.liked
-        ? { count: Math.max(0, prev.count - 1), liked: false }
-        : { count: prev.count + 1, liked: true },
-    );
+    const prev = likes;
+    const nextLiked = !prev.liked;
+    const nextCount = nextLiked
+      ? prev.count + 1
+      : Math.max(0, prev.count - 1);
+
+    setLikes({ count: nextCount, liked: nextLiked });
+
     startTransition(async () => {
-      const next = await toggleLikeAction(kind, postId);
-      setLikes({ count: next.count, liked: next.byCurrentUser });
+      if (kind === "blog") {
+        const next = await toggleLikeAction(kind, postId);
+        setLikes({ count: next.count, liked: next.byCurrentUser });
+        return;
+      }
+
+      const res = await togglePostLikeAction(postId);
+      if (!res.success) {
+        setLikes(prev);
+        toast.error(res.message ?? "Failed to update like");
+        return;
+      }
+
+      setLikes({
+        liked:
+          typeof res.data?.liked === "boolean"
+            ? res.data.liked
+            : typeof res.data?.isLiked === "boolean"
+              ? res.data.isLiked
+              : nextLiked,
+        count:
+          typeof res.data?.likeCount === "number"
+            ? res.data.likeCount
+            : nextCount,
+      });
     });
   };
 
@@ -78,21 +109,19 @@ export function PostActions({
     setText("");
     setShowComments(true);
     startTransition(async () => {
-      if (kind === "blog") {
-        const res = await createBlogCommentAction(postId, trimmed);
-        if (!res.success) {
-          toast.error(res.message ?? "Failed to post comment");
-          return;
-        }
-        setComments(res.comments);
-        if (res.authors) {
-          setAuthors((prev) => ({ ...prev, ...res.authors }));
-        }
+      const res =
+        kind === "blog"
+          ? await createBlogCommentAction(postId, trimmed)
+          : await createPostCommentAction(postId, trimmed);
+
+      if (!res.success) {
+        toast.error(res.message ?? "Failed to post comment");
         return;
       }
-
-      const updated = await addCommentAction(kind, postId, trimmed);
-      setComments(updated);
+      setComments(res.comments);
+      if (res.authors) {
+        setAuthors((prev) => ({ ...prev, ...res.authors }));
+      }
     });
   };
 
