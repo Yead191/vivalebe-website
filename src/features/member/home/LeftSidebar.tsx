@@ -27,7 +27,7 @@ const specialLinks: SidebarLink[] = [
   { labelKey: "linkMemberBlog", href: "/blog" },
   { labelKey: "linkEvents", href: "/events" },
   { labelKey: "linkSuccessStories", href: "/success-stories" },
-  { labelKey: "linkDiseaseQA", href: "/disease-qa" },
+  // { labelKey: "linkDiseaseQA", href: "/disease-qa" },
 ];
 
 interface LeftSidebarProps {
