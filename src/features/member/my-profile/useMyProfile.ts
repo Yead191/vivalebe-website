@@ -32,61 +32,74 @@ interface PersistedState {
 }
 
 function buildInitial(user: User): PersistedState {
+  const profilePhotos = user.profile?.photos ?? [];
+  const defaultPhotos =
+    profilePhotos.length > 0
+      ? profilePhotos
+      : user.photos.map((url, i) => ({
+          id: `photo_${i}`,
+          url,
+          visibility: "public" as const,
+          status: "approved" as const,
+        }));
+
   return {
     albumId: null,
     displayName: user.displayName,
     avatarUrl: user.image ?? user.avatarSeed,
-    details: user.profile ?? {
-      photos: [],
-      videos: [],
-      aboutMe: "",
-      aboutMyMatch: "",
-      preferences: {
-        gender: "",
-        ageMin: 18,
-        ageMax: 99,
-        distance: "Anywhere",
-        lookingFor: "",
-        matchLivesWith: "",
-      },
-      bodyShapeStory: "",
-      inspirationalQuotes: "",
-      conditionExperience: "",
-      myFavorites: "",
-      recommendations: "",
-      basics: {
-        livingWith: "",
-        positiveSince: "",
-        gender: "",
-        willingToFly: "",
-        willingToMeetSoon: "",
-        location: "",
-        height: "",
-        weight: "",
-        ethnicity: "",
-        relationshipStatus: "",
-        bodyType: "",
-        eyeColor: "",
-        hairColor: "",
-      },
-      extras: {
-        languages: "",
-        education: "",
-        occupation: "",
-        smoking: "",
-        drinking: "",
-        haveChildren: "",
-        wantChildren: "",
-        astrologicalSign: "",
-        annualIncome: "",
-        politicalViews: "",
-        religion: "",
-        havePets: "",
-        hobbies: "",
-        favoriteMusic: "",
-      },
-      personality: "",
-    },
+    details: user.profile
+      ? { ...user.profile, photos: defaultPhotos }
+      : {
+          photos: defaultPhotos,
+          videos: [],
+          aboutMe: "",
+          aboutMyMatch: "",
+          preferences: {
+            gender: "",
+            ageMin: 18,
+            ageMax: 99,
+            distance: "Anywhere",
+            lookingFor: "",
+            matchLivesWith: "",
+          },
+          bodyShapeStory: "",
+          inspirationalQuotes: "",
+          conditionExperience: "",
+          myFavorites: "",
+          recommendations: "",
+          basics: {
+            livingWith: "",
+            positiveSince: "",
+            gender: "",
+            willingToFly: "",
+            willingToMeetSoon: "",
+            location: "",
+            height: "",
+            weight: "",
+            ethnicity: "",
+            relationshipStatus: "",
+            bodyType: "",
+            eyeColor: "",
+            hairColor: "",
+          },
+          extras: {
+            languages: "",
+            education: "",
+            occupation: "",
+            smoking: "",
+            drinking: "",
+            haveChildren: "",
+            wantChildren: "",
+            astrologicalSign: "",
+            annualIncome: "",
+            politicalViews: "",
+            religion: "",
+            havePets: "",
+            hobbies: "",
+            favoriteMusic: "",
+          },
+          personality: "",
+        },
   };
 }
 
@@ -99,6 +112,21 @@ export function useMyProfile(user: User): MyProfileApi {
       const raw = window.localStorage.getItem(storageKey(user.id));
       if (raw) {
         const parsed = JSON.parse(raw) as PersistedState;
+
+        // Sync photos if localStorage has no photos but user does
+        if (
+          parsed.details &&
+          parsed.details.photos.length === 0 &&
+          user.photos.length > 0
+        ) {
+          parsed.details.photos = user.photos.map((url, i) => ({
+            id: `photo_${i}`,
+            url,
+            visibility: "public" as const,
+            status: "approved" as const,
+          }));
+        }
+
         setState(parsed);
       }
     } catch {

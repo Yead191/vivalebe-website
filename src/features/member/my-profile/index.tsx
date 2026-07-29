@@ -444,11 +444,11 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
               onRemove={profile.removePhoto}
             />
 
-            <VideosBlock
+            {/* <VideosBlock
               videos={details.videos}
               onAdd={profile.addVideo}
               onRemove={profile.removeVideo}
-            />
+            /> */}
 
             <PrivateAlbumBlock />
 
