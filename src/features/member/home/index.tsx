@@ -1,15 +1,13 @@
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getCurrentUser, getCurrentViewedCount } from "@/lib/mock/current-user";
-import { getUserById } from "@/lib/mock/users";
-import { connections } from "@/lib/mock/connections";
 import type { User } from "@/lib/types";
 import { LeftSidebar } from "./LeftSidebar";
 import { QuickSearch } from "./QuickSearch";
 import { HomeTabs } from "./HomeTabs";
 import type { HomeTab } from "./tabs";
 import { RightSidebar } from "./RightSidebar";
-import { getFeed } from "./action";
+import { getFeed, getRecentViewMe } from "./action";
 import { getMutualMatches } from "@/features/member/my-list/action";
 import { getProfileAction } from "@/features/member/settings/action";
 
@@ -25,7 +23,7 @@ export async function HomeFeature({
   activeTab = "videos",
 }: HomeFeatureProps) {
   const mockMe = getCurrentUser();
-  const viewedCount = getCurrentViewedCount();
+  let viewedCount = getCurrentViewedCount();
 
   let me = mockMe;
   try {
@@ -39,29 +37,32 @@ export async function HomeFeature({
         displayName: p.name || p.displayName || mockMe.displayName,
         avatarSeed: p.profile || p.image || mockMe.avatarSeed,
         coverSeed: p.profile || p.image || mockMe.coverSeed,
+        premium: !!(p.premiumMembership ?? p.premium),
       };
     }
   } catch (error) {
     console.error("Error fetching profile in home:", error);
   }
 
-  const [videoFeed, imageFeed, suggestionsRaw] = await Promise.all([
+  const [videoFeed, imageFeed, suggestionsRaw, viewMe] = await Promise.all([
     getFeed("VIDEO", 1, 20),
     getFeed("IMAGE", 1, 20),
     getMutualMatches(),
+    getRecentViewMe(1, 20),
   ]);
 
   const authors: Record<string, User> = {
     ...videoFeed.authors,
     ...imageFeed.authors,
+    ...viewMe.authors,
     [me.id]: me,
   };
+
+  if (viewMe.total > 0) viewedCount = viewMe.total;
 
   const suggestions = suggestionsRaw
     .filter((u) => u.id !== me.id)
     .slice(0, 4);
-
-  const connectionEvents = connections.filter((c) => getUserById(c.userId));
 
   return (
     <div className="container py-6">
@@ -89,9 +90,10 @@ export async function HomeFeature({
             moments={imageFeed.moments}
             momentMeta={imageFeed.momentMeta}
             momentHasNextPage={imageFeed.pagination.hasNextPage}
-            connections={connectionEvents}
+            connections={viewMe.connections}
             authors={authors}
             currentUserAvatarSeed={me.avatarSeed}
+            isPremium={me.premium}
           />
         </div>
 

@@ -3,7 +3,7 @@
 import { getImageUrl } from "@/helpers/getImageUrl";
 import { myFetch } from "@/helpers/myFetch";
 import { revalidateTags } from "@/helpers/revalidateTags";
-import type { Comment, MomentPost, User, VideoPost } from "@/lib/types";
+import type { Comment, ConnectionEvent, MomentPost, User, VideoPost } from "@/lib/types";
 
 export type FeedType = "VIDEO" | "IMAGE" | "ALL";
 
@@ -443,6 +443,99 @@ export async function togglePostLikeAction(postId: string) {
       message: "Failed to update like",
       data: undefined,
     };
+  }
+}
+
+export async function getRecentViewMe(page = 1, limit = 10): Promise<{
+  connections: ConnectionEvent[];
+  authors: Record<string, User>;
+  total: number;
+}> {
+  try {
+    const res = await myFetch(`/view-me?page=${page}&limit=${limit}`, {
+      method: "GET",
+      cache: "no-store",
+      tags: ["view-me"],
+    });
+
+    if (!res.success || !Array.isArray(res.data)) {
+      return { connections: [], authors: {}, total: 0 };
+    }
+
+    const connections: ConnectionEvent[] = [];
+    const authors: Record<string, User> = {};
+
+    for (const item of res.data) {
+      if (!item || typeof item !== "object") continue;
+      const raw = item as Record<string, unknown>;
+
+      // Prefer populated viewer object; fall back to viewedUser (API shape used elsewhere)
+      const viewerRaw =
+        raw.user && typeof raw.user === "object"
+          ? (raw.user as Record<string, unknown>)
+          : raw.viewedUser && typeof raw.viewedUser === "object"
+            ? (raw.viewedUser as Record<string, unknown>)
+            : null;
+
+      if (!viewerRaw) continue;
+
+      const id = String(viewerRaw._id ?? viewerRaw.id ?? "");
+      if (!id) continue;
+
+      const name = String(viewerRaw.name ?? viewerRaw.displayName ?? "User");
+      const profile = resolveMedia(
+        typeof viewerRaw.profile === "string" ? viewerRaw.profile : undefined,
+      );
+
+      authors[id] = {
+        id,
+        username: name,
+        displayName: name,
+        age: 0,
+        gender: "M",
+        city: "",
+        state: "",
+        country: String(viewerRaw.nationality ?? ""),
+        image: profile,
+        avatarSeed: profile || id || name,
+        coverSeed: profile || "/image.png",
+        verified: false,
+        premium: false,
+        online: false,
+        willingToFly: false,
+        headline: "",
+        bio: "",
+        ethnicity: "",
+        height: viewerRaw.height != null ? String(viewerRaw.height) : "",
+        bodyType: "",
+        livingWith: "",
+        relationshipStatus: "",
+        religion: "",
+        photos: profile ? [profile] : [],
+        privatePhotosCount: 0,
+        education:
+          typeof viewerRaw.education === "string"
+            ? viewerRaw.education
+            : undefined,
+        weight: viewerRaw.weight != null ? String(viewerRaw.weight) : undefined,
+      };
+
+      connections.push({
+        id: String(raw._id ?? `${id}-${raw.createdAt ?? ""}`),
+        userId: id,
+        kind: "viewed",
+        at: String(raw.createdAt ?? raw.updatedAt ?? new Date().toISOString()),
+      });
+    }
+
+    return {
+      connections,
+      authors,
+      total: res.pagination?.total ?? connections.length,
+    };
+  } catch (error) {
+    console.error("Error fetching view-me:", error);
+    return { connections: [], authors: {}, total: 0 };
   }
 }
 

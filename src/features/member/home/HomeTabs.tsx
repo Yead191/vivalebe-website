@@ -40,6 +40,7 @@ interface HomeTabsProps {
   connections: ConnectionEvent[];
   authors: Record<string, User>;
   currentUserAvatarSeed: string;
+  isPremium?: boolean;
 }
 
 function sortByDate<T extends { createdAt: string }>(items: T[]): T[] {
@@ -79,6 +80,7 @@ export function HomeTabs({
   connections,
   authors: initialAuthors,
   currentUserAvatarSeed,
+  isPremium = false,
 }: HomeTabsProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -367,18 +369,25 @@ export function HomeTabs({
 
       <TabsContent value="connections" className="pt-4">
         <div className="space-y-1 rounded-xl border border-border bg-card p-2">
-          {connections.map((c) => {
-            const user = authors[c.userId];
-            return user ? (
-              <ConnectionRow
-                key={c.id}
-                lang={lang}
-                dict={dict}
-                event={c}
-                user={user}
-              />
-            ) : null;
-          })}
+          {connections.length === 0 ? (
+            <p className="p-6 text-center text-sm text-muted-foreground">
+              No recent profile views yet.
+            </p>
+          ) : (
+            connections.map((c) => {
+              const user = authors[c.userId];
+              return user ? (
+                <ConnectionRow
+                  key={c.id}
+                  lang={lang}
+                  dict={dict}
+                  event={c}
+                  user={user}
+                  isPremium={isPremium}
+                />
+              ) : null;
+            })
+          )}
         </div>
       </TabsContent>
     </Tabs>
