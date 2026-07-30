@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import navItems from "@/constants/landing-nav-items";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 
 export default function LandingNavbar() {
     const [activeSection, setActiveSection] = useState<string>("home");

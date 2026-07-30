@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { MessageCircle } from "lucide-react";
 import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import { cn } from "@/lib/utils";

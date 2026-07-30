@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { videoState } from "@/lib/video-state";
 
 interface FeedVideoPlayerProps {

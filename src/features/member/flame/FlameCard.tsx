@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Heart, RotateCcw, X } from "lucide-react";
 import { cn } from "@/lib/utils";

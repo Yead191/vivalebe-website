@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { Heart, MessageCircle, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { ArrowLeft, X, ZoomIn, ZoomOut, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";

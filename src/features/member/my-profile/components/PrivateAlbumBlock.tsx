@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { getPrivateAlbum } from "../action";
 import { Loader2, Lock } from "lucide-react";
 import { getImageUrl } from "@/helpers/getImageUrl";

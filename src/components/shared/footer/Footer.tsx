@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { Heart } from "lucide-react";
 import { LocaleLink } from "@/components/shared/locale-link";
 import type { Locale } from "@/i18n/config";

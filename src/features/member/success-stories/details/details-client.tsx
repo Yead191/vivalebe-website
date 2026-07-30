@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { ArrowLeft, Flag, Heart, MessageCircle, Share2 } from "lucide-react";
 import { toast } from "sonner";

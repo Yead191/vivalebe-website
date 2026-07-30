@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PhotoEntry } from "@/lib/types";

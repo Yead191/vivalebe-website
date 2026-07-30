@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Search, Filter, Users, MoreVertical, Trash2, Ban } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { getImageUrl } from "@/helpers/getImageUrl";
 import {
   DropdownMenu,

@@ -1,5 +1,5 @@
 import { memo } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { FeedVideoPlayer } from "./FeedVideoPlayer";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";

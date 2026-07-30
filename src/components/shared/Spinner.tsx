@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import React from "react";
 
 const Spinner = () => {

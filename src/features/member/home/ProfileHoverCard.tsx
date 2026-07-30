@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import {

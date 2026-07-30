@@ -10,7 +10,7 @@ import {
   Share2,
 } from "lucide-react";
 import { toast } from "sonner";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { avatarUrl } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { useRouter } from "next/navigation";
 import { Pencil, Plus, X } from "lucide-react";
 import { toast } from "sonner";

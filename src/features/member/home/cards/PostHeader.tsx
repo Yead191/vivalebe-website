@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { MoreHorizontal } from "lucide-react";
 import { VerifiedBadge } from "@/components/shared/VerifiedBadge";

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import {

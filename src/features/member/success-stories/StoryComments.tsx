@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { avatarUrl } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import type { Comment } from "@/lib/types";
