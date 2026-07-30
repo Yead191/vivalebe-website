@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Pencil, Trash2, Check, X, Loader2, Camera } from "lucide-react";
+import { Pencil, Check, X, Loader2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
@@ -38,8 +37,8 @@ export default function MyAccountTab({ t }: { t: any }) {
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   // State for Account Delete Action
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  // const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  // const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
 
   // State for Password Change
   const [isPasswordModalOpen, setIsPasswordModalOpen] =
@@ -210,16 +209,16 @@ export default function MyAccountTab({ t }: { t: any }) {
   };
 
   // Mock function for permanent account cleanup execution
-  const handleDeleteAccount = async () => {
-    setIsDeleting(true);
-    // Simulate API deletion request
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsDeleting(false);
-    setIsDeleteDialogOpen(false);
+  // const handleDeleteAccount = async () => {
+  //   setIsDeleting(true);
+  //   // Simulate API deletion request
+  //   await new Promise((resolve) => setTimeout(resolve, 2000));
+  //   setIsDeleting(false);
+  //   setIsDeleteDialogOpen(false);
 
-    // Redirect logic goes here (e.g., router.push("/login"))
-    toast.success("Account permanently deleted.");
-  };
+  //   // Redirect logic goes here (e.g., router.push("/login"))
+  //   toast.success("Account permanently deleted.");
+  // };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();

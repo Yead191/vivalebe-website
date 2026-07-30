@@ -102,7 +102,7 @@ export function NotificationsBell() {
         ) : (
           <div className="space-y-1 max-h-[300px] overflow-y-auto">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {items.map((n: any) => {
+            {items.map((n: any, index: number) => {
               const text = n.message || n.title || n.text || "New notification";
               let at = "just now";
               try {
@@ -117,7 +117,7 @@ export function NotificationsBell() {
 
               return (
                 <DropdownMenuItem
-                  key={id || Math.random()}
+                  key={id || `notification-${index}`}
                   onClick={() => {
                     if (id && !isRead) handleRead(id);
                   }}
