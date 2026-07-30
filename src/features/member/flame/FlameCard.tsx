@@ -206,7 +206,9 @@ export function FlameCard({
                 {user.verified ? <VerifiedBadge /> : null}
               </div>
               {user.country ? (
-                <p className="text-base text-muted-foreground">{user.country}</p>
+                <p className="text-base text-muted-foreground">
+                  {user.country}
+                </p>
               ) : null}
               {user.willingToFly ? (
                 <p className="text-base font-semibold text-brand">
@@ -226,7 +228,10 @@ export function FlameCard({
                 />
                 <Row label="Height" value={formatHeight(user.height)} />
                 <Row label="Weight" value={formatWeight(user.weight)} />
-                <Row label="Education" value={formatEducation(user.education)} />
+                <Row
+                  label="Education"
+                  value={formatEducation(user.education)}
+                />
               </dl>
             </div>
 
