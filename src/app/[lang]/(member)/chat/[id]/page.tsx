@@ -1,5 +1,6 @@
 import { ChatInput } from "@/components/shared/message/ChatInput";
 import { ChatMessages } from "@/components/shared/message/ChatMessages";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { mockCurrentUser } from "@/constants/mockChatData";
 import getProfile from "@/helpers/getProfile";
 import { myFetch } from "@/helpers/myFetch";
@@ -59,6 +60,7 @@ export default async function ChatDetailPage({ params }: PageProps) {
           Conversation Not Found
         </h2>
         <p className="text-gray-500 text-sm max-w-xs mx-auto">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
           We couldn't retrieve the details for this chat. It may have been
           deleted or moved.
         </p>

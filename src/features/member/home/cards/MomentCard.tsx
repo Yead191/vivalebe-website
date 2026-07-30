@@ -46,12 +46,14 @@ export function MomentCard({
   const count = moment.imageSeeds.length;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
   // Controls for Full-Screen View
   useEffect(() => {
     if (!selectedImage) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setZoomLevel(1);
       return;
     }

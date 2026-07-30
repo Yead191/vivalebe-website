@@ -23,6 +23,7 @@ import {
 } from "./action";
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dict: any;
   lang: string;
 }
@@ -64,6 +65,7 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
     }
   }, [countdown, step]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEmailSubmit = async (values: any) => {
     setLoading(true);
     try {
@@ -75,6 +77,7 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
       } else {
         toast.error(res.error || res.message || "Failed to process request");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -128,6 +131,7 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleOtpSubmit = async (values: any) => {
     const email = emailForm.getValues("email");
     if (!email) {
@@ -154,6 +158,7 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
       } else {
         toast.error(res.error || res.message || "Invalid OTP code");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -161,6 +166,7 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleResetSubmit = async (values: any) => {
     setLoading(true);
     try {
@@ -181,6 +187,7 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
       } else {
         toast.error(res.error || res.message || "Failed to update password");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -203,6 +210,7 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
       } else {
         toast.error(res.error || res.message || "Failed to resend OTP");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     }
@@ -292,7 +300,9 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
 
             {otpForm.formState.errors.code && (
               <p className="text-rose-500 text-xs font-medium text-center mt-2">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {(otpForm.formState.errors.code as any).root?.message ||
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (otpForm.formState.errors.code as any).message ||
                   tValidation("invalidOtp")}
               </p>

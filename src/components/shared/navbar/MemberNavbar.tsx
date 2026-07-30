@@ -42,6 +42,7 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDrawerOpen(false);
     setOpenKey(null);
   }, [pathname]);

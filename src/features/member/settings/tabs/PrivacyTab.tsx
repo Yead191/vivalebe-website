@@ -2,10 +2,12 @@
 "use client";
 
 import React, { useState } from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Check, Crown, Globe, Lock } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function PrivacyTab({ t }: { t: any }) {
   const [profileScope, setProfileScope] = useState("all");
   const [regionScope, setRegionScope] = useState("all");

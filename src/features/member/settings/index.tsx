@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Shield,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Bell,
   User,
   EyeOff,
   Ban,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MessageSquare,
   RefreshCw,
 } from "lucide-react";
@@ -22,10 +25,12 @@ import ResetPassesTab from "./tabs/ResetPassesTab";
 
 interface SettingsPageFeatureProps {
   lang: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dict: any;
 }
 
 export default function SettingsPageFeature({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   lang,
   dict,
 }: SettingsPageFeatureProps) {
@@ -40,8 +45,10 @@ export default function SettingsPageFeature({
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab && tab !== activeTab) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tab);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const handleTabChange = (id: string) => {

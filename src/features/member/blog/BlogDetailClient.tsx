@@ -43,10 +43,12 @@ export function BlogDetailClient({
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!selectedImage) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setZoomLevel(1);
       return;
     }

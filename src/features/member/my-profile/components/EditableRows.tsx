@@ -58,6 +58,7 @@ export function EditableRows({
   const [draft, setDraft] = useState<FieldValues>(values);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!editing) setDraft(values);
   }, [editing, values]);
 

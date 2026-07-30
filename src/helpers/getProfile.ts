@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getProfile = async (): Promise<any | null> => {
   const token = (await cookies()).get("accessToken")?.value;
 

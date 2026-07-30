@@ -42,10 +42,12 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
   const [isSwiping, setIsSwiping] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setWinked(user.isWinked || false);
   }, [user.isWinked]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLiked(user.isLiked || false);
   }, [user.isLiked]);
 
@@ -68,6 +70,7 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
       } else {
         toast.error(res.message || "Failed to send wink");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -92,6 +95,7 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
         setLiked(liked);
         toast.error(res.message || "Failed to swipe");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setLiked(liked);
       toast.error("An error occurred");

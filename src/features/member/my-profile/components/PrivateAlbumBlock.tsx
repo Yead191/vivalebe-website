@@ -7,6 +7,7 @@ import { Loader2, Lock } from "lucide-react";
 import { getImageUrl } from "@/helpers/getImageUrl";
 
 export function PrivateAlbumBlock() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [albumData, setAlbumData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 

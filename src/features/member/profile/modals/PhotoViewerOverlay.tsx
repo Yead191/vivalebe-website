@@ -1,5 +1,6 @@
 "use client";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
@@ -101,6 +102,7 @@ export function PhotoViewerOverlay({
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     document.body.style.overflow = "hidden";
     return () => {

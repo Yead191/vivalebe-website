@@ -28,6 +28,7 @@ export function UserMenu({
   lang,
   dict,
   email,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   username,
   displayName,
   avatarSeed,

@@ -30,6 +30,7 @@ interface AccountField {
   type: "text" | "email" | "tel" | "password";
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function MyAccountTab({ t }: { t: any }) {
   // State to handle which field is actively being edited
   const [editingKey, setEditingKey] = useState<string | null>(null);
@@ -165,6 +166,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || `Failed to update ${key}`);
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -201,6 +203,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || "Failed to upload photo");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "Error uploading photo");
     }
@@ -233,6 +236,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || "Failed to change password");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {

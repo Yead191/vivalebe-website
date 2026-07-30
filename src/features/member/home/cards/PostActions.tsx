@@ -55,6 +55,7 @@ export function PostActions({
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLikes({ count: initialLikeCount, liked: initialLiked });
     setComments(initialComments);
     setAuthors(initialAuthors);

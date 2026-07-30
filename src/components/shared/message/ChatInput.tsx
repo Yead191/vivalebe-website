@@ -24,7 +24,9 @@ export function ChatInput({
   profile,
 }: {
   chatId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   activeUser: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   profile: any;
 }) {
   // console.log(activeUser, 'chat input')
@@ -118,6 +120,7 @@ export function ChatInput({
               key={i}
               className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200 group"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={URL.createObjectURL(file)}
                 alt=""

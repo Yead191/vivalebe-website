@@ -9,6 +9,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
 import { photoUrl } from "@/lib/image";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PhotoViewerOverlay } from "./modals/PhotoViewerOverlay";
 import { useRouter } from "next/navigation";
 import { createChatRoom } from "../my-list/action";
@@ -25,6 +26,7 @@ export function ProfileMain({ lang, dict, user, isPremium = false }: Props) {
   const [activeTab, setActiveTab] = useState<"public" | "private">("public");
   const [expanded, setExpanded] = useState(false);
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedPhotoIdx, setSelectedPhotoIdx] = useState<number | null>(null);
 
   const publicPhotos = user.photos.slice(0, 3);

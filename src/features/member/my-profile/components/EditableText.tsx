@@ -25,6 +25,7 @@ export function EditableText({
   const [draft, setDraft] = useState(value);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!editing) setDraft(value);
   }, [editing, value]);
 

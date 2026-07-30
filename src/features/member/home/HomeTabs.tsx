@@ -110,6 +110,7 @@ export function HomeTabs({
   const loadingMomentsRef = useRef(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVideos(initialVideos);
     setVideoMeta(initialVideoMeta);
     setVideoPage(1);
@@ -117,6 +118,7 @@ export function HomeTabs({
   }, [initialVideos, initialVideoMeta, initialVideoHasNext]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMoments(initialMoments);
     setMomentMeta(initialMomentMeta);
     setMomentPage(1);
@@ -124,6 +126,7 @@ export function HomeTabs({
   }, [initialMoments, initialMomentMeta, initialMomentHasNext]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAuthors((prev) => ({ ...prev, ...initialAuthors }));
   }, [initialAuthors]);
 

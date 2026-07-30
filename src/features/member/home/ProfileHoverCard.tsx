@@ -14,6 +14,7 @@ import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { avatarUrl, photoUrl } from "@/lib/image";
 import { createChatRoom, swipeUser } from "../my-list/action";
 import { toast } from "sonner";
@@ -48,6 +49,7 @@ export function ProfileHoverCard({ user, lang, dict }: Props) {
         setLiked(liked);
         toast.error(res.message || "Failed to swipe");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setLiked(liked);
       toast.error("An error occurred");

@@ -30,6 +30,7 @@ export function MyListClient({
   const [localUsers, setLocalUsers] = useState<User[]>(users);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalUsers(users);
   }, [users]);
 

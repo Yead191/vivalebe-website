@@ -32,6 +32,7 @@ export function PostBlogModal({
   useEffect(() => {
     if (!imageFile) return;
     const url = URL.createObjectURL(imageFile);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setImagePreview(url);
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);

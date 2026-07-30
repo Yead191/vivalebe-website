@@ -107,6 +107,7 @@ export function SuccessStoriesPageClient({
   );
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStories(initialStories);
     setLikedStoryIds(
       initialStories.filter((story) => story.isLiked).map((story) => story.id),

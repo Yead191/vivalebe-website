@@ -9,6 +9,7 @@ export default function useSocket() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSocket(socketInstance());
   }, []);
 

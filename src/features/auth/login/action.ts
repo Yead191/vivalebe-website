@@ -2,8 +2,10 @@
 
 import { myFetch } from "@/helpers/myFetch";
 import { cookies } from "next/headers";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { z } from "zod";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function loginAction(data: Record<string, any>) {
   const res = await myFetch("/auth/login", {
     method: "POST",

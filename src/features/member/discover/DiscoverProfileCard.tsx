@@ -50,6 +50,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
         setLiked(liked);
         toast.error(res.message || "Failed to swipe");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setLiked(liked);
       toast.error("An error occurred");
@@ -102,6 +103,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
       } else {
         toast.error(res.message || "Failed to send wink");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {

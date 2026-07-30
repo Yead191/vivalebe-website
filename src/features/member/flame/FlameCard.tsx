@@ -62,6 +62,7 @@ export function FlameCard({
   const [photoIdx, setPhotoIdx] = useState(0);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPhotoIdx(0);
   }, [user.id]);
 

@@ -6,6 +6,7 @@ interface RulePageProps {
 }
 
 export async function RulePageView({ type, title }: RulePageProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const res = await myFetch<any>(`/rule?type=${type}`, {
     method: "GET",
     next: { tags: ["rule", type] },

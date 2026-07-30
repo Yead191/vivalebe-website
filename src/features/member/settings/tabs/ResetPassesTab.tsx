@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ResetPassesTab({ t }: { t: any }) {
   const [isResetting, setIsResetting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);

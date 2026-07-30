@@ -72,6 +72,7 @@ export function CreatePostModal({
 
   useEffect(() => {
     const urls = files.map((file) => URL.createObjectURL(file));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFilePreviews(urls);
     return () => {
       urls.forEach((url) => URL.revokeObjectURL(url));

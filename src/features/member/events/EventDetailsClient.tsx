@@ -143,6 +143,7 @@ export function EventDetailsClient({
           <section id="join-event" className="space-y-4 rounded-2xl border border-border bg-card p-5 scroll-mt-24">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-semibold uppercase tracking-wide">
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
                 Join {ownerName.toUpperCase()}'s Event
               </h2>
               <div className="flex flex-wrap gap-2">

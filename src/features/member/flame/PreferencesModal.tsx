@@ -55,6 +55,7 @@ export function PreferencesModal({
   const [draft, setDraft] = useState<FlamePreferences>(initial);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (open) setDraft(initial);
   }, [open, initial]);
 

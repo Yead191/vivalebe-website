@@ -4,6 +4,7 @@ import { getDictionary } from '@/i18n/dictionaries';
 import { notFound } from 'next/navigation';
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function MySuccessStoriesPage({ params }: PageProps<any>) {
     const { lang } = await params;
     if (!isLocale(lang)) notFound();

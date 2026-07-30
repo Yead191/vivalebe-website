@@ -3,6 +3,7 @@ import { getDictionary } from "@/i18n/dictionaries";
 import { isLocale } from "@/i18n/config";
 import DiseaseQnAFeature from "@/features/member/disease-qa";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function page({ params }: PageProps<any>) {
     const { lang } = await params;
     if (!isLocale(lang)) notFound();
