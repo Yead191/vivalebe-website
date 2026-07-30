@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { MoreHorizontal, Pencil, Send, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/i18n/config";
