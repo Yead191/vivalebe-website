@@ -87,13 +87,13 @@ export default function SettingsPageFeature({
     //   label: t.tabs.autoReply,
     //   icon: MessageSquare,
     // },
-    { id: "group3", type: "heading", label: t.sections.general },
-    {
-      id: "resetPasses",
-      type: "item",
-      label: t.tabs.resetPasses,
-      icon: RefreshCw,
-    },
+    // { id: "group3", type: "heading", label: t.sections.general },
+    // {
+    //   id: "resetPasses",
+    //   type: "item",
+    //   label: t.tabs.resetPasses,
+    //   icon: RefreshCw,
+    // },
   ];
 
   const renderTabContent = () => {

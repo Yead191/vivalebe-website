@@ -166,7 +166,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || `Failed to update ${key}`);
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -203,7 +203,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || "Failed to upload photo");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "Error uploading photo");
     }
@@ -236,7 +236,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || "Failed to change password");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -443,7 +443,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       </Dialog>
 
       {/* Premium Styled Danger Zone */}
-      <div className="pt-4">
+      {/* <div className="pt-4">
         <div className="p-4 rounded-xl border border-red-100  bg-red-50/30  flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-0.5">
             <h4 className="text-sm font-bold text-red-600 ">
@@ -454,7 +454,6 @@ export default function MyAccountTab({ t }: { t: any }) {
             </p>
           </div>
 
-          {/* Dialog Action Modal Trigger */}
           <Dialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
@@ -511,7 +510,7 @@ export default function MyAccountTab({ t }: { t: any }) {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
