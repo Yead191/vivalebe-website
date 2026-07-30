@@ -44,7 +44,7 @@ const REPORT_REASONS = [
   },
   {
     label: "Photo impersonating another individual",
-    value: "photoImpersonatingAnotherIndividual",
+    value: "photoImperSonatingAnotherIndividual",
   },
   { label: "Photo of a child", value: "photoOfAChild" },
   { label: "Other", value: "other" },
@@ -120,7 +120,7 @@ export function ReportContentModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl p-0 rounded-none sm:rounded-none border-none max-h-[calc(100vh-10rem)] overflow-auto scrollbar-hide">
+      <DialogContent className="sm:max-w-2xl max-w-2xl p-0 rounded-none sm:rounded-none border-none max-h-[calc(100vh-10rem)] overflow-auto scrollbar-hide">
         <form onSubmit={handleSubmit} className="bg-white p-6 sm:p-10 relative">
           <DialogHeader className="mb-8 items-center">
             <DialogTitle className="text-xl font-bold tracking-tight">
