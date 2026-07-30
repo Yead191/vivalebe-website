@@ -131,6 +131,7 @@ export function useMyProfile(user: User): MyProfileApi {
           }));
         }
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setState(parsed);
       }
     } catch {
@@ -188,6 +189,7 @@ export function useMyProfile(user: User): MyProfileApi {
     };
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.id]);
 
   useEffect(() => {

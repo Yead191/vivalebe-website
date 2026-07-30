@@ -39,7 +39,9 @@ export default async function SubscriptionPage() {
       <div className="text-center mb-16">
         <h1 className="text-2xl font-bold tracking-tight mb-6 text-brand">PREMIUM</h1>
         <p className="text-muted-foreground max-w-3xl mx-auto leading-relaxed text-[15px]">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
           Since our company's founding in 2001 in Silicon Valley, we have specialized in online dating, connecting
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
           millions of couples with our trusted services for over 25 years. We've invested more than $10 million in
           our infrastructure to enhance online dating for seamless, successful connections.
         </p>

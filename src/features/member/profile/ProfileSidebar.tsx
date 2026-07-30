@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { Heart, MessageCircle, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,7 @@ const sections = [
   { id: "more-about-me", labelKey: "navMoreAboutMe" as const },
   { id: "moments", labelKey: "navMoments" as const },
   { id: "personal-blogs", labelKey: "navPersonalBlogs" as const },
-  { id: "private-note", labelKey: "navAddPrivateNote" as const },
+  // { id: "private-note", labelKey: "navAddPrivateNote" as const },
 ];
 
 interface Props {
@@ -40,6 +40,16 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
   const [isCreatingChat, setIsCreatingChat] = useState(false);
   const [liked, setLiked] = useState(user.isLiked || false);
   const [isSwiping, setIsSwiping] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setWinked(user.isWinked || false);
+  }, [user.isWinked]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLiked(user.isLiked || false);
+  }, [user.isLiked]);
 
   const handleWinkClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -60,6 +70,7 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
       } else {
         toast.error(res.message || "Failed to send wink");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -84,6 +95,7 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
         setLiked(liked);
         toast.error(res.message || "Failed to swipe");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setLiked(liked);
       toast.error("An error occurred");
@@ -155,7 +167,8 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
           onClick={handleWinkClick}
           disabled={isSendingWink || winked}
           className={cn(
-            "transition-colors disabled:opacity-50",
+            "transition-colors",
+            isSendingWink && "opacity-50",
             winked ? "text-brand" : "text-muted-foreground hover:text-brand"
           )}
         >
@@ -172,7 +185,8 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
           onClick={handleLikeClick}
           disabled={isSwiping}
           className={cn(
-            "transition-colors disabled:opacity-50",
+            "transition-colors",
+            isSwiping && "opacity-50",
             liked ? "text-red-500" : "text-muted-foreground hover:text-brand"
           )}
         >

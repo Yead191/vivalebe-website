@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { CalendarDays, Clock3, MapPin, MoreHorizontal, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";

@@ -9,9 +9,10 @@ interface Props {
   lang: Locale;
   dict: Dictionary;
   user: User;
+  isPremium?: boolean;
 }
 
-export function ProfileFeature({ lang, dict, user }: Props) {
+export function ProfileFeature({ lang, dict, user, isPremium = false }: Props) {
   // console.log(user)
   return (
     <div className="container py-5">
@@ -22,7 +23,7 @@ export function ProfileFeature({ lang, dict, user }: Props) {
             <ProfileSidebar lang={lang} dict={dict} user={user} />
           </div>
         </div>
-        <ProfileMain lang={lang} dict={dict} user={user} />
+        <ProfileMain lang={lang} dict={dict} user={user} isPremium={isPremium} />
       </div>
     </div>
   );

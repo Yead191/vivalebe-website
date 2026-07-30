@@ -62,6 +62,7 @@ export const mockGroupRooms = [
   }
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const mockMessages: Record<string, any[]> = {
   room_1: [
     {

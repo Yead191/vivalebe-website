@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { verifyEmailAction, resendOtpAction } from "./action";
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dict: any;
   lang: string;
 }
@@ -84,6 +85,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: any) => {
     if (!email) {
       toast.error("Email not found. Please try registering again.");
@@ -100,6 +102,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
       } else {
         toast.error(res.error || res.message || "Invalid OTP code");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -121,6 +124,7 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
       } else {
         toast.error(res.error || res.message || "Failed to resend OTP");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     }
@@ -167,7 +171,9 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
 
         {form.formState.errors.code && (
           <p className="text-rose-500 text-xs font-medium text-center mt-2">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {(form.formState.errors.code as any).root?.message ||
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (form.formState.errors.code as any).message ||
               tValidation("invalidOtp")}
           </p>

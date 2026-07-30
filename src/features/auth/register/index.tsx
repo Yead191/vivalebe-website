@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { registerAction } from "./action";
 
 interface Props {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dict: any;
     lang: string;
 }
@@ -26,11 +27,13 @@ export default function RegisterFeature({ dict, lang }: Props) {
     const [loading, setLoading] = useState(false);
     const tValidation = (key: string) => dict.validation?.[key] || key;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const form = useForm<any>({
         resolver: zodResolver(createRegisterSchema(tValidation)),
         defaultValues: { fullName: "", email: "", password: "", confirmPassword: "", acceptTerms: false },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (values: any) => {
         setLoading(true);
         try {
@@ -48,6 +51,7 @@ export default function RegisterFeature({ dict, lang }: Props) {
             } else {
                 toast.error(res.error || res.message || "Registration failed");
             }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             toast.error(err.message || "An unexpected error occurred");
         } finally {

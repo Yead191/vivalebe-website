@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { Plus, X } from "lucide-react";
 import {
   Dialog,
@@ -62,6 +62,7 @@ export function UploadProfilePhotoModal({
 
   useEffect(() => {
     if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFiles([]);
       setVisibility(defaultVisibility);
     }

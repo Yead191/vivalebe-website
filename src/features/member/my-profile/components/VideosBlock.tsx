@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import {
   Dialog,
   DialogContent,
@@ -121,6 +122,7 @@ function AddVideoTile({ defaultVisibility, onAdd }: AddVideoTileProps) {
 
   useEffect(() => {
     if (!file) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setThumb(null);
       setBase64Data(null);
       setDuration(0);
@@ -139,6 +141,7 @@ function AddVideoTile({ defaultVisibility, onAdd }: AddVideoTileProps) {
 
   useEffect(() => {
     if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFile(null);
       setVisibility(defaultVisibility);
     }

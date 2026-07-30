@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { ArrowLeft, X, ZoomIn, ZoomOut, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,10 +43,12 @@ export function BlogDetailClient({
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!selectedImage) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setZoomLevel(1);
       return;
     }

@@ -60,9 +60,7 @@ export async function HomeFeature({
 
   if (viewMe.total > 0) viewedCount = viewMe.total;
 
-  const suggestions = suggestionsRaw
-    .filter((u) => u.id !== me.id)
-    .slice(0, 4);
+  const suggestions = suggestionsRaw.filter((u) => u.id !== me.id);
 
   return (
     <div className="container py-6">

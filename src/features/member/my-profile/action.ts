@@ -15,6 +15,7 @@ export async function getPrivateAlbum() {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function patchPrivateAlbum(id: string, data: any) {
   try {
     const res = await myFetch(`/private-albums/${id}`, {

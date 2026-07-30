@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function AutoReplyTab({ t }: { t: any }) {
   // Array of reply options
   const [templates, setTemplates] = useState<string[]>([

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { ThumbsUp, MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
@@ -55,6 +55,7 @@ export function PostActions({
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLikes({ count: initialLikeCount, liked: initialLiked });
     setComments(initialComments);
     setAuthors(initialAuthors);

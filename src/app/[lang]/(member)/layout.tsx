@@ -22,6 +22,7 @@ export default async function MemberLayout({
         lang={lang}
         dict={dict}
         currentUser={{
+          email: userData.email || "",
           username: userData.username || "user",
           displayName: userData.name || userData.displayName || "User",
           avatarSeed:

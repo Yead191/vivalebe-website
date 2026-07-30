@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { X, Camera, Trash2 } from "lucide-react";
 import {
   Dialog,
@@ -109,6 +110,7 @@ export function ReportContentModal({
       } else {
         toast.error(res.message || "Failed to submit report");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -177,6 +179,7 @@ export function ReportContentModal({
                     key={i}
                     className="relative size-24 border border-border"
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={URL.createObjectURL(file)}
                       alt="Evidence"

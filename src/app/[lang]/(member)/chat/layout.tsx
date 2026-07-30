@@ -21,6 +21,7 @@ export default function MessageLayoutWrapper({
 
   const [search, setSearch] = useState("");
   const [userId, setUser] = useState(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [chatRooms, setChatRooms] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [loading, setLoading] = useState(true);

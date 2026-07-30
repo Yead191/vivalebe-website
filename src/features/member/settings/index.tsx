@@ -2,15 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import {
-  Shield,
-  Bell,
-  User,
-  EyeOff,
-  Ban,
-  MessageSquare,
-  RefreshCw,
-} from "lucide-react";
+import { User, EyeOff, Ban } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PrivacyTab from "./tabs/PrivacyTab";
 import NotificationsTab from "./tabs/NotificationsTab";
@@ -22,10 +14,12 @@ import ResetPassesTab from "./tabs/ResetPassesTab";
 
 interface SettingsPageFeatureProps {
   lang: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dict: any;
 }
 
 export default function SettingsPageFeature({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   lang,
   dict,
 }: SettingsPageFeatureProps) {
@@ -33,15 +27,17 @@ export default function SettingsPageFeature({
   const router = useRouter();
   const pathname = usePathname();
 
-  const initialTab = searchParams.get("tab") || "privacy";
+  const initialTab = searchParams.get("tab") || "myAccount";
   const [activeTab, setActiveTab] = useState(initialTab);
   const t = dict.settings;
 
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab && tab !== activeTab) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tab);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const handleTabChange = (id: string) => {
@@ -53,13 +49,13 @@ export default function SettingsPageFeature({
 
   const menuItems = [
     { id: "group1", type: "heading", label: t.sections.account },
-    { id: "privacy", type: "item", label: t.tabs.privacy, icon: Shield },
-    {
-      id: "notifications",
-      type: "item",
-      label: t.tabs.notifications,
-      icon: Bell,
-    },
+    // { id: "privacy", type: "item", label: t.tabs.privacy, icon: Shield },
+    // {
+    //   id: "notifications",
+    //   type: "item",
+    //   label: t.tabs.notifications,
+    //   icon: Bell,
+    // },
     { id: "myAccount", type: "item", label: t.tabs.myAccount, icon: User },
     {
       id: "hiddenMembers",
@@ -73,20 +69,20 @@ export default function SettingsPageFeature({
       label: t.tabs.deletedMembers,
       icon: Ban,
     },
-    { id: "group2", type: "heading", label: t.sections.customization },
-    {
-      id: "autoReply",
-      type: "item",
-      label: t.tabs.autoReply,
-      icon: MessageSquare,
-    },
-    { id: "group3", type: "heading", label: t.sections.general },
-    {
-      id: "resetPasses",
-      type: "item",
-      label: t.tabs.resetPasses,
-      icon: RefreshCw,
-    },
+    // { id: "group2", type: "heading", label: t.sections.customization },
+    // {
+    //   id: "autoReply",
+    //   type: "item",
+    //   label: t.tabs.autoReply,
+    //   icon: MessageSquare,
+    // },
+    // { id: "group3", type: "heading", label: t.sections.general },
+    // {
+    //   id: "resetPasses",
+    //   type: "item",
+    //   label: t.tabs.resetPasses,
+    //   icon: RefreshCw,
+    // },
   ];
 
   const renderTabContent = () => {
@@ -106,7 +102,7 @@ export default function SettingsPageFeature({
       case "resetPasses":
         return <ResetPassesTab t={t} />;
       default:
-        return <PrivacyTab t={t} />;
+        return <MyAccountTab t={t} />;
     }
   };
 

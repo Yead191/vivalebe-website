@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { MoreHorizontal, Pencil, Send, MessageCircle } from "lucide-react";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
+import { MessageCircle } from "lucide-react";
 import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
 import { photoUrl } from "@/lib/image";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PhotoViewerOverlay } from "./modals/PhotoViewerOverlay";
 import { useRouter } from "next/navigation";
 import { createChatRoom } from "../my-list/action";
@@ -17,13 +18,15 @@ interface Props {
   lang: Locale;
   dict: Dictionary;
   user: User;
+  isPremium?: boolean;
 }
 
-export function ProfileMain({ lang, dict, user }: Props) {
+export function ProfileMain({ lang, dict, user, isPremium = false }: Props) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"public" | "private">("public");
   const [expanded, setExpanded] = useState(false);
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedPhotoIdx, setSelectedPhotoIdx] = useState<number | null>(null);
 
   const publicPhotos = user.photos.slice(0, 3);
@@ -76,14 +79,14 @@ export function ProfileMain({ lang, dict, user }: Props) {
             {user.state ? `, ${user.state}` : ""}, {user.country}
           </p>
         </div>
-        <button
+        {/* <button
           type="button"
           aria-label="More"
           className="flex flex-col items-center text-muted-foreground hover:text-foreground transition-colors"
         >
           <MoreHorizontal className="size-5" />
           <span className="text-[10px]">more</span>
-        </button>
+        </button> */}
       </header>
 
       <section id="summary" className="space-y-3 scroll-mt-24">
@@ -102,7 +105,7 @@ export function ProfileMain({ lang, dict, user }: Props) {
             {dict.profile.public.replace("{count}", String(user.photos.length))}
           </button>
           <button
-            disabled
+            disabled={!isPremium}
             type="button"
             onClick={() => setActiveTab("private")}
             className={cn(
@@ -202,7 +205,7 @@ export function ProfileMain({ lang, dict, user }: Props) {
         </h2>
         <p className="text-sm text-muted-foreground">—</p>
       </section>
-      <section id="private-note" className="space-y-2 scroll-mt-24">
+      {/* <section id="private-note" className="space-y-2 scroll-mt-24">
         <h2 className="text-sm font-semibold">
           {dict.profile.navAddPrivateNote}
         </h2>
@@ -211,16 +214,16 @@ export function ProfileMain({ lang, dict, user }: Props) {
           rows={3}
           className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-brand transition-colors"
         />
-      </section>
+      </section> */}
 
       {/* Full-Screen Photo Viewer */}
-      {selectedPhotoIdx !== null && (
+      {/* {selectedPhotoIdx !== null && (
         <PhotoViewerOverlay
           user={user}
           initialIndex={selectedPhotoIdx}
           onClose={() => setSelectedPhotoIdx(null)}
         />
-      )}
+      )} */}
     </div>
   );
 }

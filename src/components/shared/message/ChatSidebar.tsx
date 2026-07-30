@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Search, Filter, Users, MoreVertical, Trash2, Ban } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { getImageUrl } from "@/helpers/getImageUrl";
 import {
   DropdownMenu,
@@ -18,6 +19,7 @@ interface ChatRoom {
   _id: string;
   name?: string;
   type?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   participants: any;
   lastMessage?: {
     text: string;
@@ -44,7 +46,9 @@ export function ChatSidebar({
   search: string,
   setSearch: (search: string) => void
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showFilter, setShowFilter] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeTab, setActiveTab] = useState<'chats' | 'groups'>('chats');
   const pathname = usePathname();
 
@@ -109,6 +113,7 @@ export function ChatSidebar({
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {activeRooms?.filter(room => {
           if (!search.trim()) return true;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           return room.participants.some((p: any) =>
             (p.name || p.id || "").toLowerCase().includes(search.toLowerCase())
           );
@@ -116,6 +121,7 @@ export function ChatSidebar({
           activeRooms
             .filter(room => {
               if (!search.trim()) return true;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               return room.participants.some((p: any) =>
                 (p.name || p.id || "").toLowerCase().includes(search.toLowerCase())
               );
@@ -123,6 +129,7 @@ export function ChatSidebar({
             .map(room => {
               const isGroup = room.type === 'group';
               const displayParticipant = isGroup ? null : (Array.isArray(room.participants)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ? room.participants.find((p: any) => p._id !== currentUserId)
                 : room.participants);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { useRouter } from "next/navigation";
 import { Pencil, Plus, X } from "lucide-react";
 import { toast } from "sonner";
@@ -72,6 +72,7 @@ export function CreatePostModal({
 
   useEffect(() => {
     const urls = files.map((file) => URL.createObjectURL(file));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFilePreviews(urls);
     return () => {
       urls.forEach((url) => URL.revokeObjectURL(url));
@@ -173,7 +174,7 @@ export function CreatePostModal({
         {trigger ?? (
           <button
             type="button"
-            className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left text-sm text-muted-foreground hover:border-brand hover:text-foreground transition-colors"
+            className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-4 py-4 text-left text-sm text-muted-foreground hover:border-brand hover:text-foreground transition-colors"
           >
             <Pencil className="size-4 shrink-0" />
             <span>{dict.myHome.composerPlaceholder}</span>

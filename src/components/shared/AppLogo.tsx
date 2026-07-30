@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 
 interface AppLogoProps {
     variant?: "default" | "white";

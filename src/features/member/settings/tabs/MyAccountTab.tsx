@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Pencil, Trash2, Check, X, Loader2, Camera } from "lucide-react";
+import { Pencil, Check, X, Loader2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
@@ -30,6 +29,7 @@ interface AccountField {
   type: "text" | "email" | "tel" | "password";
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function MyAccountTab({ t }: { t: any }) {
   // State to handle which field is actively being edited
   const [editingKey, setEditingKey] = useState<string | null>(null);
@@ -37,8 +37,8 @@ export default function MyAccountTab({ t }: { t: any }) {
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   // State for Account Delete Action
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  // const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  // const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
 
   // State for Password Change
   const [isPasswordModalOpen, setIsPasswordModalOpen] =
@@ -165,6 +165,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || `Failed to update ${key}`);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -201,22 +202,23 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || "Failed to upload photo");
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "Error uploading photo");
     }
   };
 
   // Mock function for permanent account cleanup execution
-  const handleDeleteAccount = async () => {
-    setIsDeleting(true);
-    // Simulate API deletion request
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsDeleting(false);
-    setIsDeleteDialogOpen(false);
+  // const handleDeleteAccount = async () => {
+  //   setIsDeleting(true);
+  //   // Simulate API deletion request
+  //   await new Promise((resolve) => setTimeout(resolve, 2000));
+  //   setIsDeleting(false);
+  //   setIsDeleteDialogOpen(false);
 
-    // Redirect logic goes here (e.g., router.push("/login"))
-    toast.success("Account permanently deleted.");
-  };
+  //   // Redirect logic goes here (e.g., router.push("/login"))
+  //   toast.success("Account permanently deleted.");
+  // };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -233,6 +235,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       } else {
         toast.error(res.error || res.message || "Failed to change password");
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     } finally {
@@ -439,7 +442,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       </Dialog>
 
       {/* Premium Styled Danger Zone */}
-      <div className="pt-4">
+      {/* <div className="pt-4">
         <div className="p-4 rounded-xl border border-red-100  bg-red-50/30  flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-0.5">
             <h4 className="text-sm font-bold text-red-600 ">
@@ -450,7 +453,6 @@ export default function MyAccountTab({ t }: { t: any }) {
             </p>
           </div>
 
-          {/* Dialog Action Modal Trigger */}
           <Dialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
@@ -507,7 +509,7 @@ export default function MyAccountTab({ t }: { t: any }) {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

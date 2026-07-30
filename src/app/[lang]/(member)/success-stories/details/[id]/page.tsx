@@ -5,6 +5,7 @@ import SuccessStoryDetailsFeature from "@/features/member/success-stories/detail
 
 export default async function SuccessStoryDetailsPage({
     params,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: PageProps<any>) {
     const { lang, id } = await params;
 

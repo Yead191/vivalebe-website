@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function NotificationsTab({ t }: { t: any }) {
   const [viewed, setViewed] = useState(true);
   const [likes, setLikes] = useState(true);

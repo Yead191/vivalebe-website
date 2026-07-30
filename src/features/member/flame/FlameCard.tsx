@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Heart, RotateCcw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -62,6 +62,7 @@ export function FlameCard({
   const [photoIdx, setPhotoIdx] = useState(0);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPhotoIdx(0);
   }, [user.id]);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight, Lock, Menu, X } from "lucide-react";
@@ -24,6 +24,7 @@ interface MemberNavbarProps {
   lang: Locale;
   dict: Dictionary;
   currentUser: {
+    email: string;
     username: string;
     displayName: string;
     avatarSeed: string;
@@ -41,6 +42,7 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDrawerOpen(false);
     setOpenKey(null);
   }, [pathname]);
@@ -99,6 +101,7 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
           <UserMenu
             lang={lang}
             dict={dict}
+            email={currentUser.email}
             username={currentUser.username}
             displayName={currentUser.displayName}
             avatarSeed={currentUser.avatarSeed}

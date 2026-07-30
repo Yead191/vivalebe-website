@@ -39,6 +39,9 @@ export async function getUserById(id: string): Promise<User | null> {
       religion: "",
       photos: u.profile || u.image ? [u.profile || u.image] : [],
       privatePhotosCount: 0,
+      isLiked: !!u.isLiked,
+      isWinked: !!u.isWinked,
+      winkId: u.winkId || undefined,
     } as User;
   } catch (error) {
     console.error("Error fetching user profile:", error);

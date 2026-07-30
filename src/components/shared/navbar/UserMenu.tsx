@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import {
@@ -18,6 +18,7 @@ import { logoutAction } from "@/features/auth/login/action";
 interface UserMenuProps {
   lang: Locale;
   dict: Dictionary;
+  email: string;
   username: string;
   displayName: string;
   avatarSeed: string;
@@ -26,6 +27,8 @@ interface UserMenuProps {
 export function UserMenu({
   lang,
   dict,
+  email,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   username,
   displayName,
   avatarSeed,
@@ -65,7 +68,7 @@ export function UserMenu({
               {displayName}
             </span>
             <span className="text-xs font-medium text-neutral-400 truncate">
-              @{username}
+              {email}
             </span>
           </div>
         </div>

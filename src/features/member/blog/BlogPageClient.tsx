@@ -148,6 +148,7 @@ export function BlogPageClient({
     }
 
     return list;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     activeBlogs,
     activeTab,

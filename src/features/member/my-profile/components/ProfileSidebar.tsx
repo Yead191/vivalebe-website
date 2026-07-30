@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Camera, Check, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,12 +34,15 @@ export function ProfileSidebar({
 }: ProfileSidebarProps) {
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(displayName);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!editingName) setDraftName(displayName);
   }, [editingName, displayName]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;

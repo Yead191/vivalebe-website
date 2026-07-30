@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { X, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/i18n/config";
@@ -46,12 +46,14 @@ export function MomentCard({
   const count = moment.imageSeeds.length;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
   // Controls for Full-Screen View
   useEffect(() => {
     if (!selectedImage) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setZoomLevel(1);
       return;
     }
@@ -80,16 +82,11 @@ export function MomentCard({
           <p className="px-4 pt-2 text-sm text-foreground">{moment.text}</p>
         ) : null}
         {count > 0 ? (
-          <div
-            className={cn(
-              "mt-3 gap-1 px-4 pb-3",
-              count === 1 ? "flex" : "grid grid-cols-2",
-            )}
-          >
+          <div className="mt-3 flex flex-col gap-2 px-4 pb-3">
             {moment.imageSeeds.map((seed, i) => (
               <div
                 key={seed + i}
-                className="overflow-hidden rounded-md bg-muted aspect-5/3 cursor-pointer hover:opacity-90 transition-opacity"
+                className="overflow-hidden rounded-md bg-muted w-full h-[300px] cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => setSelectedImage(seed)}
               >
                 <Image

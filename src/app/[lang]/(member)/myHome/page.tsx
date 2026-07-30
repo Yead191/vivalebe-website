@@ -15,7 +15,5 @@ export default async function MyHomePage({
   const { tab } = await searchParams;
   if (!isLocale(lang)) notFound();
   const dict = await getDictionary(lang);
-  return (
-    <HomeFeature lang={lang} dict={dict} activeTab={parseHomeTab(tab)} />
-  );
+  return <HomeFeature lang={lang} dict={dict} activeTab={parseHomeTab(tab)} />;
 }

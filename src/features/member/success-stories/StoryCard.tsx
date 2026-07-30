@@ -10,7 +10,7 @@ import {
   Share2,
 } from "lucide-react";
 import { toast } from "sonner";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { avatarUrl } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +28,7 @@ import {
   brandButtonClass,
   countMedia,
   StoryMediaStrip,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   StoryReactions,
 } from "./shared";
 import { StoryComments } from "./StoryComments";
@@ -89,6 +90,7 @@ export function StoryCard({
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <Link href={`/${lang}/profile/${story.user.username}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={avatarUrl(story.user.profileImage, 120)}
                 alt={story.user.name}

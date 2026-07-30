@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useTransition } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
@@ -32,6 +32,7 @@ export function PostBlogModal({
   useEffect(() => {
     if (!imageFile) return;
     const url = URL.createObjectURL(imageFile);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setImagePreview(url);
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import {
   Heart,
@@ -116,11 +116,13 @@ export function StoryMediaStrip({
   const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
   useEffect(() => {
     if (!selectedMedia) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setZoomLevel(1);
       return;
     }

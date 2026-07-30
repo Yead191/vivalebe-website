@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { Camera } from "lucide-react";
 import { toast } from "sonner";
@@ -79,13 +79,13 @@ export function LeftSidebar({ lang, dict, me, viewedCount }: LeftSidebarProps) {
       </div>
 
       <div className="px-1 text-sm">
-        <Link
+        {/* <Link
           href={`/${lang}/settings/photo-verification`}
           className="block text-foreground hover:text-brand transition-colors"
         >
           {dict.myHome.getPhotoVerified}
-        </Link>
-        <p className="mt-1 text-muted-foreground">
+        </Link> */}
+        <p className="text-muted-foreground">
           {dict.myHome.viewedTimes.replace("{count}", String(viewedCount))}
         </p>
       </div>

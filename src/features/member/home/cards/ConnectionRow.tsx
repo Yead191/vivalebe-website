@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import type { Locale } from "@/i18n/config";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
+import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import {
   Camera,
@@ -67,6 +67,7 @@ export function UserCard({
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLiked(user.isLiked || false);
   }, [user.isLiked]);
 
@@ -84,6 +85,7 @@ export function UserCard({
       } else {
         toast.error(res.message || "Failed to respond");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -112,6 +114,7 @@ export function UserCard({
       } else {
         toast.error(res.message || "Failed to send wink");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -161,6 +164,7 @@ export function UserCard({
         setLiked(liked);
         toast.error(res.message || "Failed to swipe");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setLiked(liked);
       toast.error("An error occurred");
@@ -182,6 +186,7 @@ export function UserCard({
       } else {
         toast.error(res.message || "Failed to block user");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred while blocking");
     } finally {
@@ -202,6 +207,7 @@ export function UserCard({
       } else {
         toast.error(res.message || "Failed to hide user");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred while hiding");
     } finally {

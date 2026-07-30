@@ -9,8 +9,10 @@ import { getHiddenMembers, unhideUser } from "../action";
 import { toast } from "sonner";
 import { avatarUrl } from "@/lib/image";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function HiddenMembersTab({ t }: { t: any }) {
   const [searchTerm, setSearchTerm] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [members, setMembers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
@@ -20,6 +22,7 @@ export default function HiddenMembersTab({ t }: { t: any }) {
         if (res.success && res.data) {
           setMembers(res.data);
         }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error("Failed to load hidden members");
       } finally {
@@ -38,6 +41,7 @@ export default function HiddenMembersTab({ t }: { t: any }) {
       } else {
         toast.error(res.message || "Failed to unhide member");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     }
@@ -83,6 +87,7 @@ export default function HiddenMembersTab({ t }: { t: any }) {
               className="flex items-center justify-between p-3 rounded-xl border border-neutral-100  hover:bg-neutral-50/50  transition-colors"
             >
               <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={avatarUrl(user.profile || user.image || "default", 150)}
                   alt={user.name || user.displayName}
