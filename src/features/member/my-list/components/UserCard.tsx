@@ -85,7 +85,7 @@ export function UserCard({
       } else {
         toast.error(res.message || "Failed to respond");
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -101,7 +101,7 @@ export function UserCard({
     setIsSendingWink(true);
     try {
       let res;
-      if (user.winkId) {
+      if (activeTab === "winked-at-you" && user.winkId) {
         // Double match if winkId is present
         res = await acceptWink(user.winkId);
       } else {
@@ -114,7 +114,7 @@ export function UserCard({
       } else {
         toast.error(res.message || "Failed to send wink");
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -164,7 +164,7 @@ export function UserCard({
         setLiked(liked);
         toast.error(res.message || "Failed to swipe");
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setLiked(liked);
       toast.error("An error occurred");
@@ -186,7 +186,7 @@ export function UserCard({
       } else {
         toast.error(res.message || "Failed to block user");
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred while blocking");
     } finally {
@@ -207,7 +207,7 @@ export function UserCard({
       } else {
         toast.error(res.message || "Failed to hide user");
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred while hiding");
     } finally {
@@ -367,7 +367,8 @@ export function UserCard({
             {/* Action buttons */}
             <div className="mt-auto flex items-center justify-between pt-3 lg:pt-5 w-full">
               <div className="flex items-center gap-6 lg:gap-8">
-                {activeTab === "you-likes" && (
+                {(activeTab === "you-likes" ||
+                  activeTab === "winked-at-you") && (
                   <button
                     type="button"
                     aria-label={dict.myList.wink}
