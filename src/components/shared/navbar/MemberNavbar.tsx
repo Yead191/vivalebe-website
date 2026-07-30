@@ -24,6 +24,7 @@ interface MemberNavbarProps {
   lang: Locale;
   dict: Dictionary;
   currentUser: {
+    email: string;
     username: string;
     displayName: string;
     avatarSeed: string;
@@ -99,6 +100,7 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
           <UserMenu
             lang={lang}
             dict={dict}
+            email={currentUser.email}
             username={currentUser.username}
             displayName={currentUser.displayName}
             avatarSeed={currentUser.avatarSeed}
