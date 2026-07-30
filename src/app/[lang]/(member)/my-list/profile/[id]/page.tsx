@@ -8,9 +8,11 @@ import { getProfileAction } from "@/features/member/settings/action";
 
 export default async function MyListProfilePage({
   params,
-}: PageProps<"/[lang]/my-list/profile/[id]">) {
+}: {
+  params: Promise<{ lang: string; id: string }>;
+}) {
   const { lang, id } = await params;
-  if (!isLocale(lang)) notFound();
+  console.log("MyListProfilePage params:", { lang, id });
 
   const user = await getUserById(id);
   const dict = await getDictionary(lang);

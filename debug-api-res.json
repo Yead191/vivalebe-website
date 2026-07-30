@@ -1,0 +1,42 @@
+{
+  "success": true,
+  "message": "User fetched successfully",
+  "data": {
+    "_id": "6a671eb0515e4e50f9269c9c",
+    "name": "Chat",
+    "email": "pifipe6648@gwshare.com",
+    "onboardingComplete": true,
+    "role": "USER",
+    "status": "ACTIVE",
+    "profile": "https://pub-b4a48ea5422f416b901c94e869fc9159.r2.dev/image/images-1-1785143253423-7d604070.jpg",
+    "isAdminVerified": false,
+    "premiumMembership": true,
+    "isBanned": false,
+    "verified": true,
+    "isResetPassword": false,
+    "accountInformation": {
+      "status": false
+    },
+    "createdAt": "2026-07-27T09:02:40.511Z",
+    "updatedAt": "2026-07-30T03:14:27.782Z",
+    "DOB": "2001-05-31T00:00:00.000Z",
+    "bio": "nhbhvnhgjn gdfyhj dty dfy hdtyhd dyf y tfh",
+    "country": "bangladesh",
+    "displayName": "fgfg",
+    "education": "COLLEGE",
+    "gender": "FEMALE",
+    "height": 232,
+    "livingWith": "OTHER",
+    "lookingFor": "MALE",
+    "nationality": "ffghf",
+    "occupation": "vxcv",
+    "relationStatus": "SINGLE",
+    "state": "gfd",
+    "weight": 232,
+    "zidCode": 6300,
+    "protectedImages": "https://pub-b4a48ea5422f416b901c94e869fc9159.r2.dev/protected/blur-images-1-1785143254742-05245eb6.jpg",
+    "isLiked": false,
+    "isWinked": false
+  },
+  "error": null
+}
