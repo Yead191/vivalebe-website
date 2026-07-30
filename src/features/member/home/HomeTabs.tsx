@@ -56,7 +56,10 @@ function sortByPopularity<T extends { id: string }>(
   );
 }
 
-function mergeById<T extends { id: string }>(existing: T[], incoming: T[]): T[] {
+function mergeById<T extends { id: string }>(
+  existing: T[],
+  incoming: T[],
+): T[] {
   const seen = new Set(existing.map((item) => item.id));
   const next = [...existing];
   for (const item of incoming) {
@@ -227,7 +230,7 @@ export function HomeTabs({
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <TabsList className="grid h-14 w-full grid-cols-3 gap-1 rounded-[20px] bg-muted/40 p-1.5">
+      <TabsList className="grid w-full grid-cols-3 gap-1 rounded-[20px] bg-muted/40 p-1.5">
         <TabsTrigger
           value="videos"
           className="group flex items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"

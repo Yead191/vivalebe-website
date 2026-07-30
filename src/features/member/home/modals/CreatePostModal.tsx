@@ -173,7 +173,7 @@ export function CreatePostModal({
         {trigger ?? (
           <button
             type="button"
-            className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left text-sm text-muted-foreground hover:border-brand hover:text-foreground transition-colors"
+            className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-4 py-4 text-left text-sm text-muted-foreground hover:border-brand hover:text-foreground transition-colors"
           >
             <Pencil className="size-4 shrink-0" />
             <span>{dict.myHome.composerPlaceholder}</span>

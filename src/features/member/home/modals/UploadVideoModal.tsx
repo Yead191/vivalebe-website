@@ -76,9 +76,8 @@ export function UploadVideoModal({
   }, [file]);
 
   const canPost =
-    (mode === "edit"
-      ? description.trim().length > 0 || !!file
-      : !!file) && !isPending;
+    (mode === "edit" ? description.trim().length > 0 || !!file : !!file) &&
+    !isPending;
 
   const reset = () => {
     setFile(null);
@@ -93,9 +92,7 @@ export function UploadVideoModal({
         prev.replace(new RegExp(`${hashtag}\\s?`, "g"), "").trim(),
       );
     } else {
-      setDescription((prev) =>
-        `${prev}${prev ? " " : ""}${hashtag}`.trim(),
-      );
+      setDescription((prev) => `${prev}${prev ? " " : ""}${hashtag}`.trim());
     }
   };
 
@@ -152,7 +149,7 @@ export function UploadVideoModal({
         {trigger ?? (
           <button
             type="button"
-            className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left text-sm text-muted-foreground hover:border-brand hover:text-foreground transition-colors"
+            className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-4 py-4 text-left text-sm text-muted-foreground hover:border-brand hover:text-foreground transition-colors"
           >
             <Pencil className="size-4 shrink-0" />
             <span>{dict.myHome.composerPlaceholder}</span>
