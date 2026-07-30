@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { Bell, Loader2 } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getNotifications } from "./action";
+import { getNotifications, markNotificationAsRead } from "./action";
 
 function timeAgo(date: Date) {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
@@ -44,7 +45,24 @@ export function NotificationsBell() {
     }
     fetchNotifs();
   }, []);
-  const unread = items.length;
+
+  const handleRead = async (id: string) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        (item._id || item.id) === id
+          ? { ...item, read: true, isRead: true }
+          : item,
+      ),
+    );
+    try {
+      await markNotificationAsRead(id);
+    } catch (error) {
+      console.error("Failed to mark notification as read", error);
+    }
+  };
+
+  const unread = items.filter((n) => !n.read && !n.isRead).length;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -91,18 +109,38 @@ export function NotificationsBell() {
                 if (n.createdAt) {
                   at = timeAgo(new Date(n.createdAt));
                 }
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
               } catch (e) {}
+
+              const id = n._id || n.id;
+              const isRead = n.read || n.isRead;
 
               return (
                 <DropdownMenuItem
-                  // eslint-disable-next-line react-hooks/purity
-                  key={n._id || n.id || Math.random()}
-                  className="cursor-pointer rounded-xl flex flex-col items-start gap-1 p-3 hover:bg-[#429CA8]/5 focus:bg-[#429CA8]/5 transition-all border border-transparent hover:border-[#429CA8]/10"
+                  key={id || Math.random()}
+                  onClick={() => {
+                    if (id && !isRead) handleRead(id);
+                  }}
+                  className={`cursor-pointer rounded-xl flex flex-col items-start gap-1 p-3 transition-all border border-transparent ${
+                    isRead
+                      ? "opacity-60"
+                      : "hover:bg-[#429CA8]/5 focus:bg-[#429CA8]/5 hover:border-[#429CA8]/10"
+                  }`}
                 >
-                  <span className="text-sm font-semibold text-neutral-700">
-                    {text}
-                  </span>
+                  <div className="flex w-full items-start justify-between gap-2">
+                    <span
+                      className={`text-sm ${
+                        isRead
+                          ? "font-medium text-neutral-500"
+                          : "font-semibold text-neutral-700"
+                      }`}
+                    >
+                      {text}
+                    </span>
+                    {!isRead && (
+                      <span className="shrink-0 size-2 rounded-full bg-[#429CA8] mt-1.5" />
+                    )}
+                  </div>
                   <span className="text-[11px] font-bold text-[#429CA8]">
                     {at}
                   </span>
