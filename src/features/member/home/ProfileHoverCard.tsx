@@ -38,7 +38,7 @@ export function ProfileHoverCard({ user, lang, dict }: Props) {
     if (isSwiping) return;
     setIsSwiping(true);
 
-    const action = liked ? "dislike" : "like";
+    const action = liked ? "reject" : "like";
     setLiked(!liked);
 
     try {

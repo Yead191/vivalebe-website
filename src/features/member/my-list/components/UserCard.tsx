@@ -152,7 +152,7 @@ export function UserCard({
     setIsSwiping(true);
 
     // Toggle the UI optimistically or just wait for the response
-    const action = liked ? "dislike" : "like";
+    const action = liked ? "reject" : "like";
     setLiked(!liked);
 
     try {
