@@ -12,7 +12,20 @@ export async function getUserById(id: string): Promise<User | null> {
 
     if (!res.success || !res.data) return null;
 
-    const u = res.data;
+    const u = Array.isArray(res.data) ? res.data[0] : (res.data?.user || res.data?.toUser || res.data?.matchedUser || res.data);
+    
+    // Debug to file
+    const fs = require("fs");
+    fs.writeFileSync("d:/Mijan/1. Development/10.vivalebe-website/debug-api-res.json", JSON.stringify(res, null, 2));
+    
+    // If we still can't find an id, maybe res.data is actually missing it or it's further nested
+    console.log("Extracted user id:", u?._id || u?.id);
+    
+    if (!u || (!u._id && !u.id)) {
+      console.log("Could not find user ID in response:", res.data);
+      return null;
+    }
+    
     return {
       id: u._id || u.id,
       username: u.name || u.username || "",

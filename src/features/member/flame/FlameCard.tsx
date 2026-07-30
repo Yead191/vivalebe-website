@@ -90,11 +90,7 @@ export function FlameCard({
       <article className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="grid gap-0 md:grid-cols-[minmax(0,520px)_minmax(0,1fr)] min-h-[calc(100vh-160px)]">
           <div className="group relative aspect-square w-full bg-muted md:aspect-auto md:h-full">
-            <Link
-              href={profileHref}
-              className="relative block h-full w-full"
-              aria-label={`Open ${user.displayName}'s profile`}
-            >
+            <div className="relative block h-full w-full">
               <Image
                 src={photoUrl(currentSeed, 800, 920)}
                 alt={user.displayName}
@@ -104,7 +100,7 @@ export function FlameCard({
                 priority
                 unoptimized
               />
-            </Link>
+            </div>
 
             {photoCount > 1 ? (
               <>
@@ -206,7 +202,9 @@ export function FlameCard({
                 {user.verified ? <VerifiedBadge /> : null}
               </div>
               {user.country ? (
-                <p className="text-base text-muted-foreground">{user.country}</p>
+                <p className="text-base text-muted-foreground">
+                  {user.country}
+                </p>
               ) : null}
               {user.willingToFly ? (
                 <p className="text-base font-semibold text-brand">
@@ -226,7 +224,10 @@ export function FlameCard({
                 />
                 <Row label="Height" value={formatHeight(user.height)} />
                 <Row label="Weight" value={formatWeight(user.weight)} />
-                <Row label="Education" value={formatEducation(user.education)} />
+                <Row
+                  label="Education"
+                  value={formatEducation(user.education)}
+                />
               </dl>
             </div>
 

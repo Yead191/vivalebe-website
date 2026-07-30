@@ -35,7 +35,7 @@ export const VideoCard = memo(function VideoCard({
 }: VideoCardProps) {
   return (
     <article className="overflow-hidden rounded-xl border border-border bg-card contain-[layout_paint_style]">
-      <PostHeader user={author} lang={lang} />
+      <PostHeader postId={video.id} user={author} lang={lang} />
       {video.caption ? (
         <p className="px-4 pt-2 text-sm text-foreground">{video.caption}</p>
       ) : null}

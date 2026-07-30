@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "message": "User fetched successfully",
+  "data": {
+    "_id": "6a644337c17054d3e3cb424a",
+    "name": "Ruby Hartman",
+    "email": "mixoda3786@gwshare.com",
+    "onboardingComplete": false,
+    "role": "USER",
+    "status": "ACTIVE",
+    "profile": "/image.png",
+    "isAdminVerified": false,
+    "premiumMembership": false,
+    "isBanned": false,
+    "verified": true,
+    "isResetPassword": false,
+    "accountInformation": {
+      "status": false
+    },
+    "createdAt": "2026-07-25T05:01:43.232Z",
+    "updatedAt": "2026-07-25T05:02:09.360Z",
+    "isLiked": false,
+    "isWinked": false
+  },
+  "error": null
+}

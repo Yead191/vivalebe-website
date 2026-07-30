@@ -55,8 +55,8 @@ const generateInitialData = (
   ];
 
   for (let i = 0; i < photoCount; i++) {
-    // Generate 1-3 random comments for each photo to show diversity
-    const commentCount = 1 + Math.floor(Math.random() * 3);
+    // Generate 1-3 comments for each photo deterministically
+    const commentCount = 1 + (i % 3);
     const comments: Comment[] = [];
     for (let j = 0; j < commentCount; j++) {
       comments.push({
@@ -70,7 +70,7 @@ const generateInitialData = (
 
     data[i] = {
       liked: false,
-      likeCount: 5 + Math.floor(Math.random() * 20),
+      likeCount: 5 + ((i * 7) % 20),
       comments,
     };
   }

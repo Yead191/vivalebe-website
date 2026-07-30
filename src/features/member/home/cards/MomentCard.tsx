@@ -77,7 +77,7 @@ export function MomentCard({
   return (
     <>
       <article className="overflow-hidden rounded-xl border border-border bg-card">
-        <PostHeader user={author} lang={lang} showAgeGender />
+        <PostHeader postId={moment.id} user={author} lang={lang} showAgeGender />
         {moment.text ? (
           <p className="px-4 pt-2 text-sm text-foreground">{moment.text}</p>
         ) : null}
