@@ -23,7 +23,7 @@ const sections = [
   { id: "more-about-me", labelKey: "navMoreAboutMe" as const },
   { id: "moments", labelKey: "navMoments" as const },
   { id: "personal-blogs", labelKey: "navPersonalBlogs" as const },
-  { id: "private-note", labelKey: "navAddPrivateNote" as const },
+  // { id: "private-note", labelKey: "navAddPrivateNote" as const },
 ];
 
 interface Props {

@@ -17,9 +17,10 @@ interface Props {
   lang: Locale;
   dict: Dictionary;
   user: User;
+  isPremium?: boolean;
 }
 
-export function ProfileMain({ lang, dict, user }: Props) {
+export function ProfileMain({ lang, dict, user, isPremium = false }: Props) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"public" | "private">("public");
   const [expanded, setExpanded] = useState(false);
@@ -102,7 +103,7 @@ export function ProfileMain({ lang, dict, user }: Props) {
             {dict.profile.public.replace("{count}", String(user.photos.length))}
           </button>
           <button
-            disabled
+            disabled={!isPremium}
             type="button"
             onClick={() => setActiveTab("private")}
             className={cn(
@@ -202,7 +203,7 @@ export function ProfileMain({ lang, dict, user }: Props) {
         </h2>
         <p className="text-sm text-muted-foreground">—</p>
       </section>
-      <section id="private-note" className="space-y-2 scroll-mt-24">
+      {/* <section id="private-note" className="space-y-2 scroll-mt-24">
         <h2 className="text-sm font-semibold">
           {dict.profile.navAddPrivateNote}
         </h2>
@@ -211,7 +212,7 @@ export function ProfileMain({ lang, dict, user }: Props) {
           rows={3}
           className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-brand transition-colors"
         />
-      </section>
+      </section> */}
 
       {/* Full-Screen Photo Viewer */}
       {/* {selectedPhotoIdx !== null && (
