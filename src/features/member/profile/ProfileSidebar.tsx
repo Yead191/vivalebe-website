@@ -41,6 +41,14 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
   const [liked, setLiked] = useState(user.isLiked || false);
   const [isSwiping, setIsSwiping] = useState(false);
 
+  useEffect(() => {
+    setWinked(user.isWinked || false);
+  }, [user.isWinked]);
+
+  useEffect(() => {
+    setLiked(user.isLiked || false);
+  }, [user.isLiked]);
+
   const handleWinkClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -155,7 +163,8 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
           onClick={handleWinkClick}
           disabled={isSendingWink || winked}
           className={cn(
-            "transition-colors disabled:opacity-50",
+            "transition-colors",
+            isSendingWink && "opacity-50",
             winked ? "text-brand" : "text-muted-foreground hover:text-brand"
           )}
         >
@@ -172,7 +181,8 @@ export function ProfileSidebar({ lang, dict, user }: Props) {
           onClick={handleLikeClick}
           disabled={isSwiping}
           className={cn(
-            "transition-colors disabled:opacity-50",
+            "transition-colors",
+            isSwiping && "opacity-50",
             liked ? "text-red-500" : "text-muted-foreground hover:text-brand"
           )}
         >

@@ -76,14 +76,14 @@ export function ProfileMain({ lang, dict, user }: Props) {
             {user.state ? `, ${user.state}` : ""}, {user.country}
           </p>
         </div>
-        <button
+        {/* <button
           type="button"
           aria-label="More"
           className="flex flex-col items-center text-muted-foreground hover:text-foreground transition-colors"
         >
           <MoreHorizontal className="size-5" />
           <span className="text-[10px]">more</span>
-        </button>
+        </button> */}
       </header>
 
       <section id="summary" className="space-y-3 scroll-mt-24">
@@ -214,13 +214,13 @@ export function ProfileMain({ lang, dict, user }: Props) {
       </section>
 
       {/* Full-Screen Photo Viewer */}
-      {selectedPhotoIdx !== null && (
+      {/* {selectedPhotoIdx !== null && (
         <PhotoViewerOverlay
           user={user}
           initialIndex={selectedPhotoIdx}
           onClose={() => setSelectedPhotoIdx(null)}
         />
-      )}
+      )} */}
     </div>
   );
 }
