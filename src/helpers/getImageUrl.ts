@@ -1,5 +1,5 @@
 export function getImageUrl(imageurl: string | null | undefined) {
-  if (!imageurl) return undefined;
+  if (!imageurl || imageurl === "default") return "/assets/blank-image.png";
   if (imageurl.startsWith("http") || imageurl.startsWith("blob:")) {
     return imageurl;
   }
