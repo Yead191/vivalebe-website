@@ -50,7 +50,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
         setLiked(liked);
         toast.error(res.message || "Failed to swipe");
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setLiked(liked);
       toast.error("An error occurred");
@@ -103,7 +103,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
       } else {
         toast.error(res.message || "Failed to send wink");
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -114,10 +114,10 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
 
   return (
     <article className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
-      <div className="grid grid-cols-[260px_minmax(0,1fr)] sm:grid-cols-[480px_minmax(0,1fr)]">
+      <div className="flex flex-col sm:grid sm:grid-cols-[260px_minmax(0,1fr)] lg:grid-cols-[480px_minmax(0,1fr)]">
         <Link
           href={`/${lang}/my-list/profile/${user.id}`}
-          className="relative block overflow-hidden bg-muted min-h-70 lg:min-h-92 2xl:min-h-120 "
+          className="relative block overflow-hidden bg-muted aspect-square sm:aspect-auto sm:min-h-70 lg:min-h-92 2xl:min-h-120 "
         >
           <Image
             src={photoUrl(user.coverSeed, 520, 520)}
@@ -211,11 +211,11 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
               disabled={isSendingWink || winked}
               className={`transition-colors disabled:opacity-50 ${winked ? "text-brand" : "text-muted-foreground hover:text-brand"}`}
             >
-              <Smile 
+              <Smile
                 className={cn(
-                  "size-5 lg:size-6 transition-transform", 
-                  winked && "fill-current stroke-card scale-110"
-                )} 
+                  "size-5 lg:size-6 transition-transform",
+                  winked && "fill-current stroke-card scale-110",
+                )}
               />
             </button>
             <button
