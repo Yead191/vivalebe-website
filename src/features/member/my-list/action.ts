@@ -381,6 +381,19 @@ export async function sendWink(receiverId: string) {
   }
 }
 
+export async function unWink(receiverId: string) {
+  try {
+    const res = await myFetch("/winks", {
+      method: "POST",
+      body: { receiverId },
+    });
+    return res;
+  } catch (error) {
+    console.error("Error removing wink:", error);
+    return { success: false, message: "Failed to remove wink" };
+  }
+}
+
 export async function acceptWink(winkId: string) {
   try {
     const res = await myFetch(`/winks/${winkId}`, {
