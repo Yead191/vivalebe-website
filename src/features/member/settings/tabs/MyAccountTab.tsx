@@ -13,11 +13,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import {
   changePasswordAction,
   getProfileAction,
   updateProfileAction,
+  verifyProfileAction,
 } from "../action";
 import { avatarUrl } from "@/lib/image";
 
@@ -50,6 +58,16 @@ export default function MyAccountTab({ t }: { t: any }) {
   });
   const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false);
 
+  // State for Verify Profile
+  const [isVerifyModalOpen, setIsVerifyModalOpen] = useState<boolean>(false);
+  const [verifyForm, setVerifyForm] = useState({
+    type: "",
+    image: null as File | null,
+    imagePreview: "",
+  });
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const [isAdminVerified, setIsAdminVerified] = useState<boolean>(false);
+
   const [userData, setUserData] = useState<
     Record<string, { value: string; isNotSet?: boolean }>
   >({
@@ -65,6 +83,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       try {
         const res = await getProfileAction();
         if (res.success && res.data) {
+          setIsAdminVerified(res.data.isAdminVerified || false);
           setUserData((prev) => ({
             ...prev,
             name: {
@@ -243,6 +262,46 @@ export default function MyAccountTab({ t }: { t: any }) {
     }
   };
 
+  const handleVerifyImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setVerifyForm((prev) => ({
+        ...prev,
+        image: file,
+        imagePreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
+  const handleVerifySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!verifyForm.type || !verifyForm.image) {
+      toast.error("Please select a document type and upload an image.");
+      return;
+    }
+    setIsVerifying(true);
+    try {
+      const formData = new FormData();
+      formData.append("documentType", verifyForm.type);
+      formData.append("documentVerified", verifyForm.image);
+      
+      const res = await verifyProfileAction(formData);
+      
+      if (res.success) {
+        toast.success(res.message || "Verification documents submitted successfully!");
+        setIsVerifyModalOpen(false);
+        setVerifyForm({ type: "", image: null, imagePreview: "" });
+      } else {
+        toast.error(res.error || res.message || "Failed to submit verification documents.");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -354,6 +413,31 @@ export default function MyAccountTab({ t }: { t: any }) {
             </div>
           );
         })}
+        {/* Verify Profile Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-4 group transition-colors">
+          <div className="space-y-1 flex-1">
+            <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
+              {t.account?.verifyProfile || "Verify Profile"}
+            </span>
+            <p className={`text-sm font-medium ${isAdminVerified ? "text-green-600" : "text-neutral-400 italic"}`}>
+              {isAdminVerified ? "Verified" : (t.account?.notVerified || "Not Verified")}
+            </p>
+          </div>
+          {isAdminVerified ? (
+            <div className="flex items-center text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 self-start sm:self-center">
+              <Check className="w-4 h-4 mr-1.5" />
+              <span className="text-sm font-medium">Verified</span>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => setIsVerifyModalOpen(true)}
+              className="rounded-lg border-neutral-200 text-neutral-600 font-medium text-sm self-start sm:self-center"
+            >
+              {t.account?.verifyNow || "Verify Now"}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Password Change Modal */}
@@ -435,6 +519,60 @@ export default function MyAccountTab({ t }: { t: any }) {
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 )}
                 {t.common?.save || "Save Password"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Verify Profile Modal */}
+      <Dialog open={isVerifyModalOpen} onOpenChange={setIsVerifyModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Verify Profile</DialogTitle>
+            <DialogDescription>
+              Please upload a valid document to verify your profile.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleVerifySubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Document Type</label>
+              <Select onValueChange={(value) => setVerifyForm(prev => ({...prev, type: value}))} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select document type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="National ID">National ID</SelectItem>
+                  <SelectItem value="Passport">Passport</SelectItem>
+                  <SelectItem value="Driving License">Driving License</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Upload Document</label>
+              <div className="flex items-center justify-center w-full">
+                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 border-neutral-300">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Camera className="w-8 h-8 mb-2 text-neutral-400" />
+                    <p className="text-sm text-neutral-500"><span className="font-semibold">Click to upload</span></p>
+                  </div>
+                  <input id="dropzone-file" type="file" className="hidden" accept="image/*" onChange={handleVerifyImageChange} />
+                </label>
+              </div>
+              {verifyForm.imagePreview && (
+                <div className="mt-4 relative rounded-lg overflow-hidden border border-neutral-200 w-full h-48">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={verifyForm.imagePreview} alt="Preview" className="w-full h-full object-contain bg-neutral-100" />
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsVerifyModalOpen(false)} disabled={isVerifying}>
+                {t.common?.cancel || "Cancel"}
+              </Button>
+              <Button type="submit" disabled={isVerifying || !verifyForm.type || !verifyForm.image} className="bg-[#429CA8] hover:bg-[#357d87] text-white">
+                {isVerifying && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                {t.common?.save || "Save"}
               </Button>
             </DialogFooter>
           </form>
