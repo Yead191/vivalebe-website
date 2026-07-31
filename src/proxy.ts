@@ -21,6 +21,9 @@ const protectedRoutes = [
   "/flame",
   "/profile",
   "/onboarding",
+  "/events",
+  "/payment",
+  "/subscription",
 ];
 
 const authRoutes = [

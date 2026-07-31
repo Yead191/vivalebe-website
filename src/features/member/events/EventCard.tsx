@@ -2,7 +2,14 @@
 
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
-import { CalendarDays, Clock3, MapPin, MoreHorizontal, Users } from "lucide-react";
+import {
+  CalendarDays,
+  Clock3,
+  DollarSign,
+  MapPin,
+  MoreHorizontal,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/config";
 import type { MemberEvent } from "./types";
@@ -33,9 +40,19 @@ function formatType(value: string) {
 }
 
 function statusClass(status: MemberEvent["status"]) {
-  if (status === "completed") return "bg-emerald-50 text-emerald-700 ring-emerald-200";
+  if (status === "completed")
+    return "bg-emerald-50 text-emerald-700 ring-emerald-200";
   if (status === "cancelled") return "bg-rose-50 text-rose-700 ring-rose-200";
   return "bg-amber-50 text-amber-700 ring-amber-200";
+}
+
+function ownerLocation(event: MemberEvent) {
+  return [
+    event.owner?.state,
+    event.owner?.country || event.owner?.nationality,
+  ]
+    .filter(Boolean)
+    .join(", ");
 }
 
 interface EventCardProps {
@@ -52,9 +69,7 @@ export function EventCard({
   onMutate,
 }: EventCardProps) {
   const ownerName = event.owner?.name || "Event host";
-  const ownerMeta = [event.owner?.state, event.owner?.country || event.owner?.nationality]
-    .filter(Boolean)
-    .join(", ");
+  const ownerMeta = ownerLocation(event);
   const profileImage = event.owner?.profile || "/image20.png";
 
   return (
@@ -106,6 +121,9 @@ export function EventCard({
         <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
           {event.visibility}
         </span>
+        <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
+          USD ${event.price}
+        </span>
       </div>
 
       <div className="mt-4 space-y-3">
@@ -143,8 +161,20 @@ export function EventCard({
           <div className="flex items-start gap-2">
             <Users className="mt-0.5 size-4 text-brand" />
             <div>
-              <p className="font-medium">Guests</p>
-              <p>{event.guests.length} invited</p>
+              <p className="font-medium">Attending</p>
+              <p>
+                {event.attendPerson} attending
+                {event.guests.length > 0
+                  ? ` · ${event.guests.length} invited`
+                  : ""}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <DollarSign className="mt-0.5 size-4 text-brand" />
+            <div>
+              <p className="font-medium">Price</p>
+              <p>USD ${event.price}</p>
             </div>
           </div>
         </div>

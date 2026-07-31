@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Heart, RotateCcw, X } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import {
   Tooltip,
@@ -133,16 +132,11 @@ export function FlameCard({
                     <button
                       type="button"
                       onClick={onUndo}
-                      disabled={!isPremium || disabled}
+                      disabled={disabled}
                       aria-label={
-                        isPremium ? "Undo last pass" : "Undo (premium required)"
+                        isPremium ? "Undo last pass" : "Subscribe to use Undo"
                       }
-                      className={cn(
-                        "inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-transform",
-                        isPremium && !disabled
-                          ? "text-foreground hover:scale-105"
-                          : "cursor-not-allowed text-muted-foreground opacity-60",
-                      )}
+                      className="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-white text-foreground shadow-md transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <RotateCcw className="size-5" />
                     </button>
