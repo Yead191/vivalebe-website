@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
-import { ArrowLeft, Flag, Heart, MessageCircle, Share2 } from "lucide-react";
+import { ArrowLeft, Flag, Heart, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { avatarUrl } from "@/lib/image";
 import { Button } from "@/components/ui/button";
@@ -157,10 +157,6 @@ export function SuccessStoryDetailsClient({
                 <Heart className="size-4" />
                 {liked ? "Liked" : dict.successStories.like}
                 <span className="ml-1">{story.likesCount}</span>
-              </Button>
-              <Button variant="outline" className={brandSoftClass}>
-                <Share2 className="size-4" />
-                {dict.successStories.share}
               </Button>
             </div>
           </div>

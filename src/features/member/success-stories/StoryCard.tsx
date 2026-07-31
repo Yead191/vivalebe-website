@@ -7,7 +7,6 @@ import {
   MessageCircle,
   MoreHorizontal,
   Pencil,
-  Share2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
@@ -227,19 +226,6 @@ export function StoryCard({
           >
             <MessageCircle className="size-4" />
             <span>{story.commentsCount}</span>
-          </Button>
-
-          <Button
-            variant="ghost"
-            className="rounded-full sm:col-span-2"
-            onClick={() =>
-              toast.message(dict.successStories.share, {
-                description: "Sharing can be wired to your real flow next.",
-              })
-            }
-          >
-            <Share2 className="size-4" />
-            {dict.successStories.share}
           </Button>
         </div>
 
