@@ -22,6 +22,8 @@ interface UserMenuProps {
   username: string;
   displayName: string;
   avatarSeed: string;
+  isAdminVerified?: boolean;
+  verifiedStatus?: string;
 }
 
 export function UserMenu({
@@ -32,8 +34,13 @@ export function UserMenu({
   username,
   displayName,
   avatarSeed,
+  isAdminVerified,
+  verifiedStatus,
 }: UserMenuProps) {
   const router = useRouter();
+  const isVerified =
+    isAdminVerified || verifiedStatus?.toLowerCase() === "verified";
+  const isPending = !isVerified && verifiedStatus?.toLowerCase() === "pending";
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="inline-flex items-center gap-2 rounded-full pr-2 pl-1 py-1 text-white/95 hover:bg-white/10 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white/40">
@@ -80,6 +87,22 @@ export function UserMenu({
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-600 hover:text-[#429CA8] hover:bg-[#429CA8]/10 transition-all mb-1"
         >
           Profile
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onClick={() => router.push(`/${lang}/settings?tab=account`)}
+          className="cursor-pointer rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-600 hover:text-[#429CA8] hover:bg-[#429CA8]/10 transition-all mb-1 flex items-center justify-between"
+        >
+          <span>{isVerified ? "Profile Verified" : "Verify Profile"}</span>
+          <span
+            className={`size-2.5 rounded-full ${
+              isVerified
+                ? "bg-green-500"
+                : isPending
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
+            }`}
+          />
         </DropdownMenuItem>
 
         <DropdownMenuItem

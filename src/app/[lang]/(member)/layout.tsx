@@ -31,6 +31,8 @@ export default async function MemberLayout({
             userData.profileImage ||
             userData.avatarSeed ||
             "default",
+          isAdminVerified: userData.isAdminVerified || false,
+          verifiedStatus: userData.verifiedStatus || "",
         }}
       />
       <main className="flex-1">{children}</main>

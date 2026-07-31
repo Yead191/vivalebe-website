@@ -64,6 +64,8 @@ export default function MyAccountTab({ t }: { t: any }) {
     type: "",
     image: null as File | null,
     imagePreview: "",
+    ownPicture: null as File | null,
+    ownPicturePreview: "",
   });
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isAdminVerified, setIsAdminVerified] = useState<boolean>(false);
@@ -275,10 +277,21 @@ export default function MyAccountTab({ t }: { t: any }) {
     }
   };
 
+  const handleOwnPictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setVerifyForm((prev) => ({
+        ...prev,
+        ownPicture: file,
+        ownPicturePreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
   const handleVerifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verifyForm.type || !verifyForm.image) {
-      toast.error("Please select a document type and upload an image.");
+    if (!verifyForm.type || !verifyForm.image || !verifyForm.ownPicture) {
+      toast.error("Please select a document type and upload both images.");
       return;
     }
     setIsVerifying(true);
@@ -286,6 +299,7 @@ export default function MyAccountTab({ t }: { t: any }) {
       const formData = new FormData();
       formData.append("documentType", verifyForm.type);
       formData.append("documentVerified", verifyForm.image);
+      formData.append("verifyOwnPicture", verifyForm.ownPicture);
 
       const res = await verifyProfileAction(formData);
 
@@ -294,7 +308,13 @@ export default function MyAccountTab({ t }: { t: any }) {
           res.message || "Verification documents submitted successfully!",
         );
         setIsVerifyModalOpen(false);
-        setVerifyForm({ type: "", image: null, imagePreview: "" });
+        setVerifyForm({
+          type: "",
+          image: null,
+          imagePreview: "",
+          ownPicture: null,
+          ownPicturePreview: "",
+        });
         setVerifiedStatus("pending");
       } else {
         toast.error(
@@ -559,7 +579,7 @@ export default function MyAccountTab({ t }: { t: any }) {
 
       {/* Verify Profile Modal */}
       <Dialog open={isVerifyModalOpen} onOpenChange={setIsVerifyModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Verify Profile</DialogTitle>
             <DialogDescription>
@@ -620,6 +640,43 @@ export default function MyAccountTab({ t }: { t: any }) {
                 </div>
               )}
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Upload Selfie (verifyOwnPicture)
+              </label>
+              <div className="flex items-center justify-center w-full">
+                <label
+                  htmlFor="own-picture-file"
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 border-neutral-300"
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Camera className="w-8 h-8 mb-2 text-neutral-400" />
+                    <p className="text-sm text-neutral-500">
+                      <span className="font-semibold">
+                        Click to upload selfie
+                      </span>
+                    </p>
+                  </div>
+                  <input
+                    id="own-picture-file"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleOwnPictureChange}
+                  />
+                </label>
+              </div>
+              {verifyForm.ownPicturePreview && (
+                <div className="mt-4 relative rounded-lg overflow-hidden border border-neutral-200 w-full h-48">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={verifyForm.ownPicturePreview}
+                    alt="Selfie Preview"
+                    className="w-full h-full object-contain bg-neutral-100"
+                  />
+                </div>
+              )}
+            </div>
             <DialogFooter>
               <Button
                 type="button"
@@ -631,7 +688,12 @@ export default function MyAccountTab({ t }: { t: any }) {
               </Button>
               <Button
                 type="submit"
-                disabled={isVerifying || !verifyForm.type || !verifyForm.image}
+                disabled={
+                  isVerifying ||
+                  !verifyForm.type ||
+                  !verifyForm.image ||
+                  !verifyForm.ownPicture
+                }
                 className="bg-[#429CA8] hover:bg-[#357d87] text-white"
               >
                 {isVerifying && (

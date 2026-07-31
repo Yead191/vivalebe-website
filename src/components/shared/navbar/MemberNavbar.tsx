@@ -28,6 +28,8 @@ interface MemberNavbarProps {
     username: string;
     displayName: string;
     avatarSeed: string;
+    isAdminVerified: boolean;
+    verifiedStatus: string;
   };
 }
 
@@ -105,6 +107,8 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
             username={currentUser.username}
             displayName={currentUser.displayName}
             avatarSeed={currentUser.avatarSeed}
+            isAdminVerified={currentUser.isAdminVerified}
+            verifiedStatus={currentUser.verifiedStatus}
           />
           <LangSwitcher />
           <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
