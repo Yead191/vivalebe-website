@@ -27,20 +27,32 @@ export async function BlogFeature({
 }: BlogFeatureProps) {
   const me = getCurrentUser();
 
-  const commentEntries = await Promise.all(
-    blogs.map(async (blog) => {
-      if (!blog.totalComments) {
-        return [blog._id, [] as ApiBlogComment[]] as const;
-      }
-      const res = await myFetch<ApiBlogComment[]>(
-        `/blog-comments/${blog._id}`,
-        {
-          cache: "no-store",
-          tags: [`blog-comments-${blog._id}`],
-        },
-      );
-      return [blog._id, res.data ?? []] as const;
+  const [commentEntries, likedRes] = await Promise.all([
+    Promise.all(
+      blogs.map(async (blog) => {
+        if (!blog.totalComments) {
+          return [blog._id, [] as ApiBlogComment[]] as const;
+        }
+        const res = await myFetch<ApiBlogComment[]>(
+          `/blog-comments/${blog._id}`,
+          {
+            cache: "no-store",
+            tags: [`blog-comments-${blog._id}`],
+          },
+        );
+        return [blog._id, res.data ?? []] as const;
+      }),
+    ),
+    myFetch<{ blogId: { _id: string } | string }[]>("/blog-likes/my", {
+      cache: "no-store",
+      tags: ["blogs-liked"],
     }),
+  ]);
+
+  const likedIds = new Set(
+    (likedRes.data ?? []).map((item) =>
+      typeof item.blogId === "string" ? item.blogId : item.blogId._id,
+    ),
   );
 
   const mappedBlogs = blogs.map(mapApiBlogToPost);
@@ -53,7 +65,10 @@ export async function BlogFeature({
   const commentMap: Record<string, Comment[]> = {};
 
   for (const blog of blogs) {
-    likeMetaMap[blog._id] = { count: blog.totalLikes, liked: false };
+    likeMetaMap[blog._id] = {
+      count: blog.totalLikes,
+      liked: likedIds.has(blog._id),
+    };
     commentCountMap[blog._id] = blog.totalComments;
   }
 

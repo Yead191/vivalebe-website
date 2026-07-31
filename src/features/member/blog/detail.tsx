@@ -23,16 +23,25 @@ export async function BlogDetailFeature({
   dict,
   blogId,
 }: BlogDetailFeatureProps) {
-  const [blogsRes, commentsRes] = await Promise.all([
+  const [blogsRes, commentsRes, likedRes] = await Promise.all([
     myFetch<ApiBlog[]>("/blogs", { cache: "no-store", tags: ["blogs"] }),
     myFetch<ApiBlogComment[]>(`/blog-comments/${blogId}`, {
       cache: "no-store",
       tags: [`blog-comments-${blogId}`],
     }),
+    myFetch<{ blogId: { _id: string } | string }[]>("/blog-likes/my", {
+      cache: "no-store",
+      tags: ["blogs-liked"],
+    }),
   ]);
 
   const apiBlog = (blogsRes.data ?? []).find((b) => b._id === blogId);
   if (!apiBlog) notFound();
+
+  const liked = (likedRes.data ?? []).some((item) => {
+    const id = typeof item.blogId === "string" ? item.blogId : item.blogId._id;
+    return id === blogId;
+  });
 
   const blog = mapApiBlogToPost(apiBlog);
   const authorsMap = {
@@ -63,7 +72,7 @@ export async function BlogDetailFeature({
       author={author}
       authorsMap={authorInfoMap}
       likeCount={apiBlog.totalLikes}
-      liked={false}
+      liked={liked}
       comments={comments}
       currentUserAvatarSeed={me.avatarSeed}
     />

@@ -78,8 +78,12 @@ export function ConnectionRow({
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-md px-2 py-2 bg-muted/50 cursor-not-allowed">
+    <Link
+      href={`/${lang}/subscription?required=1`}
+      className="flex items-center gap-3 rounded-md px-2 py-2 bg-muted/50 transition-colors hover:bg-muted"
+      aria-label="Subscribe to unlock"
+    >
       {content}
-    </div>
+    </Link>
   );
 }

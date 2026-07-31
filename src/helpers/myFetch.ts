@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
+import { unstable_rethrow } from "next/navigation";
 import { getAccessToken } from "./getAccessToken";
+import { redirectToSubscriptionIfNeeded } from "./handleSubscriptionError";
 
 interface Pagination {
   limit: number;
@@ -30,6 +32,15 @@ interface FetchOptions {
   cache?: RequestCache;
   tags?: string[];
   next?: NextFetchRequestConfig;
+}
+
+function resolveErrorMessage(json: any): string {
+  if (Array.isArray(json?.errorMessages)) {
+    return json.errorMessages.map((e: any) => e.message ?? e).join(", ");
+  }
+  if (typeof json?.errorMessages === "string") return json.errorMessages;
+  if (typeof json?.error === "string") return json.error;
+  return "Request failed";
 }
 
 export const myFetch = async <T = any>(
@@ -72,13 +83,17 @@ export const myFetch = async <T = any>(
 
     const json = await res.json();
 
-    if (!res.ok) {
+    await redirectToSubscriptionIfNeeded({
+      message: json?.message,
+      error: json?.error,
+      errorMessages: json?.errorMessages,
+    });
+
+    if (!res.ok || json?.success === false) {
       return {
         success: false,
         message: json?.message,
-        error: Array.isArray(json?.errorMessages)
-          ? json.errorMessages.map((e: any) => e.message).join(", ")
-          : json?.errorMessages || "Request failed",
+        error: resolveErrorMessage(json),
       };
     }
 
@@ -90,6 +105,7 @@ export const myFetch = async <T = any>(
       pagination: json?.pagination,
     };
   } catch (err) {
+    unstable_rethrow(err);
     return {
       success: false,
       message: "Network error",

@@ -2,7 +2,7 @@
 
 import { ChatSidebar } from "@/components/shared/message/ChatSidebar";
 import { useEffect, useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, unstable_rethrow } from "next/navigation";
 import Spinner from "@/components/shared/Spinner";
 import { io } from "socket.io-client";
 import getProfile from "@/helpers/getProfile";
@@ -114,6 +114,7 @@ export default function MessageLayoutWrapper({
           }
         }
       } catch (error) {
+        unstable_rethrow(error);
         console.error("Failed to fetch chat data:", error);
       } finally {
         setLoading(false);

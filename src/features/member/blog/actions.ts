@@ -49,10 +49,8 @@ export async function toggleBlogLikeAction(blogId: string) {
     method: "POST",
   });
 
-  if (res.success) {
-    await revalidateTags(["blogs", "blogs-my"]);
-  }
-
+  // Do not revalidate list tags here — it remounts the feed, scrolls to top,
+  // and resets optimistic liked UI because the API list does not return isLiked.
   return {
     success: res.success,
     message: res.message ?? res.error ?? undefined,
@@ -84,20 +82,32 @@ export async function getMyBlogsAction() {
   }
 
   const blogs = res.data;
-  const commentEntries = await Promise.all(
-    blogs.map(async (blog) => {
-      if (!blog.totalComments) {
-        return [blog._id, [] as ApiBlogComment[]] as const;
-      }
-      const commentsRes = await myFetch<ApiBlogComment[]>(
-        `/blog-comments/${blog._id}`,
-        {
-          cache: "no-store",
-          tags: [`blog-comments-${blog._id}`],
-        },
-      );
-      return [blog._id, commentsRes.data ?? []] as const;
+  const [commentEntries, likedRes] = await Promise.all([
+    Promise.all(
+      blogs.map(async (blog) => {
+        if (!blog.totalComments) {
+          return [blog._id, [] as ApiBlogComment[]] as const;
+        }
+        const commentsRes = await myFetch<ApiBlogComment[]>(
+          `/blog-comments/${blog._id}`,
+          {
+            cache: "no-store",
+            tags: [`blog-comments-${blog._id}`],
+          },
+        );
+        return [blog._id, commentsRes.data ?? []] as const;
+      }),
+    ),
+    myFetch<{ blogId: { _id: string } | string }[]>("/blog-likes/my", {
+      cache: "no-store",
+      tags: ["blogs-liked"],
     }),
+  ]);
+
+  const likedIds = new Set(
+    (likedRes.data ?? []).map((item) =>
+      typeof item.blogId === "string" ? item.blogId : item.blogId._id,
+    ),
   );
 
   const mappedBlogs = blogs.map(mapApiBlogToPost);
@@ -109,7 +119,10 @@ export async function getMyBlogsAction() {
   const commentMap: Record<string, Comment[]> = {};
 
   for (const blog of blogs) {
-    likeMetaMap[blog._id] = { count: blog.totalLikes, liked: false };
+    likeMetaMap[blog._id] = {
+      count: blog.totalLikes,
+      liked: likedIds.has(blog._id),
+    };
     commentCountMap[blog._id] = blog.totalComments;
   }
 

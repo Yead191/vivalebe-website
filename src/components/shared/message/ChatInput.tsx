@@ -4,8 +4,9 @@ import { useState, useRef } from "react";
 import { Smile, Paperclip, Send, X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { myFetch } from "@/helpers/myFetch";
-import { useRouter } from "next/navigation";
+import { useRouter, unstable_rethrow } from "next/navigation";
 import { revalidateTags } from "@/helpers/revalidateTags";
+import { isSubscriptionRequiredError } from "@/helpers/subscriptionRequired";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import {
   Popover,
@@ -89,9 +90,19 @@ export function ChatInput({
 
         return;
       } else {
+        // Subscription redirects are handled in myFetch — don't stack extra toasts.
+        if (
+          isSubscriptionRequiredError({
+            message: res?.message,
+            error: res?.error,
+          })
+        ) {
+          return;
+        }
         toast.error(res?.message || "Failed to send message");
       }
     } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong");
       console.error(error);
     } finally {
