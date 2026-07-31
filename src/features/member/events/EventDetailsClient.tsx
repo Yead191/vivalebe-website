@@ -14,7 +14,8 @@ import BackButton from "@/components/shared/BackButton";
 import { Button } from "@/components/ui/button";
 import { EventFormDialog } from "./EventFormDialog";
 import { createEventBooking } from "./action";
-import type { MemberEvent } from "./types";
+import type { EventBooking, MemberEvent } from "./types";
+import { cn } from "@/lib/utils";
 
 function formatDate(value: string, withTime = false) {
   if (!value) return "—";
@@ -35,14 +36,17 @@ function formatDate(value: string, withTime = false) {
 interface EventDetailsClientProps {
   event: MemberEvent;
   isOwner: boolean;
+  existingBooking?: EventBooking | null;
 }
 
 export function EventDetailsClient({
   event,
   isOwner,
+  existingBooking = null,
 }: EventDetailsClientProps) {
   const router = useRouter();
   const [isBooking, startBooking] = useTransition();
+  const alreadyBooked = Boolean(existingBooking);
 
   const ownerName = event.owner?.name || "Event host";
   const ownerMeta = [
@@ -166,7 +170,28 @@ export function EventDetailsClient({
             </div>
           </div>
 
-          {!isOwner ? (
+          {!isOwner && alreadyBooked && existingBooking ? (
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200">
+                Already booked
+              </span>
+              <span
+                className={cn(
+                  "rounded-full px-3 py-1.5 text-sm font-medium capitalize ring-1",
+                  existingBooking.paymentStatus.toLowerCase() === "paid"
+                    ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                    : "bg-amber-50 text-amber-700 ring-amber-200",
+                )}
+              >
+                Payment: {existingBooking.paymentStatus}
+              </span>
+              <span className="rounded-full bg-sky-50 px-3 py-1.5 text-sm font-medium capitalize text-sky-700 ring-1 ring-sky-200">
+                Booking: {existingBooking.bookingRequest}
+              </span>
+            </div>
+          ) : null}
+
+          {!isOwner && !alreadyBooked ? (
             <div className="pt-2">
               <Button
                 type="button"
