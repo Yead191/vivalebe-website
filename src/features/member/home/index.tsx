@@ -2,6 +2,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getCurrentUser, getCurrentViewedCount } from "@/lib/mock/current-user";
 import type { User } from "@/lib/types";
+import { unstable_rethrow } from "next/navigation";
 import { LeftSidebar } from "./LeftSidebar";
 import { QuickSearch } from "./QuickSearch";
 import { HomeTabs } from "./HomeTabs";
@@ -41,6 +42,7 @@ export async function HomeFeature({
       };
     }
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Error fetching profile in home:", error);
   }
 

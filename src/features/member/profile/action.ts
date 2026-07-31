@@ -1,4 +1,5 @@
 "use server";
+import { catchServerError } from "@/helpers/catchServerError";
 
 import { myFetch } from "@/helpers/myFetch";
 import type { User } from "@/lib/types";
@@ -57,7 +58,6 @@ export async function getUserById(id: string): Promise<User | null> {
       winkId: u.winkId || undefined,
     } as User;
   } catch (error) {
-    console.error("Error fetching user profile:", error);
-    return null;
+    return catchServerError(error, "Error fetching user profile:", null);
   }
 }

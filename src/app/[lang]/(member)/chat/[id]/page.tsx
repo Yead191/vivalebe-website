@@ -4,6 +4,7 @@ import { ChatMessages } from "@/components/shared/message/ChatMessages";
 import { mockCurrentUser } from "@/constants/mockChatData";
 import getProfile from "@/helpers/getProfile";
 import { myFetch } from "@/helpers/myFetch";
+import { unstable_rethrow } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,7 @@ export default async function ChatDetailPage({ params }: PageProps) {
       }
     }
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Failed to fetch chat details on server:", error);
     loadingError = true;
   }

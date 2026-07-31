@@ -1,4 +1,5 @@
 "use server";
+import { catchServerError } from "@/helpers/catchServerError";
 
 import { myFetch } from "@/helpers/myFetch";
 import { getProfileAction } from "@/features/member/settings/action";
@@ -16,7 +17,6 @@ export async function getChatList() {
 
     return { currentUserId, chats };
   } catch (error) {
-    console.error("Error fetching chat list:", error);
-    return { currentUserId: "", chats: [] };
+    return catchServerError(error, "Error fetching chat list:", { currentUserId: "", chats: [] });
   }
 }

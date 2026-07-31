@@ -1,4 +1,5 @@
 "use server";
+import { catchServerError } from "@/helpers/catchServerError";
 
 import { getImageUrl } from "@/helpers/getImageUrl";
 import { myFetch } from "@/helpers/myFetch";
@@ -259,8 +260,7 @@ export async function getPostComments(postId: string): Promise<{
       authors,
     };
   } catch (error) {
-    console.error("Error fetching post comments:", error);
-    return { comments: [], commentCount: 0, authors: {} };
+    return catchServerError(error, "Error fetching post comments:", { comments: [], commentCount: 0, authors: {} });
   }
 }
 
@@ -437,12 +437,11 @@ export async function togglePostLikeAction(postId: string) {
         | undefined,
     };
   } catch (error) {
-    console.error("Error toggling post like:", error);
-    return {
+    return catchServerError(error, "Error toggling post like:", {
       success: false,
       message: "Failed to update like",
       data: undefined,
-    };
+    });
   }
 }
 
@@ -534,8 +533,7 @@ export async function getRecentViewMe(page = 1, limit = 10): Promise<{
       total: res.pagination?.total ?? connections.length,
     };
   } catch (error) {
-    console.error("Error fetching view-me:", error);
-    return { connections: [], authors: {}, total: 0 };
+    return catchServerError(error, "Error fetching view-me:", { connections: [], authors: {}, total: 0 });
   }
 }
 
@@ -573,7 +571,6 @@ export async function reportPost(formData: FormData) {
     });
     return res;
   } catch (error) {
-    console.error("Error reporting post:", error);
-    return { success: false, message: "Failed to report" };
+    return catchServerError(error, "Error reporting post:", { success: false, message: "Failed to report" });
   }
 }

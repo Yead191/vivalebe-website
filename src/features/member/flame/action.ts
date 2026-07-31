@@ -1,4 +1,5 @@
 "use server";
+import { catchServerError } from "@/helpers/catchServerError";
 
 import { myFetch } from "@/helpers/myFetch";
 import type { User } from "@/lib/types";
@@ -82,11 +83,10 @@ export async function getSwipeFeed(
       },
     };
   } catch (error) {
-    console.error("Error fetching swipe feed:", error);
-    return {
+    return catchServerError(error, "Error fetching swipe feed:", {
       users: [],
       pagination: { total: 0, limit, page, totalPage: 0 },
-    };
+    });
   }
 }
 
@@ -98,7 +98,6 @@ export async function swipeAction(toUser: string, action: SwipeActionType) {
     });
     return res;
   } catch (error) {
-    console.error("Error posting swipe:", error);
-    return { success: false, message: "Failed to swipe" };
+    return catchServerError(error, "Error posting swipe:", { success: false, message: "Failed to swipe" });
   }
 }

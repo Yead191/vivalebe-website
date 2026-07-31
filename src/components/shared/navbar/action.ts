@@ -1,4 +1,5 @@
 "use server";
+import { catchServerError } from "@/helpers/catchServerError";
 
 import { myFetch } from "@/helpers/myFetch";
 
@@ -13,8 +14,7 @@ export async function getNotifications() {
 
     return res.data;
   } catch (error) {
-    console.error("Error fetching notifications:", error);
-    return [];
+    return catchServerError(error, "Error fetching notifications:", []);
   }
 }
 
@@ -26,7 +26,6 @@ export async function markNotificationAsRead(id: string) {
     });
     return res;
   } catch (error) {
-    console.error("Error marking notification as read:", error);
-    return { success: false };
+    return catchServerError(error, "Error marking notification as read:", { success: false });
   }
 }

@@ -1,4 +1,5 @@
 "use server";
+import { catchServerError } from "@/helpers/catchServerError";
 
 import { myFetch } from "@/helpers/myFetch";
 
@@ -10,8 +11,7 @@ export async function getPrivateAlbum() {
     });
     return res;
   } catch (error) {
-    console.error("Error fetching private album:", error);
-    return { success: false, data: null };
+    return catchServerError(error, "Error fetching private album:", { success: false, data: null });
   }
 }
 
@@ -24,7 +24,6 @@ export async function patchPrivateAlbum(id: string, data: any) {
     });
     return res;
   } catch (error) {
-    console.error("Error updating private album:", error);
-    return { success: false, message: "Error updating private album" };
+    return catchServerError(error, "Error updating private album:", { success: false, message: "Error updating private album" });
   }
 }

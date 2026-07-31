@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unstable_rethrow } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getCurrentUser } from "@/lib/mock/current-user";
@@ -39,6 +40,7 @@ export async function DiscoverFeature({
       meId = profileRes.data._id || profileRes.data.id || mockMe.id;
     }
   } catch (err) {
+    unstable_rethrow(err);
     console.error("Error fetching profile in discover:", err);
   }
 

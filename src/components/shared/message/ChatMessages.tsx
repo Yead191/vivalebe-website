@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useRouter } from "next/navigation";
+import { useRouter, unstable_rethrow } from "next/navigation";
 import { getImageUrl } from "@/helpers/getImageUrl";
 import { myFetch } from "@/helpers/myFetch";
 import { socketInstance } from "@/lib/socket";
@@ -200,6 +200,7 @@ export function ChatMessages({
         setHasMore(false);
       }
     } catch (error) {
+      unstable_rethrow(error);
       console.error("Failed to fetch messages:", error);
     } finally {
       setIsLoadingMore(false);

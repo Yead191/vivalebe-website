@@ -1,6 +1,8 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import { myFetch } from "@/helpers/myFetch";
 import Link from "next/link";
+import { SubscriptionRequiredToast } from "@/features/member/subscription/SubscriptionRequiredToast";
 
 export const metadata: Metadata = {
   title: "Premium Subscription - Viva Leve",
@@ -36,21 +38,29 @@ export default async function SubscriptionPage() {
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-5xl">
+      <Suspense fallback={null}>
+        <SubscriptionRequiredToast />
+      </Suspense>
+
       <div className="text-center mb-16">
-        <h1 className="text-2xl font-bold tracking-tight mb-6 text-brand">PREMIUM</h1>
+        <h1 className="text-2xl font-bold tracking-tight mb-6 text-brand">
+          PREMIUM
+        </h1>
         <p className="text-muted-foreground max-w-3xl mx-auto leading-relaxed text-[15px]">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
-          Since our company's founding in 2001 in Silicon Valley, we have specialized in online dating, connecting
+          Since our company's founding in 2001 in Silicon Valley, we have
+          specialized in online dating, connecting
           {/* eslint-disable-next-line react/no-unescaped-entities */}
-          millions of couples with our trusted services for over 25 years. We've invested more than $10 million in
-          our infrastructure to enhance online dating for seamless, successful connections.
+          millions of couples with our trusted services for over 25 years. We've
+          invested more than $10 million in our infrastructure to enhance online
+          dating for seamless, successful connections.
         </p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 items-end mt-12 max-w-4xl mx-auto">
         {sortedPackages.map((pkg) => {
           const months = parseInt(pkg.duration) || 1;
-          
+
           let badge = null;
           if (months === 3) badge = "Most Popular";
           if (months === 6) badge = "Best Deal";
@@ -58,12 +68,12 @@ export default async function SubscriptionPage() {
           const isPrimary = months === 1;
 
           return (
-            <Link 
-              key={pkg._id} 
+            <Link
+              key={pkg._id}
               href={pkg.paymentLink || "#"}
               className={`relative bg-white flex flex-col justify-center text-center cursor-pointer hover:shadow-lg transition-shadow p-10 h-64 mt-8 md:mt-0 ${
-                isPrimary 
-                  ? "border-2 border-brand" 
+                isPrimary
+                  ? "border-2 border-brand"
                   : "border border-border shadow-sm rounded-sm"
               }`}
             >
@@ -72,7 +82,9 @@ export default async function SubscriptionPage() {
                   {badge}
                 </div>
               )}
-              <h2 className={`text-xl font-medium mb-8 ${isPrimary ? "text-brand" : "text-foreground"}`}>
+              <h2
+                className={`text-xl font-medium mb-8 ${isPrimary ? "text-brand" : "text-foreground"}`}
+              >
                 {pkg.duration}
               </h2>
               <p className="text-lg font-bold text-foreground">

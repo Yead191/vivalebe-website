@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
+import { catchServerError } from "@/helpers/catchServerError";
 
 import { myFetch } from "@/helpers/myFetch";
 import type { User } from "@/lib/types";
@@ -55,8 +56,7 @@ export async function getYouLikedUsers(): Promise<User[]> {
       } as User;
     });
   } catch (error) {
-    console.error("Error fetching you-liked:", error);
-    return [];
+    return catchServerError(error, "Error fetching you-liked:", []);
   }
 }
 
@@ -101,8 +101,7 @@ export async function getLikesYouUsers(): Promise<User[]> {
       } as User;
     });
   } catch (error) {
-    console.error("Error fetching likes-you:", error);
-    return [];
+    return catchServerError(error, "Error fetching likes-you:", []);
   }
 }
 
@@ -147,8 +146,7 @@ export async function getViewedYouUsers(): Promise<User[]> {
       } as User;
     });
   } catch (error) {
-    console.error("Error fetching view-me:", error);
-    return [];
+    return catchServerError(error, "Error fetching view-me:", []);
   }
 }
 
@@ -303,8 +301,7 @@ export async function getMutualMatches(
       } as User;
     });
   } catch (error) {
-    console.error("Error fetching mutual matches:", error);
-    return [];
+    return catchServerError(error, "Error fetching mutual matches:", []);
   }
 }
 
@@ -352,8 +349,7 @@ export async function getWinks(): Promise<User[]> {
       } as User;
     });
   } catch (error) {
-    console.error("Error fetching winks:", error);
-    return [];
+    return catchServerError(error, "Error fetching winks:", []);
   }
 }
 
@@ -365,8 +361,7 @@ export async function createChatRoom(userId: string) {
     });
     return res;
   } catch (error) {
-    console.error("Error creating chat room:", error);
-    return { success: false, data: null };
+    return catchServerError(error, "Error creating chat room:", { success: false, data: null });
   }
 }
 
@@ -378,8 +373,7 @@ export async function sendWink(receiverId: string) {
     });
     return res;
   } catch (error) {
-    console.error("Error sending wink:", error);
-    return { success: false, message: "Failed to send wink" };
+    return catchServerError(error, "Error sending wink:", { success: false, message: "Failed to send wink" });
   }
 }
 
@@ -391,8 +385,7 @@ export async function unWink(receiverId: string) {
     });
     return res;
   } catch (error) {
-    console.error("Error removing wink:", error);
-    return { success: false, message: "Failed to remove wink" };
+    return catchServerError(error, "Error removing wink:", { success: false, message: "Failed to remove wink" });
   }
 }
 
@@ -416,8 +409,7 @@ export async function acceptWink(winkId: string) {
 
     return res;
   } catch (error) {
-    console.error("Error accepting wink:", error);
-    return { success: false, message: "Failed to accept wink" };
+    return catchServerError(error, "Error accepting wink:", { success: false, message: "Failed to accept wink" });
   }
 }
 
@@ -464,8 +456,7 @@ export async function getPrivateAlbumRequests(): Promise<User[]> {
       } as User;
     });
   } catch (error) {
-    console.error("Error fetching private album requests:", error);
-    return [];
+    return catchServerError(error, "Error fetching private album requests:", []);
   }
 }
 
@@ -482,8 +473,7 @@ export async function respondToPrivateAlbumRequest(
     });
     return res;
   } catch (error) {
-    console.error("Error responding to private album request:", error);
-    return { success: false, message: "Failed to respond" };
+    return catchServerError(error, "Error responding to private album request:", { success: false, message: "Failed to respond" });
   }
 }
 
@@ -530,8 +520,7 @@ export async function getPrivateAlbumAccess(): Promise<User[]> {
       } as User;
     });
   } catch (error) {
-    console.error("Error fetching private album access:", error);
-    return [];
+    return catchServerError(error, "Error fetching private album access:", []);
   }
 }
 
@@ -549,8 +538,7 @@ export async function swipeUser(
     });
     return res;
   } catch (error) {
-    console.error("Error swiping user:", error);
-    return { success: false, message: "Failed to swipe" };
+    return catchServerError(error, "Error swiping user:", { success: false, message: "Failed to swipe" });
   }
 }
 
@@ -564,8 +552,7 @@ export async function blockUser(blockedUserId: string) {
     });
     return res;
   } catch (error) {
-    console.error("Error blocking user:", error);
-    return { success: false, message: "Failed to block user" };
+    return catchServerError(error, "Error blocking user:", { success: false, message: "Failed to block user" });
   }
 }
 
@@ -579,7 +566,6 @@ export async function hideUser(userId: string) {
     });
     return res;
   } catch (error) {
-    console.error("Error hiding user:", error);
-    return { success: false, message: "Failed to hide user" };
+    return catchServerError(error, "Error hiding user:", { success: false, message: "Failed to hide user" });
   }
 }
