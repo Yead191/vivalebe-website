@@ -30,6 +30,15 @@ export async function updateProfileAction(formData: FormData) {
   return res;
 }
 
+export async function verifyProfileAction(formData: FormData) {
+  const res = await myFetch("/user/verify", {
+    method: "PATCH",
+    body: formData,
+  });
+
+  return res;
+}
+
 export async function getHiddenMembers() {
   const res = await myFetch("/block/hide", {
     method: "GET",
@@ -59,4 +68,3 @@ export async function unblockUser(id: string) {
   });
   return res;
 }
-

@@ -63,14 +63,15 @@ export function MyListClient({
       {/* User list */}
       {sorted.length > 0 ? (
         <div className="relative">
-          {!isPremium && (activeTab === "viewed-you" || activeTab === "mutual") && (
+          {!isPremium && (
             <div className="sticky top-[50vh] left-0 right-0 z-10 flex h-0 flex-col items-center justify-center overflow-visible p-4">
               <div className="bg-background/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-border text-center max-w-md w-full -translate-y-1/2">
                 <h3 className="text-xl font-bold text-foreground mb-3">
                   Premium Feature
                 </h3>
                 <p className="text-sm text-muted-foreground mb-6">
-                  Upgrade your membership to see who viewed your profile and your mutual matches.
+                  Upgrade your membership to unlock all premium features and see
+                  your matches, likes, and more.
                 </p>
                 <Link
                   href={`/${lang}/subscription`}
@@ -84,9 +85,7 @@ export function MyListClient({
 
           <div
             className={`space-y-4 ${
-              !isPremium && (activeTab === "viewed-you" || activeTab === "mutual")
-                ? "blur-md pointer-events-none select-none"
-                : ""
+              !isPremium ? "blur-md pointer-events-none select-none" : ""
             }`}
           >
             {sorted.map((user) => (
