@@ -54,6 +54,8 @@ export function PostActions({
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
 
+  // Only reset when switching posts. Syncing on every prop change wipes
+  // optimistic like state after server revalidation (liked is often hard-coded false).
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLikes({ count: initialLikeCount, liked: initialLiked });
@@ -62,7 +64,8 @@ export function PostActions({
     if (initialComments.length > 0) {
       setShowComments(true);
     }
-  }, [initialLikeCount, initialLiked, initialComments, initialAuthors]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postId]);
 
   const commentCount = Math.max(initialCommentCount ?? 0, comments.length);
 
