@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -36,6 +37,7 @@ export function FlameFeature({
   candidates: initialCandidates,
   initialPagination,
 }: FlameFeatureProps) {
+  const router = useRouter();
   const [prefs, setPrefs] = useState<FlamePreferences>(DEFAULT_PREFS);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [deck, setDeck] = useState<User[]>(initialCandidates);
@@ -115,7 +117,11 @@ export function FlameFeature({
   };
 
   const handleUndo = () => {
-    if (!me.premium || !lastPassed) return;
+    if (!lastPassed) return;
+    if (!me.premium) {
+      router.push(`/${lang}/subscription?required=1`);
+      return;
+    }
     const idx = filtered.findIndex((u) => u.id === lastPassed.id);
     if (idx >= 0) {
       setCurrentIndex(idx);
