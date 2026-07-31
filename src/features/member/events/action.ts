@@ -4,6 +4,8 @@ import { getImageUrl } from "@/helpers/getImageUrl";
 import { myFetch } from "@/helpers/myFetch";
 import { revalidateTags } from "@/helpers/revalidateTags";
 import type {
+  EventBooking,
+  EventBookingEvent,
   EventFormValues,
   EventGuest,
   EventOwner,
@@ -61,6 +63,22 @@ function mapEvent(item: Record<string, unknown>): MemberEvent {
       ? item.eventOwner
       : owner?.id || String(item.userId ?? "");
 
+  const priceRaw = item.price;
+  const price =
+    typeof priceRaw === "number"
+      ? priceRaw
+      : typeof priceRaw === "string" && priceRaw.trim()
+        ? Number(priceRaw)
+        : 0;
+
+  const attendRaw = item.attendPerson;
+  const attendPerson =
+    typeof attendRaw === "number"
+      ? attendRaw
+      : typeof attendRaw === "string" && attendRaw.trim()
+        ? Number(attendRaw)
+        : 0;
+
   return {
     id: String(item._id ?? item.id ?? ""),
     eventName: String(item.eventName ?? ""),
@@ -76,6 +94,8 @@ function mapEvent(item: Record<string, unknown>): MemberEvent {
       item.status === "completed" || item.status === "cancelled"
         ? (item.status as EventStatus)
         : "upcoming",
+    price: Number.isFinite(price) ? price : 0,
+    attendPerson: Number.isFinite(attendPerson) ? attendPerson : 0,
     createdAt: String(item.createdAt ?? ""),
     updatedAt: String(item.updatedAt ?? ""),
     owner,
@@ -84,6 +104,7 @@ function mapEvent(item: Record<string, unknown>): MemberEvent {
 }
 
 function toPayload(values: EventFormValues) {
+  const price = Number(values.price);
   return {
     eventName: values.eventName,
     type: values.type,
@@ -91,6 +112,7 @@ function toPayload(values: EventFormValues) {
     endDate: new Date(values.endDate).toISOString(),
     startTime: new Date(values.startTime).toISOString(),
     details: values.details,
+    price: Number.isFinite(price) ? price : 0,
     guests: values.guestUserIds
       .split(",")
       .map((value) => value.trim())
@@ -139,15 +161,40 @@ export async function getMyEvents(): Promise<MemberEvent[]> {
 }
 
 export async function getEventById(id: string): Promise<MemberEvent | null> {
-  const res = await myFetch(`/events/${id}-single`, {
-    method: "GET",
-    cache: "no-store",
-    tags: [`event-${id}`],
-  });
+  const endpoints = [`/events/${id}`, `/events/${id}-single`];
 
-  if (!res.success || !res.data || typeof res.data !== "object") return null;
+  for (const endpoint of endpoints) {
+    const res = await myFetch(endpoint, {
+      method: "GET",
+      cache: "no-store",
+      tags: [`event-${id}`],
+    });
 
-  return mapEvent(res.data as Record<string, unknown>);
+    if (!res.success || res.data == null) continue;
+
+    const raw = Array.isArray(res.data)
+      ? res.data[0]
+      : typeof res.data === "object" &&
+          res.data !== null &&
+          "event" in (res.data as Record<string, unknown>)
+        ? (res.data as Record<string, unknown>).event
+        : res.data;
+
+    if (raw && typeof raw === "object") {
+      return mapEvent(raw as Record<string, unknown>);
+    }
+  }
+
+  // Fallback: find in public/my lists when single-event endpoints fail.
+  const [publicEvents, myEvents] = await Promise.all([
+    getPublicEvents(1, 100),
+    getMyEvents(),
+  ]);
+  return (
+    publicEvents.events.find((event) => event.id === id) ??
+    myEvents.find((event) => event.id === id) ??
+    null
+  );
 }
 
 export async function createEvent(values: EventFormValues) {
@@ -186,4 +233,115 @@ export async function deleteEvent(id: string) {
   }
 
   return res;
+}
+
+export async function createEventBooking(eventId: string) {
+  const res = await myFetch<{
+    booking?: Record<string, unknown>;
+    checkoutUrl?: string;
+  }>("/event-booking/create", {
+    method: "POST",
+    body: { eventId },
+  });
+
+  const checkoutUrl =
+    typeof res.data?.checkoutUrl === "string" ? res.data.checkoutUrl : null;
+
+  return {
+    success: res.success,
+    message: res.message ?? res.error ?? undefined,
+    checkoutUrl,
+    data: res.data,
+  };
+}
+
+function mapBookingEvent(input: unknown): EventBookingEvent | null {
+  if (!input) return null;
+
+  if (typeof input === "string") {
+    return {
+      id: input,
+      eventName: "Event",
+      startDate: "",
+      endDate: "",
+      details: "",
+      price: 0,
+      status: "upcoming",
+      ownerId: "",
+    };
+  }
+
+  if (typeof input !== "object") return null;
+  const event = input as Record<string, unknown>;
+  const priceRaw = event.price;
+  const price =
+    typeof priceRaw === "number"
+      ? priceRaw
+      : typeof priceRaw === "string" && priceRaw.trim()
+        ? Number(priceRaw)
+        : 0;
+
+  return {
+    id: String(event._id ?? event.id ?? ""),
+    eventName: String(event.eventName ?? "Event"),
+    startDate: String(event.startDate ?? ""),
+    endDate: String(event.endDate ?? ""),
+    details: String(event.details ?? ""),
+    price: Number.isFinite(price) ? price : 0,
+    status:
+      event.status === "completed" || event.status === "cancelled"
+        ? (event.status as EventStatus)
+        : "upcoming",
+    ownerId: String(event.eventOwner ?? event.ownerId ?? ""),
+  };
+}
+
+function mapEventBooking(item: Record<string, unknown>): EventBooking {
+  const event = mapBookingEvent(item.eventId);
+  const amountRaw = item.paymentAmount;
+  const paymentAmount =
+    typeof amountRaw === "number"
+      ? amountRaw
+      : typeof amountRaw === "string" && amountRaw.trim()
+        ? Number(amountRaw)
+        : event?.price ?? 0;
+
+  return {
+    id: String(item._id ?? item.id ?? ""),
+    event,
+    eventId: event?.id || String(item.eventId ?? ""),
+    userId: String(
+      typeof item.userId === "object" && item.userId
+        ? ((item.userId as Record<string, unknown>)._id ??
+            (item.userId as Record<string, unknown>).id ??
+            "")
+        : (item.userId ?? ""),
+    ),
+    bookingRequest: String(item.bookingRequest ?? "pending"),
+    paymentStatus: String(item.paymentStatus ?? "pending"),
+    paymentDate:
+      typeof item.paymentDate === "string" ? item.paymentDate : null,
+    paymentAmount: Number.isFinite(paymentAmount) ? paymentAmount : 0,
+    currency: String(item.currency ?? "usd"),
+    checkoutSessionId:
+      typeof item.checkoutSessionId === "string"
+        ? item.checkoutSessionId
+        : undefined,
+    createdAt: String(item.createdAt ?? ""),
+    updatedAt: String(item.updatedAt ?? ""),
+  };
+}
+
+export async function getMyEventBookings(): Promise<EventBooking[]> {
+  const res = await myFetch("/event-booking/my", {
+    method: "GET",
+    cache: "no-store",
+    tags: ["event-bookings-my"],
+  });
+
+  if (!res.success || !Array.isArray(res.data)) return [];
+
+  return res.data.map((item) =>
+    mapEventBooking(item as Record<string, unknown>),
+  );
 }

@@ -3,7 +3,10 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { getCurrentViewedCount, getCurrentUser } from "@/lib/mock/current-user";
 import { getProfileAction } from "@/features/member/settings/action";
-import { getMyEvents, getPublicEvents } from "@/features/member/events/action";
+import {
+  getMyEventBookings,
+  getPublicEvents,
+} from "@/features/member/events/action";
 import { EventsFeature } from "@/features/member/events";
 
 export default async function EventsPage({
@@ -12,10 +15,10 @@ export default async function EventsPage({
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
 
-  const [dict, publicEventsRes, myEvents, profileRes] = await Promise.all([
+  const [dict, publicEventsRes, myBookings, profileRes] = await Promise.all([
     getDictionary(lang),
     getPublicEvents(),
-    getMyEvents(),
+    getMyEventBookings(),
     getProfileAction(),
   ]);
 
@@ -40,7 +43,7 @@ export default async function EventsPage({
       me={me}
       viewedCount={viewedCount}
       allEvents={publicEventsRes.events}
-      myEvents={myEvents}
+      myBookings={myBookings}
     />
   );
 }

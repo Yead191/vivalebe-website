@@ -34,6 +34,7 @@ const DEFAULT_VALUES: EventFormValues = {
   endDate: "",
   startTime: "",
   details: "",
+  price: "",
   visibility: "public",
   status: "upcoming",
   guestUserIds: "",
@@ -60,6 +61,7 @@ function toFormValues(event?: MemberEvent | null): EventFormValues {
     endDate: toDateInput(event.endDate),
     startTime: toDateTimeInput(event.startDate, event.startTime),
     details: event.details,
+    price: String(event.price ?? ""),
     visibility: event.visibility,
     status: event.status,
     guestUserIds: event.guests.map((guest) => guest.userId).join(", "),
@@ -239,6 +241,22 @@ export function EventFormDialog({
                         <SelectItem value="private">Private</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="event-price">Price (USD)</Label>
+                    <Input
+                      id="event-price"
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="e.g. 500"
+                      value={values.price}
+                      onChange={(e) =>
+                        setValues((prev) => ({ ...prev, price: e.target.value }))
+                      }
+                      className="min-h-11 rounded-xl bg-background"
+                    />
                   </div>
                 </div>
               </section>
