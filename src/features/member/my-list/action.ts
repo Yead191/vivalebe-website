@@ -51,7 +51,7 @@ export async function getYouLikedUsers(): Promise<User[]> {
           to.isWinked ||
           to.winked
         ),
-        isLiked: true,
+        isLiked: !!(item.isLike || item.isLiked || to.isLike || to.isLiked),
       } as User;
     });
   } catch (error) {
@@ -97,6 +97,7 @@ export async function getLikesYouUsers(): Promise<User[]> {
         religion: "",
         photos: from.profile ? [from.profile] : [],
         privatePhotosCount: 0,
+        isLiked: !!(item.isLike || item.isLiked || from.isLike || from.isLiked),
       } as User;
     });
   } catch (error) {
@@ -142,6 +143,7 @@ export async function getViewedYouUsers(): Promise<User[]> {
         religion: "",
         photos: u.profile ? [u.profile] : [],
         privatePhotosCount: 0,
+        isLiked: !!(item.isLike || item.isLiked || u.isLike || u.isLiked),
       } as User;
     });
   } catch (error) {
@@ -203,7 +205,6 @@ function buildMatchesUrl(filters?: MatchSearchFilters | string): string {
   return qs ? `/user/matches?${qs}` : "/user/matches";
 }
 
- 
 function mapMatchUser(item: any): User {
   const u =
     item.matchedUser || item.user || item.toUser || item.fromUser || item;
@@ -298,7 +299,7 @@ export async function getMutualMatches(
           u.isWinked ||
           u.winked
         ),
-        isLiked: true, // Mutual matches implies you liked them
+        isLiked: !!(item.isLike || item.isLiked || u.isLike || u.isLiked),
       } as User;
     });
   } catch (error) {
@@ -317,8 +318,8 @@ export async function getWinks(): Promise<User[]> {
     if (!res.success || !res.data) return [];
 
     return res.data.map((item: any) => {
-      // Based on user feedback, show the receiverId
-      const u = item.receiverId || item.fromUser || item.user || item;
+      // Show the person who winked at you (the sender)
+      const u = item.senderId || item.fromUser || item.user || item;
       return {
         id: u._id || u.id,
         username: u.name || u.username,
@@ -347,6 +348,7 @@ export async function getWinks(): Promise<User[]> {
         privatePhotosCount: 0,
         winkId: item._id || item.id,
         isWinked: item.isWinked || item.isMatch || false,
+        isLiked: !!(item.isLike || item.isLiked || u.isLike || u.isLiked),
       } as User;
     });
   } catch (error) {
@@ -378,6 +380,19 @@ export async function sendWink(receiverId: string) {
   } catch (error) {
     console.error("Error sending wink:", error);
     return { success: false, message: "Failed to send wink" };
+  }
+}
+
+export async function unWink(receiverId: string) {
+  try {
+    const res = await myFetch("/winks", {
+      method: "POST",
+      body: { receiverId },
+    });
+    return res;
+  } catch (error) {
+    console.error("Error removing wink:", error);
+    return { success: false, message: "Failed to remove wink" };
   }
 }
 
@@ -445,6 +460,7 @@ export async function getPrivateAlbumRequests(): Promise<User[]> {
         photos: u.profile || u.image ? [u.profile || u.image] : [],
         privatePhotosCount: 0,
         privateAlbumRequestId: item._id,
+        isLiked: !!(item.isLike || item.isLiked || u.isLike || u.isLiked),
       } as User;
     });
   } catch (error) {
@@ -510,6 +526,7 @@ export async function getPrivateAlbumAccess(): Promise<User[]> {
         photos: u.profile || u.image ? [u.profile || u.image] : [],
         privatePhotosCount: 0,
         privateAlbumRequestId: item._id,
+        isLiked: !!(item.isLike || item.isLiked || u.isLike || u.isLiked),
       } as User;
     });
   } catch (error) {
@@ -520,7 +537,7 @@ export async function getPrivateAlbumAccess(): Promise<User[]> {
 
 export async function swipeUser(
   toUser: string,
-  action: "like" | "dislike" = "like",
+  action: "like" | "reject" = "like",
 ) {
   try {
     const res = await myFetch("/swipe", {

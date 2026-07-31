@@ -13,6 +13,7 @@ import { photoUrl } from "@/lib/image";
 import {
   sendWink,
   acceptWink,
+  unWink,
   createChatRoom,
   swipeUser,
 } from "@/features/member/my-list/action";
@@ -39,7 +40,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
     if (isSwiping) return;
     setIsSwiping(true);
 
-    const action = liked ? "dislike" : "like";
+    const action = liked ? "reject" : "like";
     setLiked(!liked);
 
     try {
@@ -87,23 +88,34 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
   const handleWinkClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (winked) return;
     setIsSendingWink(true);
     try {
       let res;
-      if (user.winkId) {
-        res = await acceptWink(user.winkId);
+      if (winked) {
+        // Handle unwink
+        res = await unWink(user.id);
+        if (res.success) {
+          setWinked(false);
+          toast.success(res.message || "Wink removed");
+        } else {
+          toast.error(res.message || "Failed to remove wink");
+        }
       } else {
-        res = await sendWink(user.id);
-      }
+        // Handle sending/accepting wink
+        if (user.winkId) {
+          res = await acceptWink(user.winkId);
+        } else {
+          res = await sendWink(user.id);
+        }
 
-      if (res.success) {
-        setWinked(true);
-        toast.success(res.message || "Wink sent successfully");
-      } else {
-        toast.error(res.message || "Failed to send wink");
+        if (res.success) {
+          setWinked(true);
+          toast.success(res.message || "Wink sent successfully");
+        } else {
+          toast.error(res.message || "Failed to send wink");
+        }
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -208,7 +220,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
               type="button"
               aria-label="Wink"
               onClick={handleWinkClick}
-              disabled={isSendingWink || winked}
+              disabled={isSendingWink}
               className={`transition-colors disabled:opacity-50 ${winked ? "text-brand" : "text-muted-foreground hover:text-brand"}`}
             >
               <Smile
