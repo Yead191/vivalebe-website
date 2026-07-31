@@ -26,7 +26,8 @@ export interface MemberEvent {
   guests: EventGuest[];
   visibility: EventVisibility;
   status: EventStatus;
-  price?: number;
+  price: number;
+  attendPerson: number;
   createdAt: string;
   updatedAt: string;
   owner: EventOwner | null;
@@ -40,7 +41,37 @@ export interface EventFormValues {
   endDate: string;
   startTime: string;
   details: string;
+  price: string;
   visibility: EventVisibility;
   status: EventStatus;
   guestUserIds: string;
+}
+
+export type BookingRequestStatus = "pending" | "accepted" | "rejected";
+export type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
+
+export interface EventBookingEvent {
+  id: string;
+  eventName: string;
+  startDate: string;
+  endDate: string;
+  details: string;
+  price: number;
+  status: EventStatus;
+  ownerId: string;
+}
+
+export interface EventBooking {
+  id: string;
+  event: EventBookingEvent | null;
+  eventId: string;
+  userId: string;
+  bookingRequest: BookingRequestStatus | string;
+  paymentStatus: PaymentStatus | string;
+  paymentDate: string | null;
+  paymentAmount: number;
+  currency: string;
+  checkoutSessionId?: string;
+  createdAt: string;
+  updatedAt: string;
 }

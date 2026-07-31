@@ -1,7 +1,7 @@
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
-import type { MemberEvent } from "./types";
+import type { EventBooking, MemberEvent } from "./types";
 import { EventsPageClient } from "./EventsPageClient";
 
 interface EventsFeatureProps {
@@ -10,7 +10,7 @@ interface EventsFeatureProps {
   me: User;
   viewedCount: number;
   allEvents: MemberEvent[];
-  myEvents: MemberEvent[];
+  myBookings: EventBooking[];
 }
 
 export function EventsFeature(props: EventsFeatureProps) {
