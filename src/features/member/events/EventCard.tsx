@@ -7,7 +7,6 @@ import {
   Clock3,
   DollarSign,
   MapPin,
-  MoreHorizontal,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -94,22 +93,15 @@ export function EventCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {editable ? (
-            <EventFormDialog
-              mode="edit"
-              event={event}
-              triggerLabel="Edit"
-              triggerVariant="outline"
-              onSuccess={onMutate}
-            />
-          ) : null}
-          <Button variant="ghost" size="icon-sm" asChild>
-            <Link href={`/${lang}/events/${event.id}`} aria-label="Open details">
-              <MoreHorizontal className="size-5" />
-            </Link>
-          </Button>
-        </div>
+        {editable ? (
+          <EventFormDialog
+            mode="edit"
+            event={event}
+            triggerLabel="Edit"
+            triggerVariant="outline"
+            onSuccess={onMutate}
+          />
+        ) : null}
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -189,6 +181,12 @@ export function EventCard({
           <p className="line-clamp-4 whitespace-pre-line text-sm text-muted-foreground">
             {event.details}
           </p>
+        </div>
+
+        <div className="flex justify-end pt-1">
+          <Button asChild>
+            <Link href={`/${lang}/events/${event.id}`}>Details & Pay</Link>
+          </Button>
         </div>
       </div>
     </article>
