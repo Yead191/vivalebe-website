@@ -76,6 +76,12 @@ function mapEvent(item: Record<string, unknown>): MemberEvent {
       item.status === "completed" || item.status === "cancelled"
         ? (item.status as EventStatus)
         : "upcoming",
+    price:
+      typeof item.price === "number"
+        ? item.price
+        : typeof item.price === "string" && item.price.trim()
+          ? Number(item.price)
+          : undefined,
     createdAt: String(item.createdAt ?? ""),
     updatedAt: String(item.updatedAt ?? ""),
     owner,
@@ -139,15 +145,40 @@ export async function getMyEvents(): Promise<MemberEvent[]> {
 }
 
 export async function getEventById(id: string): Promise<MemberEvent | null> {
-  const res = await myFetch(`/events/${id}-single`, {
-    method: "GET",
-    cache: "no-store",
-    tags: [`event-${id}`],
-  });
+  const endpoints = [`/events/${id}`, `/events/${id}-single`];
 
-  if (!res.success || !res.data || typeof res.data !== "object") return null;
+  for (const endpoint of endpoints) {
+    const res = await myFetch(endpoint, {
+      method: "GET",
+      cache: "no-store",
+      tags: [`event-${id}`],
+    });
 
-  return mapEvent(res.data as Record<string, unknown>);
+    if (!res.success || res.data == null) continue;
+
+    const raw = Array.isArray(res.data)
+      ? res.data[0]
+      : typeof res.data === "object" &&
+          res.data !== null &&
+          "event" in (res.data as Record<string, unknown>)
+        ? (res.data as Record<string, unknown>).event
+        : res.data;
+
+    if (raw && typeof raw === "object") {
+      return mapEvent(raw as Record<string, unknown>);
+    }
+  }
+
+  // Fallback: find in public/my lists when single-event endpoints fail.
+  const [publicEvents, myEvents] = await Promise.all([
+    getPublicEvents(1, 100),
+    getMyEvents(),
+  ]);
+  return (
+    publicEvents.events.find((event) => event.id === id) ??
+    myEvents.find((event) => event.id === id) ??
+    null
+  );
 }
 
 export async function createEvent(values: EventFormValues) {
@@ -186,4 +217,24 @@ export async function deleteEvent(id: string) {
   }
 
   return res;
+}
+
+export async function createEventBooking(eventId: string) {
+  const res = await myFetch<{
+    booking?: Record<string, unknown>;
+    checkoutUrl?: string;
+  }>("/event-booking/create", {
+    method: "POST",
+    body: { eventId },
+  });
+
+  const checkoutUrl =
+    typeof res.data?.checkoutUrl === "string" ? res.data.checkoutUrl : null;
+
+  return {
+    success: res.success,
+    message: res.message ?? res.error ?? undefined,
+    checkoutUrl,
+    data: res.data,
+  };
 }

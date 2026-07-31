@@ -1,11 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
-import { CalendarDays, Clock3, Heart, MapPin, MessageCircle, Smile } from "lucide-react";
+import {
+  CalendarDays,
+  Clock3,
+  Heart,
+  MapPin,
+  MessageCircle,
+  Smile,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import BackButton from "@/components/shared/BackButton";
+import { Button } from "@/components/ui/button";
 import { EventFormDialog } from "./EventFormDialog";
+import { createEventBooking } from "./action";
 import type { MemberEvent } from "./types";
 
 function formatDate(value: string, withTime = false) {
@@ -35,6 +45,7 @@ export function EventDetailsClient({
 }: EventDetailsClientProps) {
   const router = useRouter();
   const [active, setActive] = useState("join-event");
+  const [isBooking, startBooking] = useTransition();
 
   useEffect(() => {
     const handler = () => {
@@ -67,6 +78,24 @@ export function EventDetailsClient({
     { id: "private-note", label: "ADD A PRIVATE NOTE" },
   ];
 
+  const handleBookEvent = () => {
+    startBooking(async () => {
+      const res = await createEventBooking(event.id);
+
+      if (!res.success) {
+        toast.error(res.message ?? "Failed to create event booking");
+        return;
+      }
+
+      if (res.checkoutUrl) {
+        window.location.assign(res.checkoutUrl);
+        return;
+      }
+
+      toast.error("Checkout URL not available");
+    });
+  };
+
   return (
     <div className="container py-5">
       <div className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)]">
@@ -87,13 +116,25 @@ export function EventDetailsClient({
               </div>
 
               <div className="flex items-center gap-5 px-1 text-muted-foreground">
-                <button type="button" aria-label="Wink" className="hover:text-brand transition-colors">
+                <button
+                  type="button"
+                  aria-label="Wink"
+                  className="hover:text-brand transition-colors"
+                >
                   <Smile className="size-5" />
                 </button>
-                <button type="button" aria-label="Like" className="hover:text-brand transition-colors">
+                <button
+                  type="button"
+                  aria-label="Like"
+                  className="hover:text-brand transition-colors"
+                >
                   <Heart className="size-5" />
                 </button>
-                <button type="button" aria-label="Message" className="hover:text-brand transition-colors">
+                <button
+                  type="button"
+                  aria-label="Message"
+                  className="hover:text-brand transition-colors"
+                >
                   <MessageCircle className="size-5" />
                 </button>
               </div>
@@ -125,7 +166,9 @@ export function EventDetailsClient({
         <div className="space-y-8">
           <header className="flex items-start justify-between gap-3">
             <div className="space-y-1">
-              <h1 className="text-base font-semibold tracking-wider">{ownerName}</h1>
+              <h1 className="text-base font-semibold tracking-wider">
+                {ownerName}
+              </h1>
               {ownerMeta ? (
                 <p className="text-sm text-muted-foreground">{ownerMeta}</p>
               ) : null}
@@ -140,7 +183,10 @@ export function EventDetailsClient({
             ) : null}
           </header>
 
-          <section id="join-event" className="space-y-4 rounded-2xl border border-border bg-card p-5 scroll-mt-24">
+          <section
+            id="join-event"
+            className="space-y-4 rounded-2xl border border-border bg-card p-5 scroll-mt-24"
+          >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-semibold uppercase tracking-wide">
                 {/* eslint-disable-next-line react/no-unescaped-entities */}
@@ -157,8 +203,15 @@ export function EventDetailsClient({
             </div>
 
             <div className="space-y-3">
-              <h3 className="text-2xl font-semibold text-foreground">{event.eventName}</h3>
+              <h3 className="text-2xl font-semibold text-foreground">
+                {event.eventName}
+              </h3>
               <p className="text-sm text-muted-foreground">{event.type}</p>
+              {typeof event.price === "number" && !Number.isNaN(event.price) ? (
+                <p className="text-sm font-medium text-foreground">
+                  Price: USD ${event.price}
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-4 text-sm text-foreground/90 md:grid-cols-2">
@@ -186,6 +239,19 @@ export function EventDetailsClient({
                 </div>
               </div>
             </div>
+
+            {!isOwner ? (
+              <div className="pt-2">
+                <Button
+                  type="button"
+                  onClick={handleBookEvent}
+                  disabled={isBooking}
+                  className="bg-brand text-white hover:bg-brand/90"
+                >
+                  {isBooking ? "Redirecting to checkout..." : "Book & Pay"}
+                </Button>
+              </div>
+            ) : null}
           </section>
 
           <section id="details" className="space-y-3 scroll-mt-24">

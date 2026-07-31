@@ -26,6 +26,7 @@ export interface MemberEvent {
   guests: EventGuest[];
   visibility: EventVisibility;
   status: EventStatus;
+  price?: number;
   createdAt: string;
   updatedAt: string;
   owner: EventOwner | null;
