@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
@@ -14,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { EventFormDialog } from "./EventFormDialog";
 import { EventCard } from "./EventCard";
 import { EventBookingCard } from "./EventBookingCard";
 import type { EventBooking, MemberEvent } from "./types";
@@ -68,7 +66,6 @@ export function EventsPageClient({
   allEvents,
   myBookings,
 }: EventsPageClientProps) {
-  const router = useRouter();
   const [sort, setSort] = useState<SortOption>("nearest");
 
   const sortedAllEvents = useMemo(
@@ -105,14 +102,8 @@ export function EventsPageClient({
             </p>
           </header>
 
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-            <EventFormDialog
-              mode="create"
-              onSuccess={() => router.refresh()}
-              triggerLabel="Add Events & Parties"
-            />
-
-            <div className="flex items-center gap-2 self-end text-sm">
+          <div className="flex justify-end">
+            <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Sort by:</span>
               <Select
                 value={sort}
