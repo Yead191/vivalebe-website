@@ -67,6 +67,7 @@ export default function MyAccountTab({ t }: { t: any }) {
   });
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isAdminVerified, setIsAdminVerified] = useState<boolean>(false);
+  const [verifiedStatus, setVerifiedStatus] = useState<string>("");
 
   const [userData, setUserData] = useState<
     Record<string, { value: string; isNotSet?: boolean }>
@@ -84,6 +85,7 @@ export default function MyAccountTab({ t }: { t: any }) {
         const res = await getProfileAction();
         if (res.success && res.data) {
           setIsAdminVerified(res.data.isAdminVerified || false);
+          setVerifiedStatus(res.data.verifiedStatus || "");
           setUserData((prev) => ({
             ...prev,
             name: {
@@ -284,15 +286,22 @@ export default function MyAccountTab({ t }: { t: any }) {
       const formData = new FormData();
       formData.append("documentType", verifyForm.type);
       formData.append("documentVerified", verifyForm.image);
-      
+
       const res = await verifyProfileAction(formData);
-      
+
       if (res.success) {
-        toast.success(res.message || "Verification documents submitted successfully!");
+        toast.success(
+          res.message || "Verification documents submitted successfully!",
+        );
         setIsVerifyModalOpen(false);
         setVerifyForm({ type: "", image: null, imagePreview: "" });
+        setVerifiedStatus("pending");
       } else {
-        toast.error(res.error || res.message || "Failed to submit verification documents.");
+        toast.error(
+          res.error ||
+            res.message ||
+            "Failed to submit verification documents.",
+        );
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -419,14 +428,35 @@ export default function MyAccountTab({ t }: { t: any }) {
             <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
               {t.account?.verifyProfile || "Verify Profile"}
             </span>
-            <p className={`text-sm font-medium ${isAdminVerified ? "text-green-600" : "text-neutral-400 italic"}`}>
-              {isAdminVerified ? "Verified" : (t.account?.notVerified || "Not Verified")}
+            <p
+              className={`text-sm font-medium ${
+                isAdminVerified || verifiedStatus?.toLowerCase() === "verified"
+                  ? "text-green-600"
+                  : verifiedStatus?.toLowerCase() === "pending"
+                    ? "text-yellow-600"
+                    : verifiedStatus?.toLowerCase() === "rejected"
+                      ? "text-red-600"
+                      : "text-neutral-400 italic"
+              }`}
+            >
+              {isAdminVerified || verifiedStatus?.toLowerCase() === "verified"
+                ? "Verified"
+                : verifiedStatus?.toLowerCase() === "pending"
+                  ? "Pending Approval"
+                  : verifiedStatus?.toLowerCase() === "rejected"
+                    ? "Verification Rejected"
+                    : t.account?.notVerified || "Not Verified"}
             </p>
           </div>
-          {isAdminVerified ? (
+          {isAdminVerified || verifiedStatus?.toLowerCase() === "verified" ? (
             <div className="flex items-center text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 self-start sm:self-center">
               <Check className="w-4 h-4 mr-1.5" />
               <span className="text-sm font-medium">Verified</span>
+            </div>
+          ) : verifiedStatus?.toLowerCase() === "pending" ? (
+            <div className="flex items-center text-yellow-600 bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-100 self-start sm:self-center">
+              <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+              <span className="text-sm font-medium">Pending</span>
             </div>
           ) : (
             <Button
@@ -434,7 +464,9 @@ export default function MyAccountTab({ t }: { t: any }) {
               onClick={() => setIsVerifyModalOpen(true)}
               className="rounded-lg border-neutral-200 text-neutral-600 font-medium text-sm self-start sm:self-center"
             >
-              {t.account?.verifyNow || "Verify Now"}
+              {verifiedStatus?.toLowerCase() === "rejected"
+                ? "Retry Verification"
+                : t.account?.verifyNow || "Verify Now"}
             </Button>
           )}
         </div>
@@ -537,41 +569,74 @@ export default function MyAccountTab({ t }: { t: any }) {
           <form onSubmit={handleVerifySubmit} className="space-y-4 py-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Document Type</label>
-              <Select onValueChange={(value) => setVerifyForm(prev => ({...prev, type: value}))} required>
+              <Select
+                onValueChange={(value) =>
+                  setVerifyForm((prev) => ({ ...prev, type: value }))
+                }
+                required
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select document type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="National ID">National ID</SelectItem>
                   <SelectItem value="Passport">Passport</SelectItem>
-                  <SelectItem value="Driving License">Driving License</SelectItem>
+                  <SelectItem value="Driving License">
+                    Driving License
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Upload Document</label>
               <div className="flex items-center justify-center w-full">
-                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 border-neutral-300">
+                <label
+                  htmlFor="dropzone-file"
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 border-neutral-300"
+                >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <Camera className="w-8 h-8 mb-2 text-neutral-400" />
-                    <p className="text-sm text-neutral-500"><span className="font-semibold">Click to upload</span></p>
+                    <p className="text-sm text-neutral-500">
+                      <span className="font-semibold">Click to upload</span>
+                    </p>
                   </div>
-                  <input id="dropzone-file" type="file" className="hidden" accept="image/*" onChange={handleVerifyImageChange} />
+                  <input
+                    id="dropzone-file"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleVerifyImageChange}
+                  />
                 </label>
               </div>
               {verifyForm.imagePreview && (
                 <div className="mt-4 relative rounded-lg overflow-hidden border border-neutral-200 w-full h-48">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={verifyForm.imagePreview} alt="Preview" className="w-full h-full object-contain bg-neutral-100" />
+                  <img
+                    src={verifyForm.imagePreview}
+                    alt="Preview"
+                    className="w-full h-full object-contain bg-neutral-100"
+                  />
                 </div>
               )}
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsVerifyModalOpen(false)} disabled={isVerifying}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsVerifyModalOpen(false)}
+                disabled={isVerifying}
+              >
                 {t.common?.cancel || "Cancel"}
               </Button>
-              <Button type="submit" disabled={isVerifying || !verifyForm.type || !verifyForm.image} className="bg-[#429CA8] hover:bg-[#357d87] text-white">
-                {isVerifying && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              <Button
+                type="submit"
+                disabled={isVerifying || !verifyForm.type || !verifyForm.image}
+                className="bg-[#429CA8] hover:bg-[#357d87] text-white"
+              >
+                {isVerifying && (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                )}
                 {t.common?.save || "Save"}
               </Button>
             </DialogFooter>
