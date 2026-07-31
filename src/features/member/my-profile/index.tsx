@@ -312,7 +312,14 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
       if (patch.extras !== undefined) {
         const e = patch.extras;
         if (e.languages !== undefined) payload.languages = e.languages;
-        if (e.education !== undefined) payload.education = e.education;
+        if (e.education !== undefined) {
+          if (e.education === "High school") payload.education = "HIGHT_SCHOOL";
+          else if (e.education === "Some college" || e.education === "Associate degree") payload.education = "COLLEGE";
+          else if (e.education === "Bachelor's degree") payload.education = "GRADUATE";
+          else if (e.education === "Master's degree") payload.education = "MASTERS";
+          else if (e.education === "Doctorate") payload.education = "DOCTORATE";
+          else payload.education = "HIGHT_SCHOOL"; // fallback
+        }
         if (e.occupation !== undefined) payload.occupation = e.occupation;
         if (e.smoking !== undefined) payload.smoking = e.smoking;
         if (e.drinking !== undefined) payload.drinking = e.drinking;

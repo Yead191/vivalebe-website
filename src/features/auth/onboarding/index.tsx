@@ -191,7 +191,10 @@ export default function OnboardingFeature({ dict, lang }: Props) {
         height: Number(formValues.heightValue) || 0,
         weight: Number(formValues.weightValue) || 0,
         occupation: formValues.occupation,
-        education: formValues.educationLevel.toUpperCase(),
+        education:
+          formValues.educationLevel === "highSchool"
+            ? "HIGHT_SCHOOL"
+            : formValues.educationLevel.toUpperCase(),
         relationStatus: formValues.relationshipStatus.toUpperCase(),
         bio: formValues.aboutYou,
       };
@@ -205,7 +208,7 @@ export default function OnboardingFeature({ dict, lang }: Props) {
       } else {
         toast.error(res.error || res.message || "Failed to submit onboarding");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred");
     }
