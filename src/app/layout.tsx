@@ -30,7 +30,7 @@ export default function RootLayout({
       className={`${inter.variable} ${museoModerno.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <Toaster
           position="top-right"
           offset={20}
