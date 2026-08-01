@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { EventFormDialog } from "./EventFormDialog";
 import { createEventBooking } from "./action";
 import type { EventBooking, MemberEvent } from "./types";
-import { cn } from "@/lib/utils";
 
 function formatDate(value: string, withTime = false) {
   if (!value) return "—";
@@ -46,7 +45,9 @@ export function EventDetailsClient({
 }: EventDetailsClientProps) {
   const router = useRouter();
   const [isBooking, startBooking] = useTransition();
-  const alreadyBooked = Boolean(existingBooking);
+  const paymentStatus = existingBooking?.paymentStatus.toLowerCase() ?? "";
+  const isPaymentComplete = paymentStatus === "paid";
+  const showBookAndPay = !isOwner && !isPaymentComplete;
 
   const ownerName = event.owner?.name || "Event host";
   const ownerMeta = [
@@ -170,18 +171,19 @@ export function EventDetailsClient({
             </div>
           </div>
 
-          {!isOwner && alreadyBooked && existingBooking ? (
+          {!isOwner && existingBooking ? (
             <div className="flex flex-wrap items-center gap-2 pt-2">
-              <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200">
-                Already booked
-              </span>
+              {/* {isPaymentComplete ? (
+                <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200">
+                  Already booked
+                </span>
+              ) : null} */}
               <span
-                className={cn(
-                  "rounded-full px-3 py-1.5 text-sm font-medium capitalize ring-1",
-                  existingBooking.paymentStatus.toLowerCase() === "paid"
-                    ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-                    : "bg-amber-50 text-amber-700 ring-amber-200",
-                )}
+                className={
+                  isPaymentComplete
+                    ? "rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-medium capitalize text-emerald-700 ring-1 ring-emerald-200"
+                    : "rounded-full bg-amber-50 px-3 py-1.5 text-sm font-medium capitalize text-amber-700 ring-1 ring-amber-200"
+                }
               >
                 Payment: {existingBooking.paymentStatus}
               </span>
@@ -191,7 +193,7 @@ export function EventDetailsClient({
             </div>
           ) : null}
 
-          {!isOwner && !alreadyBooked ? (
+          {showBookAndPay ? (
             <div className="pt-2">
               <Button
                 type="button"
