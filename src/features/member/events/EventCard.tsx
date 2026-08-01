@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/config";
 import type { MemberEvent } from "./types";
-import { EventFormDialog } from "./EventFormDialog";
 
 function formatDate(value: string, withTime = false) {
   if (!value) return "—";
@@ -57,51 +56,32 @@ function ownerLocation(event: MemberEvent) {
 interface EventCardProps {
   lang: Locale;
   event: MemberEvent;
-  editable?: boolean;
-  onMutate?: () => void;
 }
 
-export function EventCard({
-  lang,
-  event,
-  editable = false,
-  onMutate,
-}: EventCardProps) {
+export function EventCard({ lang, event }: EventCardProps) {
   const ownerName = event.owner?.name || "Event host";
   const ownerMeta = ownerLocation(event);
   const profileImage = event.owner?.profile || "/image20.png";
 
   return (
     <article className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <Image
-            src={profileImage}
-            alt={ownerName}
-            width={56}
-            height={56}
-            className="size-14 rounded-full object-cover"
-            unoptimized
-          />
-          <div className="space-y-1">
-            <p className="text-lg font-semibold uppercase tracking-wide text-foreground">
-              {ownerName}
-            </p>
-            {ownerMeta ? (
-              <p className="text-sm text-muted-foreground">{ownerMeta}</p>
-            ) : null}
-          </div>
+      <div className="flex items-start gap-3">
+        <Image
+          src={profileImage}
+          alt={ownerName}
+          width={56}
+          height={56}
+          className="size-14 rounded-full object-cover"
+          unoptimized
+        />
+        <div className="space-y-1">
+          <p className="text-lg font-semibold uppercase tracking-wide text-foreground">
+            {ownerName}
+          </p>
+          {ownerMeta ? (
+            <p className="text-sm text-muted-foreground">{ownerMeta}</p>
+          ) : null}
         </div>
-
-        {editable ? (
-          <EventFormDialog
-            mode="edit"
-            event={event}
-            triggerLabel="Edit"
-            triggerVariant="outline"
-            onSuccess={onMutate}
-          />
-        ) : null}
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">

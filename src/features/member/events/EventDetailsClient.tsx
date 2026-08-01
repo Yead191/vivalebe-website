@@ -8,11 +8,9 @@ import {
   MapPin,
   Users,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import BackButton from "@/components/shared/BackButton";
 import { Button } from "@/components/ui/button";
-import { EventFormDialog } from "./EventFormDialog";
 import { createEventBooking } from "./action";
 import type { EventBooking, MemberEvent } from "./types";
 
@@ -43,7 +41,6 @@ export function EventDetailsClient({
   isOwner,
   existingBooking = null,
 }: EventDetailsClientProps) {
-  const router = useRouter();
   const [isBooking, startBooking] = useTransition();
   const paymentStatus = existingBooking?.paymentStatus.toLowerCase() ?? "";
   const isPaymentComplete = paymentStatus === "paid";
@@ -82,22 +79,12 @@ export function EventDetailsClient({
       </div>
 
       <div className="mx-auto max-w-3xl space-y-8">
-        <header className="flex items-start justify-between gap-3">
-          <div className="space-y-1">
-            <h1 className="text-base font-semibold tracking-wider">
-              {ownerName}
-            </h1>
-            {ownerMeta ? (
-              <p className="text-sm text-muted-foreground">{ownerMeta}</p>
-            ) : null}
-          </div>
-          {isOwner ? (
-            <EventFormDialog
-              mode="edit"
-              event={event}
-              triggerLabel="Edit event"
-              onSuccess={() => router.refresh()}
-            />
+        <header className="space-y-1">
+          <h1 className="text-base font-semibold tracking-wider">
+            {ownerName}
+          </h1>
+          {ownerMeta ? (
+            <p className="text-sm text-muted-foreground">{ownerMeta}</p>
           ) : null}
         </header>
 

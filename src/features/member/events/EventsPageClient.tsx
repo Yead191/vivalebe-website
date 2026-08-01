@@ -97,8 +97,7 @@ export function EventsPageClient({
               Events & Parties
             </h1>
             <p className="mx-auto max-w-2xl text-sm text-muted-foreground">
-              Have something exciting planned? Create or join an event to bring
-              people together.
+              Browse upcoming events and parties, then book your spot.
             </p>
           </header>
 
