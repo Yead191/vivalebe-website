@@ -164,9 +164,9 @@ export function ChatSidebar({
                       />
                     </div>
                     {/* Mocking online status for now */}
-                    {!isGroup && (
+                    {/* {!isGroup && (
                       <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white" />
-                    )}
+                    )} */}
                   </div>
 
                   <div className="flex-1 min-w-0 text-left">
