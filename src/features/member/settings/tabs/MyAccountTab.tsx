@@ -642,7 +642,7 @@ export default function MyAccountTab({ t }: { t: any }) {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                Upload Selfie (verifyOwnPicture)
+                Upload Selfie
               </label>
               <div className="flex items-center justify-center w-full">
                 <label

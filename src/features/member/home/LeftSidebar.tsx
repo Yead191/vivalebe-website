@@ -62,7 +62,7 @@ export function LeftSidebar({ lang, dict, me, viewedCount }: LeftSidebarProps) {
             className="size-full object-cover transition-transform group-hover:scale-105"
             unoptimized
           />
-          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {/* <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <Camera className="size-8 text-white mb-2" />
             <span className="text-white text-xs font-medium px-4 text-center">
               {dict.myHome.changeProfilePicture}
@@ -74,7 +74,7 @@ export function LeftSidebar({ lang, dict, me, viewedCount }: LeftSidebarProps) {
             className="hidden"
             accept="image/*"
             onChange={handleFileChange}
-          />
+          /> */}
         </div>
       </div>
 
