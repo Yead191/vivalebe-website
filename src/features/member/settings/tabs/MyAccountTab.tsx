@@ -609,73 +609,77 @@ export default function MyAccountTab({ t }: { t: any }) {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Upload Document</label>
-              <div className="flex items-center justify-center w-full">
-                <label
-                  htmlFor="dropzone-file"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 border-neutral-300"
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Camera className="w-8 h-8 mb-2 text-neutral-400" />
-                    <p className="text-sm text-neutral-500">
-                      <span className="font-semibold">Click to upload</span>
+              <label
+                htmlFor="dropzone-file"
+                className="relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 transition-colors hover:bg-neutral-100"
+              >
+                {verifyForm.imagePreview ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={verifyForm.imagePreview}
+                      alt="Document preview"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity hover:opacity-100">
+                      <span className="text-sm font-semibold text-white">
+                        Change image
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-2 px-4 text-center">
+                    <Camera className="size-8 text-neutral-400" />
+                    <p className="text-sm font-semibold text-neutral-500">
+                      Click to upload
                     </p>
                   </div>
-                  <input
-                    id="dropzone-file"
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleVerifyImageChange}
-                  />
-                </label>
-              </div>
-              {verifyForm.imagePreview && (
-                <div className="mt-4 relative rounded-lg overflow-hidden border border-neutral-200 w-full h-48">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={verifyForm.imagePreview}
-                    alt="Preview"
-                    className="w-full h-full object-contain bg-neutral-100"
-                  />
-                </div>
-              )}
+                )}
+                <input
+                  id="dropzone-file"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleVerifyImageChange}
+                />
+              </label>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Upload Selfie
-              </label>
-              <div className="flex items-center justify-center w-full">
-                <label
-                  htmlFor="own-picture-file"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 border-neutral-300"
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Camera className="w-8 h-8 mb-2 text-neutral-400" />
-                    <p className="text-sm text-neutral-500">
-                      <span className="font-semibold">
-                        Click to upload selfie
+              <label className="text-sm font-medium">Upload Selfie</label>
+              <label
+                htmlFor="own-picture-file"
+                className="relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 transition-colors hover:bg-neutral-100"
+              >
+                {verifyForm.ownPicturePreview ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={verifyForm.ownPicturePreview}
+                      alt="Selfie preview"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity hover:opacity-100">
+                      <span className="text-sm font-semibold text-white">
+                        Change image
                       </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-2 px-4 text-center">
+                    <Camera className="size-8 text-neutral-400" />
+                    <p className="text-sm font-semibold text-neutral-500">
+                      Click to upload selfie
                     </p>
                   </div>
-                  <input
-                    id="own-picture-file"
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleOwnPictureChange}
-                  />
-                </label>
-              </div>
-              {verifyForm.ownPicturePreview && (
-                <div className="mt-4 relative rounded-lg overflow-hidden border border-neutral-200 w-full h-48">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={verifyForm.ownPicturePreview}
-                    alt="Selfie Preview"
-                    className="w-full h-full object-contain bg-neutral-100"
-                  />
-                </div>
-              )}
+                )}
+                <input
+                  id="own-picture-file"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleOwnPictureChange}
+                />
+              </label>
             </div>
             <DialogFooter>
               <Button
