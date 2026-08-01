@@ -68,7 +68,7 @@ export function FlameCard({
   const photos = user.photos.length > 0 ? user.photos : [user.coverSeed];
   const photoCount = photos.length;
   const currentSeed = photos[photoIdx] ?? user.coverSeed;
-  const profileHref = `/${lang}/profile/${encodeURIComponent(user.username)}`;
+  const profileHref = `/${lang}/my-list/profile/${user.id}`;
   const nameLabel =
     user.age > 0 ? `${user.displayName}, ${user.age}` : user.displayName;
 
