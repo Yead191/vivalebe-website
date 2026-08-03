@@ -67,7 +67,7 @@ export function NotificationsBell() {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label="Notifications"
-        className="relative inline-flex size-9 items-center justify-center rounded-full text-white/90 hover:bg-white/10 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+        className="relative inline-flex size-9 cursor-pointer items-center justify-center rounded-full text-white/90 hover:bg-white/10 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white/40"
       >
         <Bell className="size-5" />
         {unread > 0 ? (

@@ -24,7 +24,7 @@ export function LangSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="inline-flex items-center gap-1.5 rounded-full bg-black/20 hover:bg-black/30 backdrop-blur-sm px-3.5 py-1.5 text-xs font-bold tracking-wider text-white transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/40 border border-white/10 hover:border-white/20 hover:scale-105">
+      <DropdownMenuTrigger className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-black/20 hover:bg-black/30 backdrop-blur-sm px-3.5 py-1.5 text-xs font-bold tracking-wider text-white transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/40 border border-white/10 hover:border-white/20 hover:scale-105">
         {current.toUpperCase()}
         <ChevronDown className="size-3.5 opacity-80" />
       </DropdownMenuTrigger>
