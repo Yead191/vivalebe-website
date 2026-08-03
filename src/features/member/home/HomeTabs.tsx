@@ -236,7 +236,7 @@ export function HomeTabs({
       <TabsList className="grid w-full grid-cols-3 gap-1 rounded-[20px] bg-muted/40 p-1.5">
         <TabsTrigger
           value="videos"
-          className="group flex items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
+          className="group flex cursor-pointer items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
         >
           <Video className="h-4 w-4 shrink-0 transition-transform duration-300 group-data-[state=active]:scale-110" />
           <span className="text-[11px] font-bold uppercase tracking-wider sm:text-xs">
@@ -245,7 +245,7 @@ export function HomeTabs({
         </TabsTrigger>
         <TabsTrigger
           value="moments"
-          className="group flex items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
+          className="group flex cursor-pointer items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
         >
           <Sparkles className="h-4 w-4 shrink-0 transition-transform duration-300 group-data-[state=active]:scale-110" />
           <span className="text-[11px] font-bold uppercase tracking-wider sm:text-xs">
@@ -254,7 +254,7 @@ export function HomeTabs({
         </TabsTrigger>
         <TabsTrigger
           value="connections"
-          className="group flex items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
+          className="group flex cursor-pointer items-center justify-center gap-2 rounded-[14px] py-2 transition-all duration-300 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-brand data-[state=active]:shadow-sm"
         >
           <Heart className="h-4 w-4 shrink-0 transition-transform duration-300 group-data-[state=active]:scale-110" />
           <span className="text-[11px] font-bold uppercase tracking-wider sm:text-xs">

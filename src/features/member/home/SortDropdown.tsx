@@ -21,16 +21,22 @@ export function SortDropdown({ value, onChange, dict }: SortDropdownProps) {
     value === "newest" ? dict.myHome.feedNewest : dict.myHome.feedPopular;
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+      <DropdownMenuTrigger className="inline-flex cursor-pointer items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <span>{dict.myHome.feedShow}</span>
         <span className="font-medium text-foreground">{label}</span>
         <ChevronDown className="size-3" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-36">
-        <DropdownMenuItem onClick={() => onChange("newest")}>
+        <DropdownMenuItem
+          onClick={() => onChange("newest")}
+          className="cursor-pointer"
+        >
           {dict.myHome.feedNewest}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onChange("popular")}>
+        <DropdownMenuItem
+          onClick={() => onChange("popular")}
+          className="cursor-pointer"
+        >
           {dict.myHome.feedPopular}
         </DropdownMenuItem>
       </DropdownMenuContent>

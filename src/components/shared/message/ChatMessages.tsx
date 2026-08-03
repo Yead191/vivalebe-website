@@ -59,9 +59,9 @@ function Avatar({
           className="w-full h-full object-cover"
         />
       </div>
-      {online && (
+      {/* {online && (
         <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white" />
-      )}
+      )} */}
     </div>
   );
 }
@@ -287,7 +287,7 @@ export function ChatMessages({
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/chat")}
-            className="lg:hidden p-2 -ml-2 text-gray-500 hover:text-gray-900 transition-colors"
+            className="lg:hidden cursor-pointer p-2 -ml-2 text-gray-500 hover:text-gray-900 transition-colors"
           >
             <ChevronLeft size={20} />
           </button>
@@ -303,12 +303,7 @@ export function ChatMessages({
               <p className="text-gray-500 text-[11px] font-medium mt-0.5">
                 {activeUser?.participants?.length} Participants
               </p>
-            ) : (
-              <p className="text-green-500 text-[11px] font-medium uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                Online
-              </p>
-            )}
+            ) : null}
           </div>
         </div>
 

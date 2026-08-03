@@ -43,7 +43,7 @@ export function UserMenu({
   const isPending = !isVerified && verifiedStatus?.toLowerCase() === "pending";
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="inline-flex items-center gap-2 rounded-full pr-2 pl-1 py-1 text-white/95 hover:bg-white/10 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+      <DropdownMenuTrigger className="inline-flex cursor-pointer items-center gap-2 rounded-full pr-2 pl-1 py-1 text-white/95 hover:bg-white/10 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white/40">
         <Image
           src={avatarUrl(avatarSeed, 64)}
           alt={displayName}

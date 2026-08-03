@@ -18,7 +18,6 @@ export default async function MyListProfilePage({
   }
 
   const localeLang = lang as Locale;
-  console.log("MyListProfilePage params:", { lang: localeLang, id });
 
   const user = await getUserById(id);
   const dict = await getDictionary(localeLang);

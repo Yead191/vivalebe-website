@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  CalendarDays,
-  CreditCard,
-  DollarSign,
-  MoreHorizontal,
-} from "lucide-react";
+import { CalendarDays, CreditCard, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/config";
 import type { EventBooking } from "./types";
@@ -50,35 +45,11 @@ export function EventBookingCard({ lang, booking }: EventBookingCardProps) {
 
   return (
     <article className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          {eventId ? (
-            <Link
-              href={`/${lang}/events/${eventId}`}
-              className="block text-2xl font-semibold text-foreground transition-colors hover:text-brand"
-            >
-              {eventName}
-            </Link>
-          ) : (
-            <h3 className="text-2xl font-semibold text-foreground">
-              {eventName}
-            </h3>
-          )}
-          <p className="text-sm text-muted-foreground">
-            Booked on {formatDate(booking.createdAt)}
-          </p>
-        </div>
-
-        {eventId ? (
-          <Button variant="ghost" size="icon-sm" asChild>
-            <Link
-              href={`/${lang}/events/${eventId}`}
-              aria-label="Open event details"
-            >
-              <MoreHorizontal className="size-5" />
-            </Link>
-          </Button>
-        ) : null}
+      <div className="space-y-1">
+        <h3 className="text-2xl font-semibold text-foreground">{eventName}</h3>
+        <p className="text-sm text-muted-foreground">
+          Booked on {formatDate(booking.createdAt)}
+        </p>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -144,6 +115,14 @@ export function EventBookingCard({ lang, booking }: EventBookingCardProps) {
           <p className="line-clamp-3 whitespace-pre-line text-sm text-muted-foreground">
             {event.details}
           </p>
+        </div>
+      ) : null}
+
+      {eventId ? (
+        <div className="flex justify-end pt-4">
+          <Button asChild>
+            <Link href={`/${lang}/events/${eventId}`}>Details</Link>
+          </Button>
         </div>
       ) : null}
     </article>

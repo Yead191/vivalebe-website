@@ -136,7 +136,7 @@ export default function SettingsPageFeature({
                   key={item.id}
                   onClick={() => handleTabChange(item.id)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 ease-out group relative",
+                    "w-full flex cursor-pointer items-center gap-3 px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 ease-out group relative",
                     isActive
                       ? "text-[#429CA8] bg-[#429CA8]/8 "
                       : "text-neutral-600  hover:bg-neutral-100/80 ",

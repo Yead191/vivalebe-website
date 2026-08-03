@@ -34,19 +34,6 @@ export interface MemberEvent {
   ownerId: string;
 }
 
-export interface EventFormValues {
-  eventName: string;
-  type: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  details: string;
-  price: string;
-  visibility: EventVisibility;
-  status: EventStatus;
-  guestUserIds: string;
-}
-
 export type BookingRequestStatus = "pending" | "accepted" | "rejected";
 export type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
 

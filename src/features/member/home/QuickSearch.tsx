@@ -104,13 +104,14 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
           {(["Man", "Woman", "Couple"] as const).map((k) => (
             <label
               key={k}
-              className="inline-flex items-center gap-2 text-sm text-foreground"
+              className="inline-flex cursor-pointer items-center gap-2 text-sm text-foreground"
             >
               <Checkbox
                 checked={interestedIn[k]}
                 onCheckedChange={(v) =>
                   setInterestedIn((prev) => ({ ...prev, [k]: Boolean(v) }))
                 }
+                className="cursor-pointer"
               />
               {k === "Man"
                 ? dict.myHome.quickMan
@@ -133,7 +134,7 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
             max={80}
             step={1}
             onValueChange={setAgeRange}
-            className="flex-1"
+            className="flex-1 cursor-pointer"
           />
           <span className="tabular-nums text-sm text-foreground min-w-[4.5rem] text-right">
             {ageRange[0]} - {ageRange[1]}
@@ -153,12 +154,12 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
             setState(first);
           }}
         >
-          <SelectTrigger className="flex-1">
+          <SelectTrigger className="flex-1 cursor-pointer">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {countries.map((c) => (
-              <SelectItem key={c.value} value={c.value}>
+              <SelectItem key={c.value} value={c.value} className="cursor-pointer">
                 {c.name}
               </SelectItem>
             ))}
@@ -171,12 +172,12 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
           {dict.myHome.quickState}
         </Label>
         <Select value={state} onValueChange={setState}>
-          <SelectTrigger className="flex-1">
+          <SelectTrigger className="flex-1 cursor-pointer">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {states.map((s) => (
-              <SelectItem key={s} value={s}>
+              <SelectItem key={s} value={s} className="cursor-pointer">
                 {s}
               </SelectItem>
             ))}
@@ -187,7 +188,7 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
       <div className="flex justify-center pt-1">
         <button
           type="submit"
-          className="rounded-md bg-brand px-8 py-2.5 text-sm font-semibold text-brand-foreground hover:bg-brand-hover transition-colors"
+          className="cursor-pointer rounded-md bg-brand px-8 py-2.5 text-sm font-semibold text-brand-foreground hover:bg-brand-hover transition-colors"
         >
           {dict.myHome.quickSubmit}
         </button>

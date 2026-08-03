@@ -37,7 +37,7 @@ export function UsernameSearchForm({ lang, dict, initialQuery }: Props) {
       </div>
       <button
         type="submit"
-        className="rounded-r-md bg-muted-foreground/80 px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white hover:bg-foreground transition-colors"
+        className="cursor-pointer rounded-r-md bg-muted-foreground/80 px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white hover:bg-foreground transition-colors"
       >
         {dict.discover.search}
       </button>

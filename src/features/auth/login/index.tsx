@@ -83,7 +83,11 @@ export default function LoginFeature({ dict, lang }: Props) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      <form
+        method="post"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-5"
+      >
         <div className="space-y-1.5">
           <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
             {dict.auth?.loginTitle}

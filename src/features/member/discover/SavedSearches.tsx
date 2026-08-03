@@ -41,7 +41,7 @@ export function SavedSearches({
             </p>
             <Link
               href={`/${lang}/subscription`}
-              className="inline-flex h-8 items-center justify-center rounded-md bg-brand px-4 text-xs font-semibold text-primary-foreground transition-colors hover:bg-brand/90"
+              className="inline-flex h-8 cursor-pointer items-center justify-center rounded-md bg-brand px-4 text-xs font-semibold text-primary-foreground transition-colors hover:bg-brand/90"
             >
               Unlock
             </Link>
@@ -60,7 +60,7 @@ export function SavedSearches({
               href={`/${lang}/discover?from=username&name=${encodeURIComponent(
                 item.searchTerm,
               )}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-brand hover:text-foreground"
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-brand hover:text-foreground"
             >
               <History className="size-3.5" />
               {item.searchTerm}

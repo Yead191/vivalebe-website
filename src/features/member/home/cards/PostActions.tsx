@@ -157,7 +157,7 @@ export function PostActions({
           onClick={onLike}
           disabled={isPending}
           className={cn(
-            "inline-flex items-center gap-1.5 text-sm transition-colors",
+            "inline-flex cursor-pointer items-center gap-1.5 text-sm transition-colors disabled:cursor-not-allowed",
             likes.liked
               ? "text-brand"
               : "text-muted-foreground hover:text-foreground",
@@ -169,7 +169,7 @@ export function PostActions({
         <button
           type="button"
           onClick={() => setShowComments((s) => !s)}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <MessageCircle className="size-4" />
           {commentCount > 0 ? commentCount : ""}
@@ -228,7 +228,7 @@ export function PostActions({
               type="submit"
               disabled={!text.trim() || isPending}
               aria-label="Send"
-              className="rounded-full p-2 text-brand hover:bg-brand-soft disabled:opacity-40 disabled:hover:bg-transparent"
+              className="cursor-pointer rounded-full p-2 text-brand hover:bg-brand-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
             >
               <Send className="size-4" />
             </button>

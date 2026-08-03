@@ -129,7 +129,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
       <div className="flex flex-col sm:grid sm:grid-cols-[260px_minmax(0,1fr)] lg:grid-cols-[480px_minmax(0,1fr)]">
         <Link
           href={`/${lang}/my-list/profile/${user.id}`}
-          className="relative block overflow-hidden bg-muted aspect-square sm:aspect-auto sm:min-h-70 lg:min-h-92 2xl:min-h-120 "
+          className="relative block cursor-pointer overflow-hidden bg-muted aspect-square sm:aspect-auto sm:min-h-70 lg:min-h-92 2xl:min-h-120 "
         >
           <Image
             src={photoUrl(user.coverSeed, 520, 520)}
@@ -152,7 +152,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={`/${lang}/my-list/profile/${user.id}`}
-                className="text-sm lg:text-base font-bold tracking-wide hover:text-brand transition-colors"
+                className="cursor-pointer text-sm lg:text-base font-bold tracking-wide hover:text-brand transition-colors"
               >
                 {user.displayName}
               </Link>
@@ -221,7 +221,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
               aria-label="Wink"
               onClick={handleWinkClick}
               disabled={isSendingWink}
-              className={`transition-colors disabled:opacity-50 ${winked ? "text-brand" : "text-muted-foreground hover:text-brand"}`}
+              className={`cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${winked ? "text-brand" : "text-muted-foreground hover:text-brand"}`}
             >
               <Smile
                 className={cn(
@@ -235,7 +235,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
               aria-label="Message"
               onClick={handleChatClick}
               disabled={isCreatingChat}
-              className="text-muted-foreground hover:text-brand transition-colors disabled:opacity-50"
+              className="cursor-pointer text-muted-foreground hover:text-brand transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
               <MessageCircle className="size-5 lg:size-6" />
             </button>
@@ -244,7 +244,7 @@ export function DiscoverProfileCard({ lang, dict, user }: Props) {
               aria-label="Like"
               onClick={handleLikeClick}
               disabled={isSwiping}
-              className={`transition-colors disabled:opacity-50 ${liked ? "text-red-500" : "text-muted-foreground hover:text-brand"}`}
+              className={`cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${liked ? "text-red-500" : "text-muted-foreground hover:text-brand"}`}
             >
               <Heart
                 className={cn("size-5 lg:size-6", liked && "fill-current")}

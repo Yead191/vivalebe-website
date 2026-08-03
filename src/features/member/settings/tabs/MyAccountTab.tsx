@@ -290,8 +290,16 @@ export default function MyAccountTab({ t }: { t: any }) {
 
   const handleVerifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verifyForm.type || !verifyForm.image || !verifyForm.ownPicture) {
-      toast.error("Please select a document type and upload both images.");
+    if (!verifyForm.type) {
+      toast.error("Document type is required.");
+      return;
+    }
+    if (!verifyForm.image) {
+      toast.error("Document image is required.");
+      return;
+    }
+    if (!verifyForm.ownPicture) {
+      toast.error("Selfie is required.");
       return;
     }
     setIsVerifying(true);
@@ -402,7 +410,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                       size="icon"
                       onClick={() => handleSaveField(field.key)}
                       disabled={isUpdating}
-                      className="bg-[#429CA8] hover:bg-[#357d87] h-9 w-9 shrink-0 text-white rounded-lg"
+                      className="cursor-pointer bg-[#429CA8] hover:bg-[#357d87] h-9 w-9 shrink-0 text-white rounded-lg"
                     >
                       {isUpdating ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -415,7 +423,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                       variant="outline"
                       onClick={() => setEditingKey(null)}
                       disabled={isUpdating}
-                      className="h-9 w-9 shrink-0 rounded-lg border-neutral-200  text-neutral-500"
+                      className="cursor-pointer h-9 w-9 shrink-0 rounded-lg border-neutral-200  text-neutral-500"
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -434,7 +442,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                   onClick={() =>
                     startEditing(field.key, field.value, field.isNotSet)
                   }
-                  className="p-2 rounded-lg bg-neutral-50  opacity-60 hover:opacity-100 group-hover:opacity-100 text-neutral-600  transition-all hover:scale-105 self-start sm:self-center"
+                  className="cursor-pointer p-2 rounded-lg bg-neutral-50  opacity-60 hover:opacity-100 group-hover:opacity-100 text-neutral-600  transition-all hover:scale-105 self-start sm:self-center"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
@@ -482,7 +490,7 @@ export default function MyAccountTab({ t }: { t: any }) {
             <Button
               variant="outline"
               onClick={() => setIsVerifyModalOpen(true)}
-              className="rounded-lg border-neutral-200 text-neutral-600 font-medium text-sm self-start sm:self-center"
+              className="cursor-pointer rounded-lg border-neutral-200 text-neutral-600 font-medium text-sm self-start sm:self-center"
             >
               {verifiedStatus?.toLowerCase() === "rejected"
                 ? "Retry Verification"
@@ -559,13 +567,14 @@ export default function MyAccountTab({ t }: { t: any }) {
                 variant="outline"
                 onClick={() => setIsPasswordModalOpen(false)}
                 disabled={isChangingPassword}
+                className="cursor-pointer"
               >
                 {t.common?.cancel || "Cancel"}
               </Button>
               <Button
                 type="submit"
                 disabled={isChangingPassword}
-                className="bg-[#429CA8] hover:bg-[#357d87] text-white"
+                className="cursor-pointer bg-[#429CA8] hover:bg-[#357d87] text-white"
               >
                 {isChangingPassword && (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -588,94 +597,114 @@ export default function MyAccountTab({ t }: { t: any }) {
           </DialogHeader>
           <form onSubmit={handleVerifySubmit} className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Document Type</label>
+              <label className="text-sm font-medium">
+                Document Type <span className="text-red-500">*</span>
+              </label>
               <Select
+                value={verifyForm.type || undefined}
                 onValueChange={(value) =>
                   setVerifyForm((prev) => ({ ...prev, type: value }))
                 }
                 required
               >
-                <SelectTrigger>
+                <SelectTrigger aria-required="true" className="cursor-pointer">
                   <SelectValue placeholder="Select document type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="National ID">National ID</SelectItem>
-                  <SelectItem value="Passport">Passport</SelectItem>
-                  <SelectItem value="Driving License">
+                  <SelectItem value="National ID" className="cursor-pointer">
+                    National ID
+                  </SelectItem>
+                  <SelectItem value="Passport" className="cursor-pointer">
+                    Passport
+                  </SelectItem>
+                  <SelectItem
+                    value="Driving License"
+                    className="cursor-pointer"
+                  >
                     Driving License
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Upload Document</label>
-              <div className="flex items-center justify-center w-full">
-                <label
-                  htmlFor="dropzone-file"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 border-neutral-300"
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Camera className="w-8 h-8 mb-2 text-neutral-400" />
-                    <p className="text-sm text-neutral-500">
-                      <span className="font-semibold">Click to upload</span>
+              <label className="text-sm font-medium">
+                Upload Document <span className="text-red-500">*</span>
+              </label>
+              <label
+                htmlFor="dropzone-file"
+                className="relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 transition-colors hover:bg-neutral-100"
+              >
+                {verifyForm.imagePreview ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={verifyForm.imagePreview}
+                      alt="Document preview"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity hover:opacity-100">
+                      <span className="text-sm font-semibold text-white">
+                        Change image
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-2 px-4 text-center">
+                    <Camera className="size-8 text-neutral-400" />
+                    <p className="text-sm font-semibold text-neutral-500">
+                      Click to upload
                     </p>
                   </div>
-                  <input
-                    id="dropzone-file"
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleVerifyImageChange}
-                  />
-                </label>
-              </div>
-              {verifyForm.imagePreview && (
-                <div className="mt-4 relative rounded-lg overflow-hidden border border-neutral-200 w-full h-48">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={verifyForm.imagePreview}
-                    alt="Preview"
-                    className="w-full h-full object-contain bg-neutral-100"
-                  />
-                </div>
-              )}
+                )}
+                <input
+                  id="dropzone-file"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  required
+                  onChange={handleVerifyImageChange}
+                />
+              </label>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                Upload Selfie (verifyOwnPicture)
+                Upload Selfie <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center justify-center w-full">
-                <label
-                  htmlFor="own-picture-file"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 border-neutral-300"
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Camera className="w-8 h-8 mb-2 text-neutral-400" />
-                    <p className="text-sm text-neutral-500">
-                      <span className="font-semibold">
-                        Click to upload selfie
+              <label
+                htmlFor="own-picture-file"
+                className="relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 transition-colors hover:bg-neutral-100"
+              >
+                {verifyForm.ownPicturePreview ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={verifyForm.ownPicturePreview}
+                      alt="Selfie preview"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity hover:opacity-100">
+                      <span className="text-sm font-semibold text-white">
+                        Change image
                       </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-2 px-4 text-center">
+                    <Camera className="size-8 text-neutral-400" />
+                    <p className="text-sm font-semibold text-neutral-500">
+                      Click to upload selfie
                     </p>
                   </div>
-                  <input
-                    id="own-picture-file"
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleOwnPictureChange}
-                  />
-                </label>
-              </div>
-              {verifyForm.ownPicturePreview && (
-                <div className="mt-4 relative rounded-lg overflow-hidden border border-neutral-200 w-full h-48">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={verifyForm.ownPicturePreview}
-                    alt="Selfie Preview"
-                    className="w-full h-full object-contain bg-neutral-100"
-                  />
-                </div>
-              )}
+                )}
+                <input
+                  id="own-picture-file"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  required
+                  onChange={handleOwnPictureChange}
+                />
+              </label>
             </div>
             <DialogFooter>
               <Button
@@ -683,6 +712,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                 variant="outline"
                 onClick={() => setIsVerifyModalOpen(false)}
                 disabled={isVerifying}
+                className="cursor-pointer"
               >
                 {t.common?.cancel || "Cancel"}
               </Button>
@@ -694,7 +724,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                   !verifyForm.image ||
                   !verifyForm.ownPicture
                 }
-                className="bg-[#429CA8] hover:bg-[#357d87] text-white"
+                className="cursor-pointer bg-[#429CA8] hover:bg-[#357d87] text-white"
               >
                 {isVerifying && (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
