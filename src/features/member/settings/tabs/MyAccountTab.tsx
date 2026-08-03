@@ -290,8 +290,16 @@ export default function MyAccountTab({ t }: { t: any }) {
 
   const handleVerifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verifyForm.type || !verifyForm.image || !verifyForm.ownPicture) {
-      toast.error("Please select a document type and upload both images.");
+    if (!verifyForm.type) {
+      toast.error("Document type is required.");
+      return;
+    }
+    if (!verifyForm.image) {
+      toast.error("Document image is required.");
+      return;
+    }
+    if (!verifyForm.ownPicture) {
+      toast.error("Selfie is required.");
       return;
     }
     setIsVerifying(true);
@@ -588,14 +596,17 @@ export default function MyAccountTab({ t }: { t: any }) {
           </DialogHeader>
           <form onSubmit={handleVerifySubmit} className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Document Type</label>
+              <label className="text-sm font-medium">
+                Document Type <span className="text-red-500">*</span>
+              </label>
               <Select
+                value={verifyForm.type || undefined}
                 onValueChange={(value) =>
                   setVerifyForm((prev) => ({ ...prev, type: value }))
                 }
                 required
               >
-                <SelectTrigger>
+                <SelectTrigger aria-required="true">
                   <SelectValue placeholder="Select document type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -608,7 +619,9 @@ export default function MyAccountTab({ t }: { t: any }) {
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Upload Document</label>
+              <label className="text-sm font-medium">
+                Upload Document <span className="text-red-500">*</span>
+              </label>
               <label
                 htmlFor="dropzone-file"
                 className="relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 transition-colors hover:bg-neutral-100"
@@ -640,12 +653,15 @@ export default function MyAccountTab({ t }: { t: any }) {
                   type="file"
                   className="hidden"
                   accept="image/*"
+                  required
                   onChange={handleVerifyImageChange}
                 />
               </label>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Upload Selfie</label>
+              <label className="text-sm font-medium">
+                Upload Selfie <span className="text-red-500">*</span>
+              </label>
               <label
                 htmlFor="own-picture-file"
                 className="relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 transition-colors hover:bg-neutral-100"
@@ -677,6 +693,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                   type="file"
                   className="hidden"
                   accept="image/*"
+                  required
                   onChange={handleOwnPictureChange}
                 />
               </label>
