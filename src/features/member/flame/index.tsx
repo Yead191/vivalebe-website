@@ -220,7 +220,7 @@ function EmptyState({
               <button
                 type="button"
                 onClick={onReset}
-                className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+                className="cursor-pointer rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
               >
                 Start over
               </button>
@@ -229,7 +229,7 @@ function EmptyState({
               <button
                 type="button"
                 onClick={onLoadMore}
-                className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+                className="cursor-pointer rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
               >
                 Load more
               </button>
@@ -237,7 +237,7 @@ function EmptyState({
             <button
               type="button"
               onClick={onOpenPrefs}
-              className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 transition-opacity"
+              className="cursor-pointer rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 transition-opacity"
             >
               Adjust preferences
             </button>

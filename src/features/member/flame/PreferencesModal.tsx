@@ -95,6 +95,7 @@ export function PreferencesModal({
                       onCheckedChange={(checked) =>
                         toggleGender(opt.value, checked === true)
                       }
+                      className="cursor-pointer"
                     />
                     <Label
                       htmlFor={`gender-${opt.value}`}
@@ -127,6 +128,7 @@ export function PreferencesModal({
                     ageRange: [v[0], v[1]] as [number, number],
                   }))
                 }
+                className="cursor-pointer"
               />
             </div>
 
@@ -143,12 +145,16 @@ export function PreferencesModal({
                   }))
                 }
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="anywhere">Anywhere</SelectItem>
-                  <SelectItem value="country">Within {userCountry}</SelectItem>
+                  <SelectItem value="anywhere" className="cursor-pointer">
+                    Anywhere
+                  </SelectItem>
+                  <SelectItem value="country" className="cursor-pointer">
+                    Within {userCountry}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -168,6 +174,7 @@ export function PreferencesModal({
                 onCheckedChange={(c) =>
                   setDraft((d) => ({ ...d, willingToFly: c }))
                 }
+                className="cursor-pointer"
               />
             </div>
 
@@ -181,6 +188,7 @@ export function PreferencesModal({
                   onCheckedChange={(c) =>
                     setDraft((d) => ({ ...d, expandedSearch: c }))
                   }
+                  className="cursor-pointer"
                 />
               </div>
               <p className="text-xs text-muted-foreground">
@@ -195,13 +203,13 @@ export function PreferencesModal({
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="min-w-[120px] uppercase tracking-wider"
+              className="min-w-[120px] cursor-pointer uppercase tracking-wider"
             >
               Cancel
             </Button>
             <Button
               onClick={() => onSave(draft)}
-              className="min-w-[120px] bg-brand uppercase tracking-wider text-background hover:opacity-90 "
+              className="min-w-[120px] cursor-pointer bg-brand uppercase tracking-wider text-background hover:opacity-90 "
             >
               Save
             </Button>
