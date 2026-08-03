@@ -23,7 +23,7 @@ export default function MessagePage() {
                 </p>
             </div>
 
-            <button className="mt-4 px-6 py-2.5 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 shadow-sm text-sm font-medium transition-all active:scale-95 z-10">
+            <button className="mt-4 cursor-pointer px-6 py-2.5 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 shadow-sm text-sm font-medium transition-all active:scale-95 z-10">
                 New Message
             </button>
         </div>

@@ -145,7 +145,7 @@ export function ChatSidebar({
                 <Link
                   key={room._id}
                   href={chatHref}
-                  className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-all border-b border-gray-100 group ${isActive ? "bg-gray-50 border-r-2 border-r-[#429CA8]" : ""}`}
+                  className={`w-full flex cursor-pointer items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-all border-b border-gray-100 group ${isActive ? "bg-gray-50 border-r-2 border-r-[#429CA8]" : ""}`}
                 >
                   <div className="relative shrink-0">
                     <div className="w-11 h-11 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
@@ -202,7 +202,7 @@ export function ChatSidebar({
                         <div onClick={e => e.preventDefault()}>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <button className="w-6 h-6 rounded-md hover:bg-gray-200 flex items-center justify-center text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button className="w-6 h-6 cursor-pointer rounded-md hover:bg-gray-200 flex items-center justify-center text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <MoreVertical size={14} />
                               </button>
                             </DropdownMenuTrigger>

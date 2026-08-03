@@ -410,7 +410,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                       size="icon"
                       onClick={() => handleSaveField(field.key)}
                       disabled={isUpdating}
-                      className="bg-[#429CA8] hover:bg-[#357d87] h-9 w-9 shrink-0 text-white rounded-lg"
+                      className="cursor-pointer bg-[#429CA8] hover:bg-[#357d87] h-9 w-9 shrink-0 text-white rounded-lg"
                     >
                       {isUpdating ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -423,7 +423,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                       variant="outline"
                       onClick={() => setEditingKey(null)}
                       disabled={isUpdating}
-                      className="h-9 w-9 shrink-0 rounded-lg border-neutral-200  text-neutral-500"
+                      className="cursor-pointer h-9 w-9 shrink-0 rounded-lg border-neutral-200  text-neutral-500"
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -442,7 +442,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                   onClick={() =>
                     startEditing(field.key, field.value, field.isNotSet)
                   }
-                  className="p-2 rounded-lg bg-neutral-50  opacity-60 hover:opacity-100 group-hover:opacity-100 text-neutral-600  transition-all hover:scale-105 self-start sm:self-center"
+                  className="cursor-pointer p-2 rounded-lg bg-neutral-50  opacity-60 hover:opacity-100 group-hover:opacity-100 text-neutral-600  transition-all hover:scale-105 self-start sm:self-center"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
@@ -490,7 +490,7 @@ export default function MyAccountTab({ t }: { t: any }) {
             <Button
               variant="outline"
               onClick={() => setIsVerifyModalOpen(true)}
-              className="rounded-lg border-neutral-200 text-neutral-600 font-medium text-sm self-start sm:self-center"
+              className="cursor-pointer rounded-lg border-neutral-200 text-neutral-600 font-medium text-sm self-start sm:self-center"
             >
               {verifiedStatus?.toLowerCase() === "rejected"
                 ? "Retry Verification"
@@ -567,13 +567,14 @@ export default function MyAccountTab({ t }: { t: any }) {
                 variant="outline"
                 onClick={() => setIsPasswordModalOpen(false)}
                 disabled={isChangingPassword}
+                className="cursor-pointer"
               >
                 {t.common?.cancel || "Cancel"}
               </Button>
               <Button
                 type="submit"
                 disabled={isChangingPassword}
-                className="bg-[#429CA8] hover:bg-[#357d87] text-white"
+                className="cursor-pointer bg-[#429CA8] hover:bg-[#357d87] text-white"
               >
                 {isChangingPassword && (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -606,13 +607,20 @@ export default function MyAccountTab({ t }: { t: any }) {
                 }
                 required
               >
-                <SelectTrigger aria-required="true">
+                <SelectTrigger aria-required="true" className="cursor-pointer">
                   <SelectValue placeholder="Select document type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="National ID">National ID</SelectItem>
-                  <SelectItem value="Passport">Passport</SelectItem>
-                  <SelectItem value="Driving License">
+                  <SelectItem value="National ID" className="cursor-pointer">
+                    National ID
+                  </SelectItem>
+                  <SelectItem value="Passport" className="cursor-pointer">
+                    Passport
+                  </SelectItem>
+                  <SelectItem
+                    value="Driving License"
+                    className="cursor-pointer"
+                  >
                     Driving License
                   </SelectItem>
                 </SelectContent>
@@ -704,6 +712,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                 variant="outline"
                 onClick={() => setIsVerifyModalOpen(false)}
                 disabled={isVerifying}
+                className="cursor-pointer"
               >
                 {t.common?.cancel || "Cancel"}
               </Button>
@@ -715,7 +724,7 @@ export default function MyAccountTab({ t }: { t: any }) {
                   !verifyForm.image ||
                   !verifyForm.ownPicture
                 }
-                className="bg-[#429CA8] hover:bg-[#357d87] text-white"
+                className="cursor-pointer bg-[#429CA8] hover:bg-[#357d87] text-white"
               >
                 {isVerifying && (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />

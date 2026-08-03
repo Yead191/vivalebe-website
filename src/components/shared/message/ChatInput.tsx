@@ -139,7 +139,7 @@ export function ChatInput({
               />
               <button
                 onClick={() => removeFile(i)}
-                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                className="absolute top-1 right-1 w-5 h-5 cursor-pointer rounded-full bg-black/60 flex items-center justify-center text-white/70 hover:text-white transition-colors"
               >
                 <X size={12} />
               </button>
@@ -147,7 +147,7 @@ export function ChatInput({
           ))}
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-16 h-16 rounded-xl border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-all"
+            className="w-16 h-16 cursor-pointer rounded-xl border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-all"
           >
             <Plus size={20} />
           </button>
@@ -167,7 +167,7 @@ export function ChatInput({
           <PopoverTrigger asChild>
             <button
               disabled={isBlocked}
-              className="text-gray-400 hover:text-[#429CA8] transition-colors shrink-0 disabled:pointer-events-none disabled:text-gray-300"
+              className="cursor-pointer text-gray-400 hover:text-[#429CA8] transition-colors shrink-0 disabled:pointer-events-none disabled:text-gray-300"
             >
               <Smile size={20} />
             </button>
@@ -235,7 +235,7 @@ export function ChatInput({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isBlocked}
-            className="text-gray-400 hover:text-[#429CA8] transition-colors shrink-0 disabled:pointer-events-none disabled:text-gray-300"
+            className="cursor-pointer text-gray-400 hover:text-[#429CA8] transition-colors shrink-0 disabled:pointer-events-none disabled:text-gray-300"
           >
             <Paperclip size={18} />
           </button>
@@ -249,7 +249,7 @@ export function ChatInput({
         ${
           isSending || (!text.trim() && files.length === 0) || isBlocked
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-            : "bg-[#429CA8] text-white hover:bg-[#347A83] shadow-sm active:scale-95"
+            : "cursor-pointer bg-[#429CA8] text-white hover:bg-[#347A83] shadow-sm active:scale-95"
         }`}
           >
             {isSending ? (

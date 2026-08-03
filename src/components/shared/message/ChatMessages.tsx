@@ -287,7 +287,7 @@ export function ChatMessages({
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/chat")}
-            className="lg:hidden p-2 -ml-2 text-gray-500 hover:text-gray-900 transition-colors"
+            className="lg:hidden cursor-pointer p-2 -ml-2 text-gray-500 hover:text-gray-900 transition-colors"
           >
             <ChevronLeft size={20} />
           </button>
