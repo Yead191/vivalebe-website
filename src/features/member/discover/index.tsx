@@ -62,7 +62,7 @@ export async function DiscoverFeature({
       <nav className="mb-4 flex items-center gap-2 border-b border-border pb-3 text-xs font-semibold tracking-wider">
         <Link
           href={`/${lang}/discover`}
-          className="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+          className="cursor-pointer text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
         >
           {dict.discover.breadcrumb}
         </Link>
