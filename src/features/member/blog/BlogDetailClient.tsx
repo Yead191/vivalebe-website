@@ -142,17 +142,6 @@ export function BlogDetailClient({
             ) : null}
           </div>
 
-          {/* Report */}
-          <div className="flex items-center border-t border-border px-4 py-2">
-            <button
-              type="button"
-              onClick={() => setIsReportOpen(true)}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {dict.blog.report}
-            </button>
-          </div>
-
           {/* Like + Comments */}
           <PostActions
             kind="blog"
