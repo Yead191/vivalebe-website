@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "10.10.26.159" },
     ],
   },
-  allowedDevOrigins: ["10.10.26.175"],
+  allowedDevOrigins: ["10.10.26.174", "10.10.26.175"],
   experimental: {
     serverActions: {
       bodySizeLimit: "50mb",
