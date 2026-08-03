@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
-import { ArrowLeft, X, ZoomIn, ZoomOut, Share2 } from "lucide-react";
+import { ArrowLeft, X, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -41,7 +41,6 @@ export function BlogDetailClient({
   const [zoomLevel, setZoomLevel] = useState(1);
   const [mounted, setMounted] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
@@ -64,16 +63,6 @@ export function BlogDetailClient({
   }, [selectedImage]);
 
   const toggleZoom = () => setZoomLevel((z) => (z === 1 ? 2.5 : 1));
-
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // fallback: do nothing
-    }
-  };
 
   const formattedDate = new Intl.DateTimeFormat(
     lang === "pt" ? "pt-BR" : "en-US",
@@ -153,22 +142,14 @@ export function BlogDetailClient({
             ) : null}
           </div>
 
-          {/* Share bar */}
-          <div className="flex items-center justify-between border-t border-border px-4 py-2">
+          {/* Report */}
+          <div className="flex items-center border-t border-border px-4 py-2">
             <button
               type="button"
               onClick={() => setIsReportOpen(true)}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               {dict.blog.report}
-            </button>
-            <button
-              type="button"
-              onClick={handleShare}
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Share2 className="size-4" />
-              {copied ? "Copied!" : dict.blog.share}
             </button>
           </div>
 
