@@ -95,22 +95,22 @@ export default function LoginFeature({ dict, lang }: Props) {
           <p className="text-sm text-neutral-500">{dict.auth?.loginSubtitle}</p>
         </div>
 
-        <Button
+        {/* <Button
           type="button"
           variant="outline"
           className="w-full h-11 rounded-xl border-neutral-200 font-medium text-neutral-700 hover:bg-neutral-50 gap-2 cursor-pointer transition-colors"
         >
           <FcGoogle className="size-4 text-neutral-500" />
           Continue with Google
-        </Button>
+        </Button> */}
 
-        <div className="relative flex py-1 items-center text-neutral-300">
+        {/* <div className="relative flex py-1 items-center text-neutral-300">
           <div className="grow border-t border-neutral-200"></div>
           <span className="shrink mx-4 text-xs font-semibold uppercase tracking-wider text-neutral-400">
             {dict.auth?.or}
           </span>
           <div className="grow border-t border-neutral-200"></div>
-        </div>
+        </div> */}
 
         <div className="space-y-4">
           <FormInput
