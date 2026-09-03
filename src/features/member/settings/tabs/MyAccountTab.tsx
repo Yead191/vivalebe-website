@@ -85,6 +85,7 @@ export default function MyAccountTab({ t }: { t: any }) {
     const fetchProfile = async () => {
       try {
         const res = await getProfileAction();
+        console.log("Profile Data: ",res)
         if (res.success && res.data) {
           setIsAdminVerified(res.data.isAdminVerified || false);
           setVerifiedStatus(res.data.verifiedStatus || "");
@@ -215,11 +216,12 @@ export default function MyAccountTab({ t }: { t: any }) {
 
       if (res.success) {
         toast.success("Profile photo updated");
-        // If API returns the uploaded image URL, we can set it here
-        if (res.data?.image) {
+        const uploadedUrl =
+          res.data?.profile || res.data?.image || res.data?.profileImage;
+        if (uploadedUrl) {
           setUserData((prev) => ({
             ...prev,
-            image: { value: res.data.image, isNotSet: false },
+            image: { value: uploadedUrl, isNotSet: false },
           }));
         }
       } else {
@@ -340,6 +342,9 @@ export default function MyAccountTab({ t }: { t: any }) {
                 src={avatarUrl(userData.image.value, 256)}
                 alt="Profile"
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/blank-image.png";
+                }}
               />
             ) : (
               <span className="text-3xl text-neutral-400 font-bold">

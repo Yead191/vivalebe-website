@@ -1,5 +1,5 @@
 export function getImageUrl(imageurl: string | null | undefined) {
-  if (!imageurl || imageurl === "default") return "/assets/blank-image.png";
+  if (!imageurl || imageurl === "default") return "/blank-image.png";
   if (imageurl.startsWith("http") || imageurl.startsWith("blob:")) {
     return imageurl;
   }
@@ -9,14 +9,14 @@ export function getImageUrl(imageurl: string | null | undefined) {
   const imageBase =
     process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
     process.env.IMAGE_BASE_URL ||
-    (socketBase ? `${socketBase}/files` : undefined) ||
-    "http://10.10.26.159:5000/files";
+    socketBase ||
+    "http://10.10.26.159:5000";
 
-  if (imageurl.startsWith("/asset")) {
-    return `${imageBase.replace(/\/files\/?$/, "")}${imageurl}`;
-  }
-
-  const normalizedBase = imageBase.replace(/\/$/, "");
+  // Strip accidental /files, /api/v1, or trailing slashes so static routes like /image/... resolve correctly
+  const cleanBase = imageBase
+    .replace(/\/files\/?$/, "")
+    .replace(/\/api\/v1\/?$/, "")
+    .replace(/\/$/, "");
   const normalizedPath = imageurl.startsWith("/") ? imageurl : `/${imageurl}`;
-  return `${normalizedBase}${normalizedPath}`;
+  return `${cleanBase}${normalizedPath}`;
 }

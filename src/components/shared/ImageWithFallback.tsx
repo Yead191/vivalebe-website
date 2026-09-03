@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NextImage, { ImageProps } from "next/image";
 
 const transparentGif = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
@@ -10,6 +10,10 @@ const fallbackSvg = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/
 
 export function ImageWithFallback(props: ImageProps) {
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setError(false);
+  }, [props.src]);
 
   return (
     <NextImage
