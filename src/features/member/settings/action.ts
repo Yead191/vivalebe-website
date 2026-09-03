@@ -21,10 +21,18 @@ export async function getProfileAction() {
   return res;
 }
 
-export async function updateProfileAction(formData: FormData) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function updateProfileAction(data: FormData | Record<string, any>) {
+  let body: any = data;
+  if (!(data instanceof FormData) && typeof data === "object" && data !== null) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { protectedImages, ...cleanData } = data;
+    body = cleanData;
+  }
+
   const res = await myFetch("/user", {
     method: "PATCH",
-    body: formData,
+    body,
   });
 
   return res;

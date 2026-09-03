@@ -231,17 +231,7 @@ export default function MyAccountTab({ t }: { t: any }) {
     }
   };
 
-  // Mock function for permanent account cleanup execution
-  // const handleDeleteAccount = async () => {
-  //   setIsDeleting(true);
-  //   // Simulate API deletion request
-  //   await new Promise((resolve) => setTimeout(resolve, 2000));
-  //   setIsDeleting(false);
-  //   setIsDeleteDialogOpen(false);
 
-  //   // Redirect logic goes here (e.g., router.push("/login"))
-  //   toast.success("Account permanently deleted.");
-  // };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
