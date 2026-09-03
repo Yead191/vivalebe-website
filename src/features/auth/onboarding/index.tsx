@@ -68,6 +68,23 @@ type OnboardingValues = {
   aboutYou: string;
 };
 
+const mapLivingWith = (value: string): string => {
+  const normalized = (value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (normalized === "hsv1") return "HSV-1";
+  if (normalized === "hsv2") return "HSV-2";
+  if (normalized === "hpv") return "HPV";
+  if (normalized === "hiv") return "HIV";
+  if (normalized === "other") return "OTHER";
+  return value ? value.toUpperCase() : "OTHER";
+};
+
+const mapGender = (value: string): string => {
+  if (value === "man") return "MALE";
+  if (value === "woman") return "FEMALE";
+  if (value === "couple") return "COUPLE";
+  return value ? value.toUpperCase() : "MALE";
+};
+
 const initialValues: OnboardingValues = {
   interestedIn: "woman",
   lookingFor: "man",
@@ -76,7 +93,7 @@ const initialValues: OnboardingValues = {
   zipCode: "",
   nationality: "",
   dateOfBirth: "",
-  livingWith: "other",
+  livingWith: "OTHER",
   displayName: "",
   heightValue: "",
   heightUnit: "cm",
@@ -131,7 +148,11 @@ export default function OnboardingFeature({ dict, lang }: Props) {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
     try {
-      form.reset({ ...initialValues, ...JSON.parse(raw) });
+      const parsed = JSON.parse(raw);
+      if (parsed.livingWith) {
+        parsed.livingWith = mapLivingWith(parsed.livingWith);
+      }
+      form.reset({ ...initialValues, ...parsed });
     } catch {
       window.localStorage.removeItem(STORAGE_KEY);
     }
@@ -177,8 +198,8 @@ export default function OnboardingFeature({ dict, lang }: Props) {
     try {
       const formValues = form.getValues();
       const payload = {
-        gender: formValues.interestedIn === "man" ? "MALE" : "FEMALE",
-        lookingFor: formValues.lookingFor === "man" ? "MALE" : "FEMALE",
+        gender: mapGender(formValues.interestedIn),
+        lookingFor: mapGender(formValues.lookingFor),
         country: formValues.country,
         state: formValues.state,
         zidCode: Number(formValues.zipCode) || 0,
@@ -186,7 +207,7 @@ export default function OnboardingFeature({ dict, lang }: Props) {
         DOB: formValues.dateOfBirth
           ? new Date(formValues.dateOfBirth).toISOString()
           : new Date().toISOString(),
-        livingWith: formValues.livingWith.toUpperCase(),
+        livingWith: mapLivingWith(formValues.livingWith),
         displayName: formValues.displayName,
         height: Number(formValues.heightValue) || 0,
         weight: Number(formValues.weightValue) || 0,
@@ -512,13 +533,15 @@ function PersonalStep({ dict, form }: any) {
             </label>
             <select
               {...field}
+              value={mapLivingWith(field.value || "OTHER")}
+              onChange={(e) => field.onChange(e.target.value)}
               className="h-11 w-full rounded-2xl border border-neutral-200 bg-white px-3 text-sm"
             >
-              <option value="hsv1">HSV-1</option>
-              <option value="hsv2">HSV-2</option>
-              <option value="hpv">HPV</option>
-              <option value="hiv">HIV</option>
-              <option value="other">Other</option>
+              <option value="HSV-1">HSV-1</option>
+              <option value="HSV-2">HSV-2</option>
+              <option value="HPV">HPV</option>
+              <option value="HIV">HIV</option>
+              <option value="OTHER">Other</option>
             </select>
             <p className="text-xs text-neutral-500">
               {dict.onboarding?.privacyNote}
