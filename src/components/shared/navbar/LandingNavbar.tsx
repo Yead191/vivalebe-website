@@ -56,8 +56,6 @@ export default function LandingNavbar() {
         }
         setDrawerOpen(false);
     };
-
-    // ── Styles ─────────────────────────────────────────────────────────────────
     const navBase =
         "fixed top-0 z-50 w-full transition-all duration-500";
 
@@ -65,13 +63,13 @@ export default function LandingNavbar() {
         ? "bg-[#014B52] backdrop-blur-sm"
         : "bg-transparent";
 
-    // const navTranslate = showNavbar ? "translate-y-0" : "-translate-y-full";
+    
 
     return (
         <nav className={`${navBase} ${navBg} `}>
             <div className=" container py-4 flex items-center justify-between">
 
-                {/* ── Logo ── */}
+           
                 <button
                     onClick={() => scrollToSection("home")}
                     className="shrink-0 flex items-center gap-0 select-none"
@@ -80,7 +78,6 @@ export default function LandingNavbar() {
                     <Image src={'/logo.png'} width={400} height={100} alt="logo" className="h-[51px] w-fit object-contain" draggable={false} />
                 </button>
 
-                {/* ── Desktop nav links ── */}
                 <ul className="hidden lg:flex items-center gap-1">
                     {navItems.map((item) => {
                         const isActive = activeSection === item.sectionId;
