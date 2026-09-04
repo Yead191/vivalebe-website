@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function AutoReplyTab({ t }: { t: any }) {
-  // Array of reply options
+
   const [templates, setTemplates] = useState<string[]>([
     "Thanks for your message! I'm currently offline but will reply when I'm back.",
     "Thanks for reaching out! I'm taking a short break and will respond soon.",
@@ -22,14 +22,14 @@ export default function AutoReplyTab({ t }: { t: any }) {
   const [newReplyText, setNewReplyText] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const MAX_CHARS = 160; // Standard premium length constraint
+  const MAX_CHARS = 160; 
 
   const handleCreateReply = async () => {
     if (!newReplyText.trim()) return;
 
     setIsSaving(true);
 
-    // Simulate database/API mutation latency
+ 
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     const updatedTemplates = [...templates, newReplyText.trim()];
