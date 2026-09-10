@@ -1,10 +1,9 @@
-import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { Lock } from "lucide-react";
+import { ProfileImage } from "@/components/shared/ProfileImage";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { ConnectionEvent, User } from "@/lib/types";
-import { avatarUrl } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
 interface ConnectionRowProps {
@@ -32,16 +31,15 @@ export function ConnectionRow({
   const content = (
     <>
       <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
-        <Image
-          src={avatarUrl(user.avatarSeed, 80)}
+        <ProfileImage
+          seed={user.avatarSeed}
           alt={isPremium ? user.displayName : ""}
           width={40}
-          height={40}
           className={cn(
             "size-10 rounded-full object-cover",
             !isPremium && "scale-110 blur-[3px]",
           )}
-          unoptimized
+          iconClassName="size-4"
         />
         {!isPremium ? (
           <span className="absolute inset-0 rounded-full bg-background/20" />

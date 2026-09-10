@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { ThumbsUp, MessageCircle, Send } from "lucide-react";
+import { ProfileImage } from "@/components/shared/ProfileImage";
 import { toast } from "sonner";
 import {
   createBlogCommentAction,
@@ -13,7 +13,6 @@ import {
   createPostCommentAction,
   togglePostLikeAction,
 } from "@/features/member/home/action";
-import { avatarUrl } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import type { Comment } from "@/lib/types";
 
@@ -186,13 +185,12 @@ export function PostActions({
                   href={`/${lang}/my-list/profile/${c.authorId}`}
                   className="shrink-0"
                 >
-                  <Image
-                    src={avatarUrl(author?.avatarSeed ?? c.authorId, 48)}
+                  <ProfileImage
+                    seed={author?.avatarSeed}
                     alt={author?.displayName ?? ""}
                     width={28}
-                    height={28}
                     className="size-7 rounded-full object-cover"
-                    unoptimized
+                    iconClassName="size-3.5"
                   />
                 </Link>
                 <div className="min-w-0">
@@ -209,13 +207,12 @@ export function PostActions({
             );
           })}
           <form onSubmit={onSubmit} className="flex items-center gap-2 pt-1">
-            <Image
-              src={avatarUrl(currentUserAvatarSeed, 48)}
+            <ProfileImage
+              seed={currentUserAvatarSeed}
               alt=""
               width={28}
-              height={28}
               className="size-7 shrink-0 rounded-full object-cover"
-              unoptimized
+              iconClassName="size-3.5"
             />
             <input
               type="text"

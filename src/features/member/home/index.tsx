@@ -1,7 +1,6 @@
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { getCurrentUser, getCurrentViewedCount } from "@/lib/mock/current-user";
-import type { User } from "@/lib/types";
+import type { Gender, User } from "@/lib/types";
 import { unstable_rethrow } from "next/navigation";
 import { LeftSidebar } from "./LeftSidebar";
 import { QuickSearch } from "./QuickSearch";
@@ -18,28 +17,56 @@ interface HomeFeatureProps {
   activeTab?: HomeTab;
 }
 
+function mapGender(value: unknown): Gender {
+  const v = String(value ?? "").toUpperCase();
+  if (v === "W" || v === "FEMALE" || v === "WOMAN") return "W";
+  if (v === "C" || v === "COUPLE") return "C";
+  return "M";
+}
+
+function userFromProfile(p: Record<string, unknown> | null | undefined): User {
+  const id = String(p?._id || p?.id || "");
+  const photo = String(p?.profile || p?.image || p?.profileImage || "");
+  return {
+    id,
+    username: String(p?.username || p?.name || ""),
+    displayName: String(p?.name || p?.displayName || ""),
+    age: Number(p?.age) || 0,
+    gender: mapGender(p?.gender),
+    city: String(p?.city || ""),
+    state: String(p?.state || ""),
+    country: String(p?.country || ""),
+    avatarSeed: photo,
+    coverSeed: photo,
+    verified: Boolean(p?.isAdminVerified),
+    premium: Boolean(p?.premiumMembership ?? p?.premium),
+    online: false,
+    willingToFly: false,
+    headline: "",
+    bio: "",
+    ethnicity: "",
+    height: "",
+    bodyType: "",
+    livingWith: "",
+    relationshipStatus: "",
+    religion: "",
+    photos: [],
+    privatePhotosCount: 0,
+  };
+}
+
 export async function HomeFeature({
   lang,
   dict,
   activeTab = "videos",
 }: HomeFeatureProps) {
-  const mockMe = getCurrentUser();
-  let viewedCount = getCurrentViewedCount();
+  let me = userFromProfile(null);
+  let viewedCount = 0;
 
-  let me = mockMe;
   try {
     const profileRes = await getProfileAction();
     if (profileRes?.success && profileRes?.data) {
-      const p = profileRes.data;
-      me = {
-        ...mockMe,
-        id: p._id || p.id || mockMe.id,
-        username: p.name || p.username || mockMe.username,
-        displayName: p.name || p.displayName || mockMe.displayName,
-        avatarSeed: p.profile || p.image || mockMe.avatarSeed,
-        coverSeed: p.profile || p.image || mockMe.coverSeed,
-        premium: !!(p.premiumMembership ?? p.premium),
-      };
+      me = userFromProfile(profileRes.data);
     }
   } catch (error) {
     unstable_rethrow(error);
@@ -57,8 +84,8 @@ export async function HomeFeature({
     ...videoFeed.authors,
     ...imageFeed.authors,
     ...viewMe.authors,
-    [me.id]: me,
   };
+  if (me.id) authors[me.id] = me;
 
   if (viewMe.total > 0) viewedCount = viewMe.total;
 

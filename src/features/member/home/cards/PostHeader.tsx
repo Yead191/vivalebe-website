@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { MoreHorizontal, Flag } from "lucide-react";
+import { ProfileImage } from "@/components/shared/ProfileImage";
 import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import {
   DropdownMenu,
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Locale } from "@/i18n/config";
 import type { User } from "@/lib/types";
-import { avatarUrl } from "@/lib/image";
 import { ReportContentModal } from "../modals/ReportContentModal";
 
 interface PostHeaderProps {
@@ -43,13 +42,12 @@ export function PostHeader({
     <>
       <div className="flex items-start gap-3 px-4 pt-4">
         <Link href={`/${lang}/my-list/profile/${user.id}`} className="shrink-0">
-          <Image
-            src={avatarUrl(user.avatarSeed, 80)}
+          <ProfileImage
+            seed={user.avatarSeed}
             alt={user.displayName}
             width={36}
-            height={36}
             className="size-9 rounded-full object-cover ring-1 ring-border"
-            unoptimized
+            iconClassName="size-4"
           />
         </Link>
         <div className="min-w-0 flex-1">

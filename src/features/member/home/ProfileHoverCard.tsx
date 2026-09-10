@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
-import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
+import { ProfileImage } from "@/components/shared/ProfileImage";
 import {
   HoverCard,
   HoverCardContent,
@@ -14,8 +14,6 @@ import { VerifiedBadge } from "@/components/shared/VerifiedBadge";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { User } from "@/lib/types";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { avatarUrl, photoUrl } from "@/lib/image";
 import { createChatRoom, swipeUser } from "../my-list/action";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -92,13 +90,13 @@ export function ProfileHoverCard({ user, lang, dict }: Props) {
           className="block aspect-4/5 w-full overflow-hidden rounded-lg bg-muted ring-1 ring-border focus-visible:ring-2 focus-visible:ring-brand outline-none"
           aria-label={user.displayName}
         >
-          <Image
-            src={user.coverSeed}
+          <ProfileImage
+            seed={user.coverSeed || user.avatarSeed}
             alt={user.displayName}
             width={240}
             height={300}
-            className="size-full object-cover transition-transform hover:scale-105"
-            unoptimized
+            className="size-full object-cover"
+            iconClassName="size-10"
           />
         </button>
       </HoverCardTrigger>
@@ -113,13 +111,12 @@ export function ProfileHoverCard({ user, lang, dict }: Props) {
           className="block w-full text-left"
         >
           <div className="flex items-center gap-3 p-4">
-            <Image
-              src={avatarUrl(user.avatarSeed, 80)}
+            <ProfileImage
+              seed={user.avatarSeed}
               alt={user.displayName}
               width={40}
-              height={40}
               className="size-10 rounded-full object-cover"
-              unoptimized
+              iconClassName="size-4"
             />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">

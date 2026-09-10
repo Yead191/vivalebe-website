@@ -64,12 +64,12 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
   const router = useRouter();
   const [interestedIn, setInterestedIn] = useState<Record<string, boolean>>({
     Man: false,
-    Woman: true,
+    Woman: false,
     Couple: false,
   });
-  const [ageRange, setAgeRange] = useState<number[]>([19, 24]);
-  const [country, setCountry] = useState("bangladesh");
-  const [state, setState] = useState("dhaka");
+  const [ageRange, setAgeRange] = useState<number[]>([18, 80]);
+  const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
 
   const states = countries.find((c) => c.value === country)?.states ?? [];
 
@@ -147,15 +147,14 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
           {dict.myHome.quickCountry}
         </Label>
         <Select
-          value={country}
+          value={country || undefined}
           onValueChange={(v) => {
             setCountry(v);
-            const first = countries.find((c) => c.value === v)?.states[0] ?? "";
-            setState(first);
+            setState("");
           }}
         >
           <SelectTrigger className="flex-1 cursor-pointer">
-            <SelectValue />
+            <SelectValue placeholder={dict.myHome.quickCountry} />
           </SelectTrigger>
           <SelectContent>
             {countries.map((c) => (
@@ -171,9 +170,9 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
         <Label className="sm:w-32 text-xs text-foreground">
           {dict.myHome.quickState}
         </Label>
-        <Select value={state} onValueChange={setState}>
+        <Select value={state || undefined} onValueChange={setState}>
           <SelectTrigger className="flex-1 cursor-pointer">
-            <SelectValue />
+            <SelectValue placeholder={dict.myHome.quickState} />
           </SelectTrigger>
           <SelectContent>
             {states.map((s) => (
