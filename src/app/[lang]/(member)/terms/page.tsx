@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import { RulePageView } from "@/components/shared/RulePageView";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions - Viva Leve",
-  description: "Terms and conditions for using Viva Leve",
+  title: "Terms & Conditions",
+  description:
+    "The terms that keep Sigaleve safe, respectful, and fair for every member.",
+  keywords: [
+    "Sigaleve",
+    "terms and conditions",
+    "community rules",
+    "user agreement",
+  ],
 };
 
 export default function TermsPage() {

@@ -1,6 +1,7 @@
 "use server";
 
 import { myFetch } from "@/helpers/myFetch";
+import { clearAuthCookies } from "@/helpers/forceLogout";
 import { cookies } from "next/headers";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { z } from "zod";
@@ -35,8 +36,6 @@ export async function loginAction(data: Record<string, any>) {
 }
 
 export async function logoutAction() {
-  const cookieStore = await cookies();
-  cookieStore.delete("accessToken");
-  cookieStore.delete("refreshToken");
+  await clearAuthCookies();
   return { success: true };
 }

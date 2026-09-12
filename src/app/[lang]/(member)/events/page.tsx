@@ -8,6 +8,14 @@ import {
   getPublicEvents,
 } from "@/features/member/events/action";
 import { EventsFeature } from "@/features/member/events";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Events",
+  description:
+    "Find Sigaleve events, meet members in real life, and join the next gathering.",
+  keywords: ["Sigaleve", "events", "meetups", "community events"],
+};
 
 export default async function EventsPage({
   params,

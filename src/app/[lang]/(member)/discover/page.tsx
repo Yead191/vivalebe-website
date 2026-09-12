@@ -3,6 +3,14 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { DiscoverFeature } from "@/features/member/discover";
 import type { MatchSearchFilters } from "@/features/member/my-list/action";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Discover Members - Sigaleve",
+  description:
+    "Discover Sigaleve members who match what you are looking for — honestly and on your terms.",
+  keywords: ["Sigaleve", "discover", "search members", "match", "honest relationships", "honest dating", "our story", "mission", "vision", "values", "culture", "community", "platform", "product", "service", "company", "team", "team members", "team member", "team member profile", "team member profile page"],
+};
 
 function firstString(value: string | string[] | undefined) {
   if (typeof value === "string") return value;

@@ -4,6 +4,13 @@ import { getDictionary } from "@/i18n/dictionaries";
 import { BlogFeature } from "@/features/member/blog";
 import { myFetch } from "@/helpers/myFetch";
 import type { ApiBlog } from "@/features/member/blog/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog - Sigaleve",
+  description: "Read and share honest stories from the Sigaleve community.",
+  keywords: ["Sigaleve", "blog", "community stories", "articles", "stories", "stories from the community", "stories from the community", "stories from the community",] 
+};
 
 export default async function BlogRootPage({
   params,

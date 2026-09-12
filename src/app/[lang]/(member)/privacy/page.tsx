@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import { RulePageView } from "@/components/shared/RulePageView";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - Viva Leve",
-  description: "Privacy Policy of Viva Leve",
+  title: "Privacy Policy",
+  description:
+    "Read how Sigaleve collects, uses, and protects your personal information.",
+  keywords: [
+    "Sigaleve",
+    "privacy policy",
+    "data protection",
+    "personal information",
+  ],
 };
 
 export default function PrivacyPage() {

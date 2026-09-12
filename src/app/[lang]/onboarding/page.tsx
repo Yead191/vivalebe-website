@@ -2,6 +2,15 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getOnboardingDictionary } from "@/i18n/onboarding-dictionary";
 import OnboardingFeature from "@/features/auth/onboarding";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Complete Your Profile",
+  description:
+    "Finish your Sigaleve profile so the right people can find the real you.",
+  keywords: ["Sigaleve", "onboarding", "complete profile"],
+  robots: { index: false, follow: false },
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function OnboardingPage({ params }: PageProps<any>) {

@@ -2,9 +2,13 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { PaymentSuccessClient } from "@/features/member/payment/PaymentSuccessClient";
 
-export const metadata = {
-  title: "Payment Successful - Viva Leve",
-  description: "Your payment was completed successfully.",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Payment Successful",
+  description: "Your Sigaleve payment was completed successfully.",
+  keywords: ["Sigaleve", "payment", "checkout"],
+  robots: { index: false, follow: false },
 };
 
 export default async function PaymentSuccessPage({

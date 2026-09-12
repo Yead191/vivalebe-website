@@ -6,7 +6,18 @@ import getProfile from "@/helpers/getProfile";
 import { myFetch } from "@/helpers/myFetch";
 import { unstable_rethrow } from "next/navigation";
 
+import type { Metadata } from "next";
+
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Conversation",
+    description: "Continue this private conversation on Sigaleve.",
+    keywords: ["Sigaleve", "chat", "conversation"],
+    robots: { index: false, follow: false },
+  };
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;

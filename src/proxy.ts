@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { defaultLocale, locales, isLocale } from "@/i18n/config";
+import { isAccessTokenExpired } from "@/helpers/tokenExpiry";
 
 function pickLocale(request: NextRequest): string {
   const header = request.headers.get("accept-language") ?? "";
@@ -33,6 +34,44 @@ const authRoutes = [
   "/auth/forgot-password",
 ];
 
+function clearAuthCookies(response: NextResponse) {
+  const expired = { path: "/", maxAge: 0 };
+  response.cookies.set("accessToken", "", expired);
+  response.cookies.set("refreshToken", "", expired);
+  return response;
+}
+
+function withLocaleHeaders(
+  request: NextRequest,
+  locale: string,
+  stripAuth: boolean,
+) {
+  const headers = new Headers(request.headers);
+  headers.set("x-locale", locale);
+  headers.set("x-url", request.url);
+
+  if (stripAuth) {
+    const leftover = request.headers
+      .get("cookie")
+      ?.split(";")
+      .map((part) => part.trim())
+      .filter(
+        (part) =>
+          part &&
+          !part.startsWith("accessToken=") &&
+          !part.startsWith("refreshToken="),
+      )
+      .join("; ");
+
+    if (leftover) headers.set("cookie", leftover);
+    else headers.delete("cookie");
+  }
+
+  const response = NextResponse.next({ request: { headers } });
+  if (stripAuth) clearAuthCookies(response);
+  return response;
+}
+
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
@@ -59,7 +98,12 @@ export function proxy(request: NextRequest) {
       `/${currentLocale}${pathname === "/" ? "" : pathname}${search}`,
       request.url,
     );
-    return NextResponse.redirect(target);
+    const response = NextResponse.redirect(target);
+    const token = request.cookies.get("accessToken")?.value;
+    if (token && isAccessTokenExpired(token)) {
+      return clearAuthCookies(response);
+    }
+    return response;
   } else {
     // URL already has a locale, extract it
     const segments = pathname.split("/");
@@ -68,6 +112,8 @@ export function proxy(request: NextRequest) {
   }
 
   const accessToken = request.cookies.get("accessToken")?.value;
+  const tokenExpired = Boolean(accessToken) && isAccessTokenExpired(accessToken);
+  const isAuthenticated = Boolean(accessToken) && !tokenExpired;
 
   // Check if it's a protected route
   const isProtected = protectedRoutes.some(
@@ -80,19 +126,17 @@ export function proxy(request: NextRequest) {
       pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`),
   );
 
-  if (isProtected && !accessToken) {
-    // Redirect to login if not authenticated
+  if (isProtected && !isAuthenticated) {
     const loginUrl = new URL(`/${currentLocale}/auth/login`, request.url);
-    return NextResponse.redirect(loginUrl);
+    return clearAuthCookies(NextResponse.redirect(loginUrl));
   }
 
-  if (isAuthRoute && accessToken) {
-    // Redirect to myHome if already authenticated
+  if (isAuthRoute && isAuthenticated) {
     const homeUrl = new URL(`/${currentLocale}/myHome`, request.url);
     return NextResponse.redirect(homeUrl);
   }
 
-  return NextResponse.next();
+  return withLocaleHeaders(request, currentLocale, tokenExpired);
 }
 
 export const config = {

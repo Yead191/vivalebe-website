@@ -360,7 +360,7 @@
   "auth": {
     "layoutPanelTitle": "Discover premium structural systems.",
     "layoutPanelSubtitle": "Experience standard split-screen platform components safely and rapidly.",
-    "loginTitle": "Welcome back",
+    "loginTitle": "Welcome to Sigaleve",
     "loginSubtitle": "Enter your structural credentials to open your session.",
     "or": "or",
     "forgotPasswordLink": "Forgot password?",
@@ -384,21 +384,21 @@
     "resetPasswordSubtitle": "Configure your modern security key configurations below.",
     "resetPasswordButton": "Update Password Security Key",
     "labels": {
-      "fullName": "Full legal name",
+      "fullName": "Full Name",
       "email": "Email address",
-      "password": "Password structural key",
-      "confirmPassword": "Confirm protective passkey",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
       "rememberMe": "Keep me logged in"
     }
   },
   "validation": {
     "invalidEmail": "Please enter a valid email address.",
-    "passwordRequired": "Password structural key is required.",
-    "nameMin": "Full legal name must contain at least 2 characters.",
-    "passwordMin": "Security passkey must be at least 8 characters long.",
-    "passwordUppercase": "Passkey requires at least one uppercase letter [A-Z].",
-    "passwordNumber": "Passkey requires at least one numerical identifier [0-9].",
-    "passwordMismatch": "The confirmation passkey does not match your assigned password.",
+    "passwordRequired": "Password is required.",
+    "nameMin": "Full Name must contain at least 2 characters.",
+    "passwordMin": "Password must be at least 8 characters long.",
+    "passwordUppercase": "Password requires at least one uppercase letter [A-Z].",
+    "passwordNumber": "Password requires at least one numerical identifier [0-9].",
+    "passwordMismatch": "The confirmation password does not match your assigned password.",
     "acceptTerms": "You must check and authorize the core terms of use to register.",
     "invalidOtp": "Please enter a valid 4-digit code."
   }

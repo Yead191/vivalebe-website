@@ -1,5 +1,28 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { isLocale } from "@/i18n/config";
+import { defaultLocale, isLocale } from "@/i18n/config";
+import { getSiteUrl } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const locale = isLocale(lang) ? lang : defaultLocale;
+  const site = getSiteUrl();
+  return {
+    alternates: {
+      languages: {
+        en: `${site}/en`,
+        pt: `${site}/pt`,
+      },
+    },
+    openGraph: {
+      locale: locale === "pt" ? "pt_BR" : "en_US",
+    },
+  };
+}
 
 interface LayoutProps {
   children: React.ReactNode;

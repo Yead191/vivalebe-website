@@ -2,9 +2,22 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { PhotoEntry, ProfileDetails, User, VideoEntry } from "@/lib/types";
+import { hasRealImageSrc } from "@/lib/image";
 import { getPrivateAlbum } from "./action";
 
 const storageKey = (userId: string) => `viveleve:my-profile:${userId}`;
+
+function cleanDummyText(value: string | undefined): string {
+  const v = (value ?? "").trim();
+  if (!v) return "";
+  if (/coffee roastery in Pinheiros/i.test(v)) return "";
+  if (/someone genuine, kind, and present/i.test(v)) return "";
+  return v;
+}
+
+function realPhotos(photos: PhotoEntry[]): PhotoEntry[] {
+  return photos.filter((p) => hasRealImageSrc(p.url));
+}
 
 type Updater = (prev: ProfileDetails) => ProfileDetails;
 
@@ -33,7 +46,7 @@ interface PersistedState {
 
 function buildInitial(user: User): PersistedState {
   const profilePhotos = user.profile?.photos ?? [];
-  const defaultPhotos =
+  const defaultPhotos = realPhotos(
     profilePhotos.length > 0
       ? profilePhotos
       : user.photos.map((url, i) => ({
@@ -41,14 +54,22 @@ function buildInitial(user: User): PersistedState {
           url,
           visibility: "public" as const,
           status: "approved" as const,
-        }));
+        })),
+  );
 
   return {
     albumId: null,
     displayName: user.displayName,
-    avatarUrl: user.image ?? user.avatarSeed,
+    avatarUrl: hasRealImageSrc(user.image ?? user.avatarSeed)
+      ? (user.image ?? user.avatarSeed)
+      : "",
     details: user.profile
-      ? { ...user.profile, photos: defaultPhotos }
+      ? {
+          ...user.profile,
+          photos: defaultPhotos,
+          aboutMe: cleanDummyText(user.profile.aboutMe),
+          aboutMyMatch: cleanDummyText(user.profile.aboutMyMatch),
+        }
       : {
           photos: defaultPhotos,
           videos: [],
@@ -113,22 +134,31 @@ export function useMyProfile(user: User): MyProfileApi {
       if (raw) {
         const parsed = JSON.parse(raw) as PersistedState;
 
-        // Always trust the API for name and photo over cached localStorage
         parsed.displayName = user.displayName;
-        parsed.avatarUrl = user.image ?? user.avatarSeed;
+        parsed.avatarUrl = hasRealImageSrc(user.image ?? user.avatarSeed)
+          ? (user.image ?? user.avatarSeed)
+          : "";
 
-        // Sync photos if localStorage has no photos but user does
-        if (
-          parsed.details &&
-          parsed.details.photos.length === 0 &&
-          user.photos.length > 0
-        ) {
-          parsed.details.photos = user.photos.map((url, i) => ({
-            id: `photo_${i}`,
-            url,
-            visibility: "public" as const,
-            status: "approved" as const,
-          }));
+        if (parsed.details) {
+          parsed.details.photos = realPhotos(parsed.details.photos ?? []);
+          parsed.details.aboutMe = cleanDummyText(parsed.details.aboutMe);
+          parsed.details.aboutMyMatch = cleanDummyText(
+            parsed.details.aboutMyMatch,
+          );
+
+          if (
+            parsed.details.photos.length === 0 &&
+            user.photos.length > 0
+          ) {
+            parsed.details.photos = realPhotos(
+              user.photos.map((url, i) => ({
+                id: `photo_${i}`,
+                url,
+                visibility: "public" as const,
+                status: "approved" as const,
+              })),
+            );
+          }
         }
 
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -148,7 +178,11 @@ export function useMyProfile(user: User): MyProfileApi {
             albumId: res.data._id || prev.albumId,
             details: {
               ...prev.details,
-              aboutMe: res.data.aboutMe || prev.details.aboutMe,
+              aboutMe: cleanDummyText(
+                res.data.aboutMe != null
+                  ? res.data.aboutMe
+                  : prev.details.aboutMe,
+              ),
               bodyShapeStory: res.data.bodyShape || prev.details.bodyShapeStory,
               inspirationalQuotes:
                 res.data.motivateMe || prev.details.inspirationalQuotes,

@@ -3,6 +3,15 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { MyListFeature } from "@/features/member/my-list";
 import { DEFAULT_TAB } from "@/constants/mockMyListData";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "My List",
+  description:
+    "Review likes, winks, and people who viewed you on Sigaleve.",
+  keywords: ["Sigaleve", "likes", "winks", "viewed you"],
+  robots: { index: false, follow: false },
+};
 
 export default async function MyListPage({
   params,

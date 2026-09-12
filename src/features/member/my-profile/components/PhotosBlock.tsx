@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PhotoEntry } from "@/lib/types";
+import { hasRealImageSrc } from "@/lib/image";
+import { ProfileImage } from "@/components/shared/ProfileImage";
 import { UploadProfilePhotoModal } from "@/features/member/home/modals/UploadProfilePhotoModal";
 
 type Tab = PhotoEntry["visibility"];
@@ -25,16 +26,19 @@ export function PhotosBlock({ photos, onAdd, onRemove }: PhotosBlockProps) {
   const [activeTab, setActiveTab] = useState<Tab>("public");
 
   const counts = useMemo(() => {
+    const real = photos.filter((p) => hasRealImageSrc(p.url));
     return TABS.reduce<Record<Tab, number>>(
       (acc, t) => {
-        acc[t.key] = photos.filter((p) => p.visibility === t.key).length;
+        acc[t.key] = real.filter((p) => p.visibility === t.key).length;
         return acc;
       },
       { public: 0, private: 0, custom: 0 },
     );
   }, [photos]);
 
-  const visible = photos.filter((p) => p.visibility === activeTab);
+  const visible = photos.filter(
+    (p) => p.visibility === activeTab && hasRealImageSrc(p.url),
+  );
 
   return (
     <section className="space-y-3">
@@ -68,12 +72,12 @@ export function PhotosBlock({ photos, onAdd, onRemove }: PhotosBlockProps) {
             key={photo.id}
             className="group relative aspect-square overflow-hidden bg-muted"
           >
-            <Image
-              src={photo.url}
+            <ProfileImage
+              seed={photo.url}
               alt="Profile photo"
-              fill
-              className="object-cover"
-              unoptimized
+              width={400}
+              className="size-full object-cover"
+              iconClassName="size-10"
             />
             {photo.status === "pending" ? (
               <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded bg-black/60 px-2 py-0.5 text-xs font-medium text-white">

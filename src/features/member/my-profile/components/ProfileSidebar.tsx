@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Camera, Check, Pencil } from "lucide-react";
+import { ProfileImage } from "@/components/shared/ProfileImage";
 import { cn } from "@/lib/utils";
 
 export interface NavItem {
@@ -64,12 +64,12 @@ export function ProfileSidebar({
   return (
     <aside className="space-y-4">
       <div className="group relative aspect-square w-full overflow-hidden bg-muted">
-        <Image
-          src={avatarUrl}
-          alt={displayName}
-          fill
-          className="object-cover"
-          unoptimized
+        <ProfileImage
+          seed={avatarUrl}
+          alt={displayName || "Profile"}
+          width={480}
+          className="size-full object-cover"
+          iconClassName="size-16"
         />
         {/* <button
           type="button"
@@ -109,7 +109,8 @@ export function ProfileSidebar({
         ) : (
           <>
             <span className="text-sm font-semibold uppercase tracking-wider">
-              {displayName}, {age}
+              {displayName}
+              {age > 0 ? `, ${age}` : ""}
             </span>
             {/* <button
               type="button"

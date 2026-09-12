@@ -353,7 +353,7 @@
   "auth": {
     "layoutPanelTitle": "Descubra sistemas estruturais premium.",
     "layoutPanelSubtitle": "Experimente componentes de plataforma padrão em tela dividida com segurança e rapidez.",
-    "loginTitle": "Bem-vindo de volta",
+    "loginTitle": "Bem-vindo ao Sigaleve",
     "loginSubtitle": "Insira suas credenciais estruturais para iniciar sua sessão.",
     "or": "ou",
     "forgotPasswordLink": "Esqueceu a senha?",
@@ -377,21 +377,21 @@
     "resetPasswordSubtitle": "Configure suas novas chaves estruturais de segurança abaixo.",
     "resetPasswordButton": "Atualizar Chave de Segurança",
     "labels": {
-      "fullName": "Nome completo legal",
+      "fullName": "Nome completo",
       "email": "Endereço de e-mail",
-      "password": "Senha de acesso estrutural",
-      "confirmPassword": "Confirmar senha de proteção",
+      "password": "Senha",
+      "confirmPassword": "Confirmar Senha",
       "rememberMe": "Manter conectado neste dispositivo"
     }
   },
   "validation": {
     "invalidEmail": "Por favor, insira um endereço de e-mail válido.",
-    "passwordRequired": "A senha estrutural de acesso é obrigatória.",
-    "nameMin": "O nome completo legal deve conter pelo menos 2 caracteres.",
-    "passwordMin": "A chave protetora deve ter pelo menos 8 caracteres.",
+    "passwordRequired": "A senha é obrigatória.",
+    "nameMin": "O nome completo deve conter pelo menos 2 caracteres.",
+    "passwordMin": "A senha deve ter pelo menos 8 caracteres.",
     "passwordUppercase": "A senha exige pelo menos uma letra maiúscula [A-Z].",
     "passwordNumber": "A senha exige pelo menos um identificador numérico [0-9].",
-    "passwordMismatch": "A chave protetora de confirmação não corresponde à senha atribuída.",
+    "passwordMismatch": "A senha de confirmação não corresponde à senha atribuída.",
     "acceptTerms": "Você deve marcar e autorizar os termos principais de uso para registrar.",
     "invalidOtp": "Por favor, insira um código de 4 dígitos válido."
   }

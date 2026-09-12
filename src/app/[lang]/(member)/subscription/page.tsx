@@ -1,12 +1,14 @@
-import { Metadata } from "next";
 import { Suspense } from "react";
 import { myFetch } from "@/helpers/myFetch";
 import Link from "next/link";
 import { SubscriptionRequiredToast } from "@/features/member/subscription/SubscriptionRequiredToast";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Premium Subscription - Viva Leve",
-  description: "Upgrade to Viva Leve Premium",
+  title: "Premium Membership",
+  description:
+    "Unlock premium Sigaleve features and get more from every genuine connection.",
+  keywords: ["Sigaleve", "premium", "subscription", "membership"],
 };
 
 interface Package {

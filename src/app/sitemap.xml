@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
+  <url>
+    <loc>https://sigaleve.com/pt</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sigaleve.com/pt" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/en</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sigaleve.com/pt" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/pt/about</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/about" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/en/about</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/about" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/pt/contact</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/contact" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/en/contact</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/contact" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/pt/blog</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/blog" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/en/blog</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/blog" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/pt/success-stories</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/success-stories" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/success-stories" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/en/success-stories</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/success-stories" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/success-stories" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/pt/disease-qa</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/disease-qa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/disease-qa" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/en/disease-qa</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/disease-qa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/disease-qa" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/pt/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/privacy" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/privacy" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/pt/terms</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/terms" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://sigaleve.com/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sigaleve.com/pt/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sigaleve.com/en/terms" />
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

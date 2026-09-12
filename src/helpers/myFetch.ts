@@ -1,8 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { unstable_rethrow } from "next/navigation";
+import { forceLogoutAndRedirectToLogin } from "./forceLogout";
 import { getAccessToken } from "./getAccessToken";
 import { redirectToSubscriptionIfNeeded } from "./handleSubscriptionError";
+import { isAccessTokenExpired, isSessionExpiredApiError } from "./tokenExpiry";
+
+const publicAuthPaths = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  "/auth/verify-email",
+  "/auth/resend-otp",
+];
+
+function isPublicAuthCall(url: string) {
+  const path = url.split("?")[0];
+  return publicAuthPaths.some((authPath) => path === authPath);
+}
 
 interface Pagination {
   limit: number;
@@ -58,13 +74,20 @@ export const myFetch = async <T = any>(
   const accessToken = await getAccessToken();
   const isFormData = body instanceof FormData;
   const hasBody = body !== undefined && method !== "GET";
+  const skipAuthHeader = isPublicAuthCall(url);
+
+  if (!skipAuthHeader && accessToken && isAccessTokenExpired(accessToken)) {
+    await forceLogoutAndRedirectToLogin();
+  }
 
   const reqHeaders: Record<string, string> = {
     Accept: "application/json",
     ...headers,
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
-    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-    ...(token ? { Authorization: `${token}` } : {}),
+    ...(!skipAuthHeader && accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : {}),
+    ...(!skipAuthHeader && token ? { Authorization: `${token}` } : {}),
   };
 
   try {
@@ -82,6 +105,14 @@ export const myFetch = async <T = any>(
     });
 
     const json = await res.json();
+
+    if (
+      !skipAuthHeader &&
+      (accessToken || token) &&
+      isSessionExpiredApiError(res.status, json)
+    ) {
+      await forceLogoutAndRedirectToLogin();
+    }
 
     await redirectToSubscriptionIfNeeded({
       message: json?.message,

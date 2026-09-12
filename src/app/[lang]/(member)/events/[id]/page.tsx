@@ -6,6 +6,28 @@ import {
 } from "@/features/member/events/action";
 import { getProfileAction } from "@/features/member/settings/action";
 import { EventDetailsClient } from "@/features/member/events/EventDetailsClient";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/events/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const event = await getEventById(id);
+  const title = event?.eventName || "Event Details";
+  const description =
+    event?.details?.slice(0, 160) ||
+    "See date, details, and how to join this Sigaleve event.";
+  return {
+    title,
+    description,
+    keywords: ["Sigaleve", "event details", "meetup", "community events"],
+    openGraph: {
+      title: `${title} | Sigaleve`,
+      description,
+      url: `/events/${id}`,
+    },
+  };
+}
 
 export default async function EventDetailsPage({
   params,

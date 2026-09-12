@@ -5,6 +5,14 @@ import { getProfileAction } from "@/features/member/settings/action";
 import { getSwipeFeed } from "@/features/member/flame/action";
 import { FlameFeature } from "@/features/member/flame";
 import type { User } from "@/lib/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Flame",
+  description:
+    "Explore Flame on Sigaleve and find people who spark a real connection.",
+  keywords: ["Sigaleve", "flame", "match", "spark"],
+};
 
 export default async function FlamePage({
   params,

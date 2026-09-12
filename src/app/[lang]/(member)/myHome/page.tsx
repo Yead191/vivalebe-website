@@ -3,6 +3,20 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { HomeFeature } from "@/features/member/home";
 import { parseHomeTab } from "@/features/member/home/tabs";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home Feed",
+  description:
+    "See new videos, moments, and connections on Sigaleve — the community where honest relationships begin.",
+  keywords: [
+    "Sigaleve",
+    "home feed",
+    "moments",
+    "videos",
+    "honest dating",
+  ],
+};
 
 export default async function MyHomePage({
   params,

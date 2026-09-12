@@ -5,6 +5,26 @@ import { getUserById } from "@/features/member/profile/action";
 import { ProfileFeature } from "@/features/member/profile";
 import { ProfileNotFoundState } from "@/features/member/profile/ProfileNotFoundState";
 import { getProfileAction } from "@/features/member/settings/action";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  return {
+    title: "Member Profile",
+    description: "View this member’s profile on Sigaleve.",
+    keywords: ["Sigaleve", "member profile"],
+    robots: { index: false, follow: false },
+    openGraph: {
+      title: "Member Profile | Sigaleve",
+      description: "View this member’s profile on Sigaleve.",
+      url: `/my-list/profile/${id}`,
+    },
+  };
+}
 
 export default async function MyListProfilePage({
   params,

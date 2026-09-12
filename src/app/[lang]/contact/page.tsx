@@ -5,10 +5,13 @@ import ContactForm from "@/features/contact/ContactForm";
 import { MemberNavbar } from "@/components/shared/navbar/MemberNavbar";
 import { Footer } from "@/components/shared/footer/Footer";
 import { getProfileAction } from "@/features/member/settings/action";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Contact Us | Viva Leve",
-  description: "Get in touch with the Viva Leve team.",
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description:
+    "Contact the Sigaleve team for support, partnerships, or questions about the community.",
+  keywords: ["Sigaleve", "contact", "support", "help"],
 };
 
 export default async function ContactPage({
