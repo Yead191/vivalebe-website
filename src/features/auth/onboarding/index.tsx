@@ -35,6 +35,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { createOnboardingSchema } from "@/schemas/auth/onboarding.schema";
+import {
+  ONBOARDING_COUNTRIES,
+  getOnboardingStates,
+  isOnboardingCountry,
+} from "@/lib/lusophone-locations";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const STORAGE_KEY = "vivaleve:onboarding:v1";
 const steps = [
@@ -151,6 +163,15 @@ export default function OnboardingFeature({ dict, lang }: Props) {
       const parsed = JSON.parse(raw);
       if (parsed.livingWith) {
         parsed.livingWith = mapLivingWith(parsed.livingWith);
+      }
+      if (!isOnboardingCountry(parsed.country)) {
+        parsed.country = "";
+        parsed.state = "";
+      } else if (!getOnboardingStates(parsed.country).includes(parsed.state)) {
+        parsed.state = "";
+      }
+      if (!isOnboardingCountry(parsed.nationality)) {
+        parsed.nationality = "";
       }
       form.reset({ ...initialValues, ...parsed });
     } catch {
@@ -352,7 +373,9 @@ export default function OnboardingFeature({ dict, lang }: Props) {
                   {step === "preferences" && (
                     <PreferencesStep dict={dict} form={form} />
                   )}
-                  {step === "location" && <LocationStep form={form} />}
+                  {step === "location" && (
+                    <LocationStep dict={dict} form={form} lang={lang} />
+                  )}
                   {step === "personal" && (
                     <PersonalStep dict={dict} form={form} />
                   )}
@@ -465,32 +488,155 @@ function PreferencesStep({ dict, form }: any) {
   );
 }
 
+const selectTriggerClass =
+  "h-11 w-full rounded-2xl border-neutral-200 bg-white px-3 text-sm";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function LocationStep({ form }: any) {
+function LocationStep({ dict, form, lang }: any) {
+  const selectedCountry = form.watch("country") as string;
+  const states = getOnboardingStates(selectedCountry);
+
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      {["country", "state", "zipCode", "nationality"].map((name) => (
-        <FormField
-          key={name}
-          control={form.control}
-          name={name}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          render={({ field }: any) => (
-            <FormItem className="space-y-2">
-              <label className="text-sm font-medium capitalize text-neutral-700">
-                {name === "zipCode" ? "ZIP Code" : name}
-              </label>
+      <FormField
+        control={form.control}
+        name="country"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        render={({ field }: any) => (
+          <FormItem className="space-y-2">
+            <label className="text-sm font-medium text-neutral-700">
+              {dict.onboarding?.country}
+            </label>
+            <Select
+              value={field.value || undefined}
+              onValueChange={(value) => {
+                field.onChange(value);
+                form.setValue("state", "", { shouldValidate: true });
+              }}
+            >
               <FormControl>
-                <Input
-                  {...field}
-                  className="h-11 rounded-2xl border-neutral-200 bg-white"
-                />
+                <SelectTrigger className={selectTriggerClass}>
+                  <SelectValue
+                    placeholder={dict.onboarding?.countryPlaceholder}
+                  />
+                </SelectTrigger>
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      ))}
+              <SelectContent>
+                {ONBOARDING_COUNTRIES.map((country) => (
+                  <SelectItem
+                    key={country.value}
+                    value={country.value}
+                    className="cursor-pointer"
+                  >
+                    {lang === "pt" ? country.pt : country.en}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="state"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        render={({ field }: any) => (
+          <FormItem className="space-y-2">
+            <label className="text-sm font-medium text-neutral-700">
+              {dict.onboarding?.state}
+            </label>
+            <Select
+              value={field.value || undefined}
+              onValueChange={field.onChange}
+              disabled={!selectedCountry}
+              
+            >
+              <FormControl>
+                <SelectTrigger className={selectTriggerClass}>
+                  <SelectValue
+                    placeholder={
+                      selectedCountry
+                        ? dict.onboarding?.statePlaceholder
+                        : dict.onboarding?.selectCountryFirst
+                    }
+                  />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {states.map((state) => (
+                  <SelectItem
+                    key={state}
+                    value={state}
+                    className="cursor-pointer"
+                  >
+                    {state}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="zipCode"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        render={({ field }: any) => (
+          <FormItem className="space-y-2">
+            <label className="text-sm font-medium text-neutral-700">
+              {dict.onboarding?.zipCode}
+            </label>
+            <FormControl>
+              <Input
+                {...field}
+                className="h-11 rounded-2xl border-neutral-200 bg-white"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="nationality"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        render={({ field }: any) => (
+          <FormItem className="space-y-2">
+            <label className="text-sm font-medium text-neutral-700">
+              {dict.onboarding?.nationality}
+            </label>
+            <Select
+              value={field.value || undefined}
+              onValueChange={field.onChange}
+            >
+              <FormControl>
+                <SelectTrigger className={selectTriggerClass}>
+                  <SelectValue
+                    placeholder={dict.onboarding?.nationalityPlaceholder}
+                  />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {ONBOARDING_COUNTRIES.map((country) => (
+                  <SelectItem
+                    key={country.value}
+                    value={country.value}
+                    className="cursor-pointer"
+                  >
+                    {lang === "pt" ? country.pt : country.en}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }

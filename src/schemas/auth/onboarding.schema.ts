@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  ONBOARDING_COUNTRY_VALUES,
+  getOnboardingStates,
+} from "@/lib/lusophone-locations";
 
 const heightUnitSchema = z.enum(["cm", "ft"]);
 const weightUnitSchema = z.enum(["kg", "lb"]);
@@ -8,10 +12,14 @@ export const createOnboardingSchema = (t: (key: string) => string) =>
     .object({
       interestedIn: z.enum(["man", "woman", "couple"]),
       lookingFor: z.enum(["man", "woman", "couple"]),
-      country: z.string().min(2, { message: t("countryRequired") }),
-      state: z.string().min(2, { message: t("stateRequired") }),
+      country: z.enum(ONBOARDING_COUNTRY_VALUES, {
+        message: t("countryRequired"),
+      }),
+      state: z.string().min(1, { message: t("stateRequired") }),
       zipCode: z.string().min(3, { message: t("zipRequired") }),
-      nationality: z.string().min(2, { message: t("nationalityRequired") }),
+      nationality: z.enum(ONBOARDING_COUNTRY_VALUES, {
+        message: t("nationalityRequired"),
+      }),
       dateOfBirth: z.string().min(1, { message: t("dobRequired") }),
       livingWith: z.enum([
         "hsv1",
@@ -61,5 +69,12 @@ export const createOnboardingSchema = (t: (key: string) => string) =>
       {
         path: ["dateOfBirth"],
         message: t("mustBeAdult"),
+      },
+    )
+    .refine(
+      (data) => getOnboardingStates(data.country).includes(data.state),
+      {
+        path: ["state"],
+        message: t("stateRequired"),
       },
     );
