@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { defaultLocale, locales, isLocale } from "@/i18n/config";
 import { isAccessTokenExpired } from "@/helpers/tokenExpiry";
+import { ONBOARDING_COOKIE } from "@/helpers/onboardingCookie";
 
 function pickLocale(request: NextRequest): string {
   const header = request.headers.get("accept-language") ?? "";
@@ -38,6 +39,7 @@ function clearAuthCookies(response: NextResponse) {
   const expired = { path: "/", maxAge: 0 };
   response.cookies.set("accessToken", "", expired);
   response.cookies.set("refreshToken", "", expired);
+  response.cookies.set(ONBOARDING_COOKIE, "", expired);
   return response;
 }
 
@@ -59,7 +61,8 @@ function withLocaleHeaders(
         (part) =>
           part &&
           !part.startsWith("accessToken=") &&
-          !part.startsWith("refreshToken="),
+          !part.startsWith("refreshToken=") &&
+          !part.startsWith(`${ONBOARDING_COOKIE}=`),
       )
       .join("; ");
 
@@ -114,6 +117,8 @@ export function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
   const tokenExpired = Boolean(accessToken) && isAccessTokenExpired(accessToken);
   const isAuthenticated = Boolean(accessToken) && !tokenExpired;
+  const onboardingIncomplete =
+    request.cookies.get(ONBOARDING_COOKIE)?.value === "false";
 
   // Check if it's a protected route
   const isProtected = protectedRoutes.some(
@@ -126,14 +131,35 @@ export function proxy(request: NextRequest) {
       pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`),
   );
 
+  const isOnboardingRoute =
+    pathWithoutLocale === "/onboarding" ||
+    pathWithoutLocale.startsWith("/onboarding/");
+
+  const isHomeRoute =
+    pathWithoutLocale === "/" ||
+    pathWithoutLocale === "" ||
+    pathWithoutLocale === "/myHome" ||
+    pathWithoutLocale.startsWith("/myHome/");
+
   if (isProtected && !isAuthenticated) {
     const loginUrl = new URL(`/${currentLocale}/auth/login`, request.url);
     return clearAuthCookies(NextResponse.redirect(loginUrl));
   }
 
+  if (isAuthenticated && onboardingIncomplete && !isOnboardingRoute) {
+    if (isHomeRoute || (isProtected && !isAuthRoute)) {
+      const onboardingUrl = new URL(
+        `/${currentLocale}/onboarding`,
+        request.url,
+      );
+      return NextResponse.redirect(onboardingUrl);
+    }
+  }
+
   if (isAuthRoute && isAuthenticated) {
-    const homeUrl = new URL(`/${currentLocale}/myHome`, request.url);
-    return NextResponse.redirect(homeUrl);
+    const nextPath = onboardingIncomplete ? "onboarding" : "myHome";
+    const nextUrl = new URL(`/${currentLocale}/${nextPath}`, request.url);
+    return NextResponse.redirect(nextUrl);
   }
 
   return withLocaleHeaders(request, currentLocale, tokenExpired);

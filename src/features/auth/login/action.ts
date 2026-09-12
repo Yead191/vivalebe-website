@@ -2,6 +2,7 @@
 
 import { myFetch } from "@/helpers/myFetch";
 import { clearAuthCookies } from "@/helpers/forceLogout";
+import { setOnboardingCompleteCookie } from "@/helpers/onboardingSession";
 import { cookies } from "next/headers";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { z } from "zod";
@@ -30,6 +31,8 @@ export async function loginAction(data: Record<string, any>) {
         maxAge: 60 * 60 * 24 * 30, // 30 days
       });
     }
+
+    await setOnboardingCompleteCookie(res.data.onboardingComplete !== false);
   }
 
   return res;

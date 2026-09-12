@@ -1,9 +1,10 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { MemberNavbar } from "@/components/shared/navbar/MemberNavbar";
 import { Footer } from "@/components/shared/footer/Footer";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { getProfileAction } from "@/features/member/settings/action";
+import { isOnboardingIncompleteFlag } from "@/helpers/onboardingCookie";
 
 export default async function MemberLayout({
   children,
@@ -15,6 +16,10 @@ export default async function MemberLayout({
   const dict = await getDictionary(lang);
   const profileRes = await getProfileAction();
   const userData = profileRes?.data || {};
+
+  if (isOnboardingIncompleteFlag(userData.onboardingComplete)) {
+    redirect(`/${lang}/onboarding`);
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/30">

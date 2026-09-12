@@ -1,6 +1,7 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { defaultLocale, isLocale } from "@/i18n/config";
+import { ONBOARDING_COOKIE } from "./onboardingCookie";
 
 async function getRequestLocale(): Promise<string> {
   const h = await headers();
@@ -25,6 +26,7 @@ export async function clearAuthCookies(): Promise<void> {
     const store = await cookies();
     store.delete("accessToken");
     store.delete("refreshToken");
+    store.delete(ONBOARDING_COOKIE);
   } catch {
     // Cookie mutation is not always allowed during RSC render
   }

@@ -66,9 +66,9 @@ export default function LoginFeature({ dict, lang }: Props) {
       if (res.success) {
         toast.success(res.message || "Logged in successfully");
         if (res.data?.onboardingComplete === false) {
-          router.push(`/${lang}/onboarding`);
+          router.replace(`/${lang}/onboarding`);
         } else {
-          router.push(`/${lang}/myHome`);
+          router.replace(`/${lang}/myHome`);
         }
       } else {
         toast.error(res.error || res.message || "Failed to login");
