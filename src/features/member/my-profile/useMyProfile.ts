@@ -3,20 +3,27 @@
 import { useCallback, useEffect, useState } from "react";
 import type { PhotoEntry, ProfileDetails, User, VideoEntry } from "@/lib/types";
 import { hasRealImageSrc } from "@/lib/image";
+import { handleClientSubscriptionError } from "@/helpers/handleClientSubscriptionError";
+import type { Locale } from "@/i18n/config";
 import { getPrivateAlbum } from "./action";
+import {
+  albumAvatarUrl,
+  albumDisplayName,
+  albumFromResponse,
+  applyAlbumToDetails,
+  emptyUserInfo,
+  mapAlbumUserInfo,
+  type AlbumUserInfo,
+} from "./albumMap";
 
 const storageKey = (userId: string) => `viveleve:my-profile:${userId}`;
 
-function cleanDummyText(value: string | undefined): string {
-  const v = (value ?? "").trim();
-  if (!v) return "";
-  if (/coffee roastery in Pinheiros/i.test(v)) return "";
-  if (/someone genuine, kind, and present/i.test(v)) return "";
-  return v;
-}
-
-function realPhotos(photos: PhotoEntry[]): PhotoEntry[] {
-  return photos.filter((p) => hasRealImageSrc(p.url));
+function clearProfileLocalStorage(userId: string) {
+  try {
+    window.localStorage.removeItem(storageKey(userId));
+  } catch {
+    // ignore
+  }
 }
 
 type Updater = (prev: ProfileDetails) => ProfileDetails;
@@ -26,10 +33,13 @@ export interface MyProfileApi {
   albumId: string | null;
   displayName: string;
   avatarUrl: string;
+  userInfo: AlbumUserInfo;
   details: ProfileDetails;
   updateDisplayName: (name: string) => void;
   updateAvatar: (url: string) => void;
   update: (updater: Updater) => void;
+  applyAlbum: (data: unknown) => void;
+  setAlbumId: (id: string) => void;
   addPhoto: (photo: PhotoEntry) => void;
   removePhoto: (id: string) => void;
   addVideo: (video: VideoEntry) => void;
@@ -41,180 +51,103 @@ interface PersistedState {
   albumId: string | null;
   displayName: string;
   avatarUrl: string;
+  userInfo: AlbumUserInfo;
   details: ProfileDetails;
 }
 
+function emptyDetails(fallbackPhotos: PhotoEntry[]): ProfileDetails {
+  return {
+    photos: fallbackPhotos,
+    videos: [],
+    aboutMe: "",
+    aboutMyMatch: "",
+    preferences: {
+      gender: "",
+      ageMin: 18,
+      ageMax: 99,
+      distance: "Anywhere",
+      lookingFor: "",
+      matchLivesWith: "",
+    },
+    bodyShapeStory: "",
+    inspirationalQuotes: "",
+    conditionExperience: "",
+    myFavorites: "",
+    recommendations: "",
+    basics: {
+      livingWith: "",
+      positiveSince: "",
+      gender: "",
+      willingToFly: "",
+      willingToMeetSoon: "",
+      location: "",
+      height: "",
+      weight: "",
+      ethnicity: "",
+      relationshipStatus: "",
+      bodyType: "",
+      eyeColor: "",
+      hairColor: "",
+    },
+    extras: {
+      languages: "",
+      education: "",
+      occupation: "",
+      smoking: "",
+      drinking: "",
+      haveChildren: "",
+      wantChildren: "",
+      astrologicalSign: "",
+      annualIncome: "",
+      politicalViews: "",
+      religion: "",
+      havePets: "",
+      hobbies: "",
+      favoriteMusic: "",
+    },
+    personality: "",
+  };
+}
+
 function buildInitial(user: User): PersistedState {
-  const profilePhotos = user.profile?.photos ?? [];
-  const defaultPhotos = realPhotos(
-    profilePhotos.length > 0
-      ? profilePhotos
-      : user.photos.map((url, i) => ({
-          id: `photo_${i}`,
-          url,
-          visibility: "public" as const,
-          status: "approved" as const,
-        })),
-  );
+  const avatar = hasRealImageSrc(user.image ?? user.avatarSeed)
+    ? (user.image ?? user.avatarSeed)
+    : "";
 
   return {
     albumId: null,
     displayName: user.displayName,
-    avatarUrl: hasRealImageSrc(user.image ?? user.avatarSeed)
-      ? (user.image ?? user.avatarSeed)
-      : "",
-    details: user.profile
-      ? {
-          ...user.profile,
-          photos: defaultPhotos,
-          aboutMe: cleanDummyText(user.profile.aboutMe),
-          aboutMyMatch: cleanDummyText(user.profile.aboutMyMatch),
-        }
-      : {
-          photos: defaultPhotos,
-          videos: [],
-          aboutMe: "",
-          aboutMyMatch: "",
-          preferences: {
-            gender: "",
-            ageMin: 18,
-            ageMax: 99,
-            distance: "Anywhere",
-            lookingFor: "",
-            matchLivesWith: "",
-          },
-          bodyShapeStory: "",
-          inspirationalQuotes: "",
-          conditionExperience: "",
-          myFavorites: "",
-          recommendations: "",
-          basics: {
-            livingWith: "",
-            positiveSince: "",
-            gender: "",
-            willingToFly: "",
-            willingToMeetSoon: "",
-            location: "",
-            height: "",
-            weight: "",
-            ethnicity: "",
-            relationshipStatus: "",
-            bodyType: "",
-            eyeColor: "",
-            hairColor: "",
-          },
-          extras: {
-            languages: "",
-            education: "",
-            occupation: "",
-            smoking: "",
-            drinking: "",
-            haveChildren: "",
-            wantChildren: "",
-            astrologicalSign: "",
-            annualIncome: "",
-            politicalViews: "",
-            religion: "",
-            havePets: "",
-            hobbies: "",
-            favoriteMusic: "",
-          },
-          personality: "",
-        },
+    avatarUrl: avatar,
+    userInfo: emptyUserInfo(),
+    details: emptyDetails([]),
   };
 }
 
-export function useMyProfile(user: User): MyProfileApi {
+export function useMyProfile(user: User, lang: Locale): MyProfileApi {
   const [state, setState] = useState<PersistedState>(() => buildInitial(user));
   const [hydrated, setHydrated] = useState(false);
 
+  const applyAlbum = useCallback((data: unknown) => {
+    const album = albumFromResponse(data);
+    if (!album) return;
+
+    setState((prev) => ({
+      albumId: album._id || album.id || prev.albumId,
+      displayName: albumDisplayName(album, prev.displayName),
+      avatarUrl: albumAvatarUrl(album, prev.avatarUrl),
+      userInfo: mapAlbumUserInfo(album.user),
+      details: applyAlbumToDetails(prev.details, album),
+    }));
+  }, []);
+
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(storageKey(user.id));
-      if (raw) {
-        const parsed = JSON.parse(raw) as PersistedState;
+    clearProfileLocalStorage(user.id);
 
-        parsed.displayName = user.displayName;
-        parsed.avatarUrl = hasRealImageSrc(user.image ?? user.avatarSeed)
-          ? (user.image ?? user.avatarSeed)
-          : "";
-
-        if (parsed.details) {
-          parsed.details.photos = realPhotos(parsed.details.photos ?? []);
-          parsed.details.aboutMe = cleanDummyText(parsed.details.aboutMe);
-          parsed.details.aboutMyMatch = cleanDummyText(
-            parsed.details.aboutMyMatch,
-          );
-
-          if (
-            parsed.details.photos.length === 0 &&
-            user.photos.length > 0
-          ) {
-            parsed.details.photos = realPhotos(
-              user.photos.map((url, i) => ({
-                id: `photo_${i}`,
-                url,
-                visibility: "public" as const,
-                status: "approved" as const,
-              })),
-            );
-          }
-        }
-
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setState(parsed);
-      }
-    } catch {
-      // ignore corrupt localStorage entries; fall back to defaults
-    }
-
-    // Fetch from backend
     const fetchData = async () => {
       try {
         const res = await getPrivateAlbum();
-        if (res.success && res.data) {
-          setState((prev) => ({
-            ...prev,
-            albumId: res.data._id || prev.albumId,
-            details: {
-              ...prev.details,
-              aboutMe: cleanDummyText(
-                res.data.aboutMe != null
-                  ? res.data.aboutMe
-                  : prev.details.aboutMe,
-              ),
-              bodyShapeStory: res.data.bodyShape || prev.details.bodyShapeStory,
-              inspirationalQuotes:
-                res.data.motivateMe || prev.details.inspirationalQuotes,
-              conditionExperience:
-                res.data.myCondition || prev.details.conditionExperience,
-              extras: {
-                ...prev.details.extras,
-                smoking: res.data.smoking || prev.details.extras.smoking,
-                drinking: res.data.drinking || prev.details.extras.drinking,
-                haveChildren:
-                  res.data.haveChildren || prev.details.extras.haveChildren,
-                wantChildren:
-                  res.data.wantChildren || prev.details.extras.wantChildren,
-                astrologicalSign:
-                  res.data.astrologicalSign ||
-                  prev.details.extras.astrologicalSign,
-                annualIncome:
-                  res.data.annualIncome || prev.details.extras.annualIncome,
-                politicalViews:
-                  res.data.politicalViews || prev.details.extras.politicalViews,
-                religion: res.data.religion || prev.details.extras.religion,
-                havePets: res.data.havePets || prev.details.extras.havePets,
-                hobbies:
-                  res.data.myHobbiesAndInterests?.join(", ") ||
-                  prev.details.extras.hobbies,
-                favoriteMusic:
-                  res.data.myFavoriteMusic?.join(", ") ||
-                  prev.details.extras.favoriteMusic,
-              },
-            },
-          }));
-        }
+        if (handleClientSubscriptionError(res, lang)) return;
+        if (res.success && res.data) applyAlbum(res.data);
       } catch (err) {
         console.error("Error fetching private albums data", err);
       } finally {
@@ -223,17 +156,7 @@ export function useMyProfile(user: User): MyProfileApi {
     };
 
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user.id]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.localStorage.setItem(storageKey(user.id), JSON.stringify(state));
-    } catch {
-      // quota or privacy mode — silently ignore
-    }
-  }, [state, hydrated, user.id]);
+  }, [applyAlbum, lang, user.id]);
 
   const update = useCallback((updater: Updater) => {
     setState((prev) => ({ ...prev, details: updater(prev.details) }));
@@ -245,6 +168,10 @@ export function useMyProfile(user: User): MyProfileApi {
 
   const updateAvatar = useCallback((url: string) => {
     setState((prev) => ({ ...prev, avatarUrl: url }));
+  }, []);
+
+  const setAlbumId = useCallback((id: string) => {
+    setState((prev) => ({ ...prev, albumId: id }));
   }, []);
 
   const addPhoto = useCallback((photo: PhotoEntry) => {
@@ -282,13 +209,8 @@ export function useMyProfile(user: User): MyProfileApi {
   }, []);
 
   const reset = useCallback(() => {
-    const fresh = buildInitial(user);
-    setState(fresh);
-    try {
-      window.localStorage.removeItem(storageKey(user.id));
-    } catch {
-      // ignore
-    }
+    setState(buildInitial(user));
+    clearProfileLocalStorage(user.id);
   }, [user]);
 
   return {
@@ -296,9 +218,12 @@ export function useMyProfile(user: User): MyProfileApi {
     albumId: state.albumId,
     displayName: state.displayName,
     avatarUrl: state.avatarUrl,
+    userInfo: state.userInfo,
     details: state.details,
     updateDisplayName,
     updateAvatar,
+    applyAlbum,
+    setAlbumId,
     update,
     addPhoto,
     removePhoto,

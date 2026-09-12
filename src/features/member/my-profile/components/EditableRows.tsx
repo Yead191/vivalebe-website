@@ -4,6 +4,17 @@ import { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
+import type { SelectOption } from "./fieldOptions";
+
+export type SelectFieldOption = string | SelectOption;
+
+function optionValue(option: SelectFieldOption) {
+  return typeof option === "string" ? option : option.value;
+}
+
+function optionLabel(option: SelectFieldOption) {
+  return typeof option === "string" ? option : option.label;
+}
 
 export type FieldValue = string | number;
 export type FieldValues = Record<string, FieldValue>;
@@ -20,7 +31,7 @@ export type FieldDef =
       key: string;
       label: string;
       type: "select";
-      options: string[];
+      options: SelectFieldOption[];
       emptyLabel?: string;
     }
   | {
@@ -44,7 +55,7 @@ interface EditableRowsProps {
   title: string;
   fields: FieldDef[];
   values: FieldValues;
-  onSave: (next: FieldValues) => void;
+  onChange: (next: FieldValues) => void;
 }
 
 export function EditableRows({
@@ -52,7 +63,7 @@ export function EditableRows({
   title,
   fields,
   values,
-  onSave,
+  onChange,
 }: EditableRowsProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<FieldValues>(values);
@@ -63,12 +74,11 @@ export function EditableRows({
   }, [editing, values]);
 
   const setDraftValue = (key: string, value: FieldValue) => {
-    setDraft((d) => ({ ...d, [key]: value }));
-  };
-
-  const handleSave = () => {
-    onSave(draft);
-    setEditing(false);
+    setDraft((d) => {
+      const next = { ...d, [key]: value };
+      onChange(next);
+      return next;
+    });
   };
 
   return (
@@ -110,20 +120,13 @@ export function EditableRows({
       </dl>
 
       {editing ? (
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex justify-end pt-2">
           <button
             type="button"
             onClick={() => setEditing(false)}
             className="rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors cursor-pointer"
           >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-hover transition-colors cursor-pointer"
-          >
-            Save
+            Done
           </button>
         </div>
       ) : null}
@@ -149,7 +152,14 @@ function FieldReadView({
   const raw = values[field.key];
   const value = raw === undefined || raw === null ? "" : String(raw);
   if (value) {
-    return <span className="text-foreground">{value}</span>;
+    const label =
+      field.type === "select"
+        ? optionLabel(
+            field.options.find((option) => optionValue(option) === value) ??
+              value,
+          )
+        : value;
+    return <span className="text-foreground">{label}</span>;
   }
   const empty =
     "emptyLabel" in field && field.emptyLabel ? field.emptyLabel : "Select";
@@ -190,8 +200,8 @@ function FieldEditor({
       >
         <option value="">Select</option>
         {field.options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
+          <option key={optionValue(opt)} value={optionValue(opt)}>
+            {optionLabel(opt)}
           </option>
         ))}
       </select>

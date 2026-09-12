@@ -1,22 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { useCallback, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import type {
-  MatchPreferences,
-  ProfileBasics,
-  ProfileDetails,
-  ProfileExtras,
-  User,
-} from "@/lib/types";
+import type { ProfileDetails, ProfileExtras, User } from "@/lib/types";
 import { useMyProfile } from "./useMyProfile";
 import { ProfileSidebar, type NavItem } from "./components/ProfileSidebar";
 import { PhotosBlock } from "./components/PhotosBlock";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { VideosBlock } from "./components/VideosBlock";
-import { PrivateAlbumBlock } from "./components/PrivateAlbumBlock";
 import { EditableText } from "./components/EditableText";
 import {
   EditableRows,
@@ -26,28 +16,21 @@ import {
 import {
   ANNUAL_INCOME,
   ASTROLOGICAL_SIGN,
-  BASIC_GENDER,
-  BODY_TYPE,
-  DISTANCE_OPTIONS,
   DRINKING,
-  EDUCATION,
-  ETHNICITY,
-  EYE_COLOR,
-  HAIR_COLOR,
   HAVE_CHILDREN,
   HAVE_PETS,
-  LIVING_WITH,
-  LOOKING_FOR,
-  MATCH_LIVES_WITH,
   POLITICAL_VIEWS,
-  POSITIVE_SINCE,
-  PREFERENCE_GENDER,
-  RELATIONSHIP_STATUS,
   RELIGION,
   SMOKING,
   WANT_CHILDREN,
 } from "./components/fieldOptions";
-import { patchPrivateAlbum } from "./action";
+import { getPrivateAlbum, savePrivateAlbum } from "./action";
+import {
+  buildPrivateAlbumFormData,
+  mergeProfileDetails,
+} from "./albumFormData";
+import { formatAlbumLabel, formatMeasure } from "./albumMap";
+import { handleClientSubscriptionError } from "@/helpers/handleClientSubscriptionError";
 import { toast } from "sonner";
 
 interface MyProfileFeatureProps {
@@ -56,355 +39,93 @@ interface MyProfileFeatureProps {
   user: User;
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { id: "summary", label: "Summary" },
-  { id: "more-about-me", label: "More About Me" },
-  { id: "moments", label: "Moments" },
-  { id: "my-events", label: "My Events" },
-  { id: "feedback", label: "Feedback" },
+const NAV_ITEMS: NavItem[] = [{ id: "summary", label: "Profile" }];
+
+const LIFESTYLE_FIELDS: FieldDef[] = [
+  { key: "smoking", label: "Smoking", type: "select", options: SMOKING },
+  { key: "drinking", label: "Drinking", type: "select", options: DRINKING },
+  {
+    key: "haveChildren",
+    label: "Have children",
+    type: "select",
+    options: HAVE_CHILDREN,
+  },
+  {
+    key: "wantChildren",
+    label: "Want children",
+    type: "select",
+    options: WANT_CHILDREN,
+  },
+  {
+    key: "astrologicalSign",
+    label: "Astrological sign",
+    type: "select",
+    options: ASTROLOGICAL_SIGN,
+  },
+  {
+    key: "annualIncome",
+    label: "Annual income",
+    type: "select",
+    options: ANNUAL_INCOME,
+  },
+  {
+    key: "politicalViews",
+    label: "Political views",
+    type: "select",
+    options: POLITICAL_VIEWS,
+  },
+  { key: "religion", label: "Religion", type: "select", options: RELIGION },
+  { key: "havePets", label: "Have pets", type: "select", options: HAVE_PETS },
 ];
 
-export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
-  const profile = useMyProfile(user);
-  const [activeId, setActiveId] = useState<string>(NAV_ITEMS[0].id);
-  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) {
-          setActiveId(visible[0].target.id);
-        }
-      },
-      {
-        rootMargin: "-25% 0px -55% 0px",
-        threshold: [0, 0.25, 0.5, 1],
-      },
-    );
-
-    NAV_ITEMS.forEach((item) => {
-      const el = document.getElementById(item.id);
-      sectionRefs.current[item.id] = el;
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const handleNavigate = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, []);
-
-  const preferenceFields: FieldDef[] = useMemo(
-    () => [
-      {
-        key: "gender",
-        label: "Gender",
-        type: "select",
-        options: PREFERENCE_GENDER,
-      },
-      {
-        key: "ageRange",
-        label: "Age range",
-        type: "range",
-        minKey: "ageMin",
-        maxKey: "ageMax",
-        min: 18,
-        max: 99,
-      },
-      {
-        key: "distance",
-        label: "Distance",
-        type: "select",
-        options: DISTANCE_OPTIONS,
-      },
-      {
-        key: "lookingFor",
-        label: "Looking for",
-        type: "select",
-        options: LOOKING_FOR,
-      },
-      {
-        key: "matchLivesWith",
-        label: "My Match Lives with",
-        type: "select",
-        options: MATCH_LIVES_WITH,
-      },
-    ],
-    [],
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid grid-cols-[10rem_minmax(0,1fr)] gap-3 items-start py-2">
+      <dt className="text-sm text-foreground">{label}:</dt>
+      <dd className="text-sm text-foreground">{value || "—"}</dd>
+    </div>
   );
+}
 
-  const basicsFields: FieldDef[] = useMemo(
-    () => [
-      {
-        key: "livingWith",
-        label: "Living With",
-        type: "select",
-        options: LIVING_WITH,
-      },
-      {
-        key: "positiveSince",
-        label: "Positive Since",
-        type: "select",
-        options: POSITIVE_SINCE,
-      },
-      { key: "gender", label: "Gender", type: "select", options: BASIC_GENDER },
-      { key: "willingToFly", label: "Willing to fly to meet?", type: "yesno" },
-      {
-        key: "willingToMeetSoon",
-        label: "Willing to Meet in Person Next 7 Days?",
-        type: "yesno",
-      },
-      {
-        key: "location",
-        label: "Location",
-        type: "text",
-        placeholder: "City, Country",
-      },
-      {
-        key: "height",
-        label: "Height",
-        type: "text",
-        placeholder: "e.g. 5' 10\" (178 cm)",
-      },
-      {
-        key: "weight",
-        label: "Weight",
-        type: "text",
-        emptyLabel: "Add",
-        placeholder: "e.g. 75 kg",
-      },
-      {
-        key: "ethnicity",
-        label: "Ethnicity",
-        type: "select",
-        options: ETHNICITY,
-      },
-      {
-        key: "relationshipStatus",
-        label: "Relationship status",
-        type: "select",
-        options: RELATIONSHIP_STATUS,
-      },
-      {
-        key: "bodyType",
-        label: "Body type",
-        type: "select",
-        options: BODY_TYPE,
-      },
-      {
-        key: "eyeColor",
-        label: "Eye color",
-        type: "select",
-        options: EYE_COLOR,
-      },
-      {
-        key: "hairColor",
-        label: "Hair color",
-        type: "select",
-        options: HAIR_COLOR,
-      },
-    ],
-    [],
-  );
-
-  const extrasFields: FieldDef[] = useMemo(
-    () => [
-      {
-        key: "languages",
-        label: "Languages",
-        type: "text",
-        placeholder: "e.g. English, Portuguese",
-      },
-      {
-        key: "education",
-        label: "Education",
-        type: "select",
-        options: EDUCATION,
-      },
-      {
-        key: "occupation",
-        label: "Occupation",
-        type: "text",
-        placeholder: "e.g. Software engineer",
-      },
-      { key: "smoking", label: "Smoking", type: "select", options: SMOKING },
-      { key: "drinking", label: "Drinking", type: "select", options: DRINKING },
-      {
-        key: "haveChildren",
-        label: "Have children",
-        type: "select",
-        options: HAVE_CHILDREN,
-      },
-      {
-        key: "wantChildren",
-        label: "Want children",
-        type: "select",
-        options: WANT_CHILDREN,
-      },
-      {
-        key: "astrologicalSign",
-        label: "Astrological sign",
-        type: "select",
-        options: ASTROLOGICAL_SIGN,
-      },
-      {
-        key: "annualIncome",
-        label: "Annual income",
-        type: "select",
-        options: ANNUAL_INCOME,
-      },
-      {
-        key: "politicalViews",
-        label: "Political views",
-        type: "select",
-        options: POLITICAL_VIEWS,
-      },
-      { key: "religion", label: "Religion", type: "select", options: RELIGION },
-      {
-        key: "havePets",
-        label: "Have pets",
-        type: "select",
-        options: HAVE_PETS,
-      },
-      {
-        key: "hobbies",
-        label: "My hobbies & interests",
-        type: "text",
-        placeholder: "e.g. Cycling, photography",
-      },
-      {
-        key: "favoriteMusic",
-        label: "My favorite music",
-        type: "text",
-        placeholder: "Genres or artists",
-      },
-    ],
-    [],
-  );
+export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) {
+  const profile = useMyProfile(user, lang);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [saving, setSaving] = useState(false);
 
   const updateDetails = useCallback(
-    async (patch: Partial<ProfileDetails>) => {
-      profile.update((prev) => ({ ...prev, ...patch }));
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payload: any = {};
-      if (patch.aboutMe !== undefined) payload.aboutMe = patch.aboutMe;
-      if (patch.bodyShapeStory !== undefined)
-        payload.bodyShape = patch.bodyShapeStory;
-      if (patch.inspirationalQuotes !== undefined)
-        payload.motivateMe = patch.inspirationalQuotes;
-      if (patch.conditionExperience !== undefined)
-        payload.myCondition = patch.conditionExperience;
-      if (patch.myFavorites !== undefined)
-        payload.favorites = patch.myFavorites;
-      if (patch.recommendations !== undefined)
-        payload.canEnjoyThem = patch.recommendations;
-      if (patch.personality !== undefined)
-        payload.personality = patch.personality;
-
-      if (patch.extras !== undefined) {
-        const e = patch.extras;
-        if (e.languages !== undefined) payload.languages = e.languages;
-        if (e.education !== undefined) {
-          if (e.education === "High school") payload.education = "HIGHT_SCHOOL";
-          else if (e.education === "Some college" || e.education === "Associate degree") payload.education = "COLLEGE";
-          else if (e.education === "Bachelor's degree") payload.education = "GRADUATE";
-          else if (e.education === "Master's degree") payload.education = "MASTERS";
-          else if (e.education === "Doctorate") payload.education = "DOCTORATE";
-          else payload.education = "HIGHT_SCHOOL"; // fallback
-        }
-        if (e.occupation !== undefined) payload.occupation = e.occupation;
-        if (e.smoking !== undefined) payload.smoking = e.smoking;
-        if (e.drinking !== undefined) payload.drinking = e.drinking;
-        if (e.haveChildren !== undefined) payload.haveChildren = e.haveChildren;
-        if (e.wantChildren !== undefined) payload.wantChildren = e.wantChildren;
-        if (e.astrologicalSign !== undefined)
-          payload.astrologicalSign = e.astrologicalSign;
-        if (e.annualIncome !== undefined) payload.annualIncome = e.annualIncome;
-        if (e.politicalViews !== undefined)
-          payload.politicalViews = e.politicalViews;
-        if (e.religion !== undefined) payload.religion = e.religion;
-        if (e.havePets !== undefined) payload.havePets = e.havePets;
-        if (e.hobbies !== undefined)
-          payload.myHobbiesAndInterests = e.hobbies
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean);
-        if (e.favoriteMusic !== undefined)
-          payload.myFavoriteMusic = e.favoriteMusic
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean);
-      }
-
-      if (Object.keys(payload).length > 0) {
-        if (!profile.albumId) {
-          toast.error("Could not save to private album: Album ID not found.");
-          return;
-        }
-        try {
-          const res = await patchPrivateAlbum(profile.albumId, payload);
-          if (!res.success) {
-            toast.error(res.message || "Failed to update profile.");
-          } else {
-            toast.success("Profile updated successfully!");
-          }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (e) {
-          toast.error("An error occurred");
-        }
-      } else {
-        // Show success message for fields that only update local state
-        toast.success("Profile updated successfully!");
-      }
+    (patch: Partial<ProfileDetails>) => {
+      profile.update((prev) => mergeProfileDetails(prev, patch));
     },
     [profile],
   );
 
-  const handlePreferencesSave = (next: FieldValues) => {
-    const updated: MatchPreferences = {
-      gender: (next.gender as MatchPreferences["gender"]) || "",
-      ageMin: Number(next.ageMin ?? 18),
-      ageMax: Number(next.ageMax ?? 99),
-      distance: (next.distance as MatchPreferences["distance"]) || "Anywhere",
-      lookingFor: String(next.lookingFor ?? ""),
-      matchLivesWith: String(next.matchLivesWith ?? ""),
-    };
-    updateDetails({ preferences: updated });
-  };
+  const handleSaveAll = useCallback(async () => {
+    setSaving(true);
+    try {
+      const formData = buildPrivateAlbumFormData(profile.details, pendingFiles);
+      const res = await savePrivateAlbum(formData);
+      if (handleClientSubscriptionError(res, lang)) return;
+      if (!res.success) {
+        toast.error(res.error || res.message || "Failed to update profile.");
+        return;
+      }
+      const albumId = res.data?._id || res.data?.id;
+      if (albumId) profile.setAlbumId(albumId);
+      if (res.data) profile.applyAlbum(res.data);
+      const latest = await getPrivateAlbum();
+      if (latest.success && latest.data) profile.applyAlbum(latest.data);
+      setPendingFiles([]);
+      toast.success("Profile saved successfully!");
+    } catch {
+      toast.error("An error occurred");
+    } finally {
+      setSaving(false);
+    }
+  }, [lang, pendingFiles, profile]);
 
-  const handleBasicsSave = (next: FieldValues) => {
-    const updated: ProfileBasics = {
-      livingWith: String(next.livingWith ?? ""),
-      positiveSince: String(next.positiveSince ?? ""),
-      gender: (next.gender as ProfileBasics["gender"]) || "",
-      willingToFly: (next.willingToFly as ProfileBasics["willingToFly"]) || "",
-      willingToMeetSoon:
-        (next.willingToMeetSoon as ProfileBasics["willingToMeetSoon"]) || "",
-      location: String(next.location ?? ""),
-      height: String(next.height ?? ""),
-      weight: String(next.weight ?? ""),
-      ethnicity: String(next.ethnicity ?? ""),
-      relationshipStatus: String(next.relationshipStatus ?? ""),
-      bodyType: String(next.bodyType ?? ""),
-      eyeColor: String(next.eyeColor ?? ""),
-      hairColor: String(next.hairColor ?? ""),
-    };
-    updateDetails({ basics: updated });
-  };
-
-  const handleExtrasSave = (next: FieldValues) => {
-    const updated: ProfileExtras = {
-      languages: String(next.languages ?? ""),
-      education: String(next.education ?? ""),
-      occupation: String(next.occupation ?? ""),
+  const handleLifestyleChange = (next: FieldValues) => {
+    const extras: ProfileExtras = {
+      ...profile.details.extras,
       smoking: String(next.smoking ?? ""),
       drinking: String(next.drinking ?? ""),
       haveChildren: String(next.haveChildren ?? ""),
@@ -414,10 +135,20 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
       politicalViews: String(next.politicalViews ?? ""),
       religion: String(next.religion ?? ""),
       havePets: String(next.havePets ?? ""),
-      hobbies: String(next.hobbies ?? ""),
-      favoriteMusic: String(next.favoriteMusic ?? ""),
     };
-    updateDetails({ extras: updated });
+    updateDetails({ extras });
+  };
+
+  const handleAddMedia = (file: File) => {
+    const url = URL.createObjectURL(file);
+    profile.addVideo({
+      id: `pending_media_${Date.now()}`,
+      url,
+      thumbnail: url,
+      durationSeconds: 0,
+      visibility: "private",
+    });
+    setPendingFiles((prev) => [...prev, file]);
   };
 
   if (!profile.hydrated) {
@@ -428,7 +159,15 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
     );
   }
 
-  const { details } = profile;
+  const { details, userInfo } = profile;
+  const hasUserInfo = Boolean(
+    userInfo.bio ||
+      userInfo.education ||
+      userInfo.height ||
+      userInfo.weight ||
+      userInfo.nationality ||
+      userInfo.relationStatus,
+  );
 
   return (
     <div className="container py-6">
@@ -439,8 +178,8 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
             displayName={profile.displayName}
             age={user.age}
             navItems={NAV_ITEMS}
-            activeId={activeId}
-            onNavigate={handleNavigate}
+            activeId="summary"
+            onNavigate={() => undefined}
             onAvatarChange={profile.updateAvatar}
             onDisplayNameSave={profile.updateDisplayName}
           />
@@ -450,130 +189,135 @@ export default function MyProfileFeature({ user }: MyProfileFeatureProps) {
           <section id="summary" className="space-y-6 scroll-mt-24">
             <PhotosBlock
               photos={details.photos}
-              onAdd={(arr) => arr.forEach((p) => profile.addPhoto(p))}
+              defaultTab="private"
+              onAdd={(arr, files) => {
+                arr.forEach((p) => profile.addPhoto(p));
+                setPendingFiles((prev) => [...prev, ...files]);
+              }}
               onRemove={profile.removePhoto}
             />
 
-            {/* <VideosBlock
-              videos={details.videos}
-              onAdd={profile.addVideo}
-              onRemove={profile.removeVideo}
-            /> */}
+            <section className="space-y-3 rounded-2xl border border-border/70 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-base font-bold tracking-tight">Media</h3>
+                <label className="cursor-pointer rounded-full border border-border px-3 py-1.5 text-xs font-semibold hover:bg-muted">
+                  Add video
+                  <input
+                    type="file"
+                    accept="video/*"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleAddMedia(file);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
+              {details.videos.length > 0 ? (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {details.videos.map((video) => (
+                    <div
+                      key={video.id}
+                      className="overflow-hidden rounded-md bg-black"
+                    >
+                      <video
+                        src={video.url}
+                        controls
+                        className="aspect-video w-full"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No media uploaded yet.
+                </p>
+              )}
+            </section>
 
-            <PrivateAlbumBlock />
+            <div className="divide-y divide-border rounded-2xl border border-border/70 bg-white px-5 shadow-sm">
+              {hasUserInfo ? (
+                <section className="space-y-1 py-5">
+                  <h3 className="text-sm font-bold text-foreground">
+                    Profile info
+                  </h3>
+                  <dl>
+                    <InfoRow label="Bio" value={userInfo.bio} />
+                    <InfoRow
+                      label="Education"
+                      value={formatAlbumLabel(userInfo.education)}
+                    />
+                    <InfoRow
+                      label="Height"
+                      value={formatMeasure(userInfo.height, "cm")}
+                    />
+                    <InfoRow
+                      label="Weight"
+                      value={formatMeasure(userInfo.weight, "kg")}
+                    />
+                    <InfoRow label="Nationality" value={userInfo.nationality} />
+                    <InfoRow
+                      label="Relationship status"
+                      value={formatAlbumLabel(userInfo.relationStatus)}
+                    />
+                  </dl>
+                </section>
+              ) : null}
 
-            <button
-              type="button"
-              className="flex w-full items-center justify-between border-y border-border py-3 text-sm font-semibold hover:text-brand transition-colors cursor-pointer"
-            >
-              Requests to Upload More to Albums
-              <ChevronRight className="size-4" />
-            </button>
-
-            <div className="divide-y divide-border">
               <EditableText
-                title="About Me (Important)"
+                title="About Me"
                 placeholder="Share something true about who you are right now."
                 value={details.aboutMe}
-                onSave={(v) => updateDetails({ aboutMe: v })}
+                onChange={(v) => updateDetails({ aboutMe: v })}
               />
               <EditableText
-                title="About My Match"
-                placeholder="Describe the kind of person you're hoping to meet."
-                value={details.aboutMyMatch}
-                onSave={(v) => updateDetails({ aboutMyMatch: v })}
+                title="Body Shape"
+                placeholder="Share how you stay in shape."
+                value={details.bodyShapeStory}
+                onChange={(v) => updateDetails({ bodyShapeStory: v })}
+              />
+              <EditableText
+                title="What Motivates Me"
+                placeholder="Share quotes or habits that keep you going."
+                value={details.inspirationalQuotes}
+                onChange={(v) => updateDetails({ inspirationalQuotes: v })}
+              />
+              <EditableText
+                title="My Condition"
+                placeholder="Tell your story to inspire and guide others."
+                value={details.conditionExperience}
+                onChange={(v) => updateDetails({ conditionExperience: v })}
               />
               <EditableRows
-                title="Preferences for My Matches"
-                fields={preferenceFields}
+                title="Lifestyle"
+                fields={LIFESTYLE_FIELDS}
                 values={{
-                  gender: details.preferences.gender,
-                  ageMin: details.preferences.ageMin,
-                  ageMax: details.preferences.ageMax,
-                  distance: details.preferences.distance,
-                  lookingFor: details.preferences.lookingFor,
-                  matchLivesWith: details.preferences.matchLivesWith,
+                  smoking: details.extras.smoking,
+                  drinking: details.extras.drinking,
+                  haveChildren: details.extras.haveChildren,
+                  wantChildren: details.extras.wantChildren,
+                  astrologicalSign: details.extras.astrologicalSign,
+                  annualIncome: details.extras.annualIncome,
+                  politicalViews: details.extras.politicalViews,
+                  religion: details.extras.religion,
+                  havePets: details.extras.havePets,
                 }}
-                onSave={handlePreferencesSave}
-              />
-              <EditableText
-                title="How I Work Hard and Keep My Body in Shape"
-                placeholder="Share how you stay in shape to encourage others to prioritize their health and wellness."
-                value={details.bodyShapeStory}
-                onSave={(v) => updateDetails({ bodyShapeStory: v })}
-              />
-              <EditableText
-                title="The Inspirational Quotes that Motivate Me"
-                placeholder="Share quotes that inspire you and reflect your values."
-                value={details.inspirationalQuotes}
-                onSave={(v) => updateDetails({ inspirationalQuotes: v })}
-              />
-              <EditableText
-                title="Experience of Having My Condition"
-                placeholder="Tell your story to inspire and guide others in similar situations."
-                value={details.conditionExperience}
-                onSave={(v) => updateDetails({ conditionExperience: v })}
-              />
-              <EditableText
-                title="My Favorites"
-                placeholder="Any other favorites you'd like to add."
-                value={details.myFavorites}
-                onSave={(v) => updateDetails({ myFavorites: v })}
-              />
-              <EditableText
-                title="Things I Highly Recommend to the Community so Everyone Can Enjoy Them"
-                placeholder="Share your favorite restaurants, brands, or activities."
-                value={details.recommendations}
-                onSave={(v) => updateDetails({ recommendations: v })}
+                onChange={handleLifestyleChange}
               />
             </div>
           </section>
 
-          <section
-            id="more-about-me"
-            className="space-y-6 scroll-mt-24 divide-y divide-border"
-          >
-            <EditableRows
-              title="My Basics"
-              fields={basicsFields}
-              values={details.basics as unknown as FieldValues}
-              onSave={handleBasicsSave}
-            />
-            <EditableRows
-              title="More About Me"
-              fields={extrasFields}
-              values={details.extras as unknown as FieldValues}
-              onSave={handleExtrasSave}
-            />
-            <EditableText
-              title="My Personality"
-              placeholder="How would you describe your personality? Share a little bit of who you are."
-              value={details.personality}
-              onSave={(v) => updateDetails({ personality: v })}
-            />
-          </section>
-
-          <section id="moments" className="scroll-mt-24 py-5">
-            <h3 className="text-sm font-bold">Moments</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Your published moments will appear here.
-            </p>
-          </section>
-
-          <section id="my-events" className="scroll-mt-24 py-5">
-            <h3 className="text-sm font-bold">My Events</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
-              Events you've created or RSVP&apos;d to will appear here.
-            </p>
-          </section>
-
-          <section id="feedback" className="scroll-mt-24 py-5">
-            <h3 className="text-sm font-bold">Feedback</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Feedback others have left on your profile will appear here.
-            </p>
-          </section>
+          <div className="sticky bottom-4 z-20 flex justify-end pt-2">
+            <button
+              type="button"
+              disabled={saving}
+              onClick={handleSaveAll}
+              className="rounded-full bg-[#429CA8] px-8 py-3 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-[#357D87] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+            >
+              {saving ? "Saving..." : "Save profile"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

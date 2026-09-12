@@ -9,7 +9,7 @@ interface EditableTextProps {
   title: string;
   placeholder?: string;
   value: string;
-  onSave: (next: string) => void;
+  onChange: (next: string) => void;
   maxLength?: number;
 }
 
@@ -18,7 +18,7 @@ export function EditableText({
   title,
   placeholder,
   value,
-  onSave,
+  onChange,
   maxLength = 2000,
 }: EditableTextProps) {
   const [editing, setEditing] = useState(false);
@@ -29,14 +29,9 @@ export function EditableText({
     if (!editing) setDraft(value);
   }, [editing, value]);
 
-  const handleSave = () => {
-    onSave(draft.trim());
-    setEditing(false);
-  };
-
-  const handleCancel = () => {
-    setDraft(value);
-    setEditing(false);
+  const handleDraftChange = (next: string) => {
+    setDraft(next);
+    onChange(next);
   };
 
   return (
@@ -68,7 +63,9 @@ export function EditableText({
         <div className="space-y-2">
           <textarea
             value={draft}
-            onChange={(e) => setDraft(e.target.value.slice(0, maxLength))}
+            onChange={(e) =>
+              handleDraftChange(e.target.value.slice(0, maxLength))
+            }
             placeholder={placeholder}
             rows={4}
             className="w-full rounded-md border border-border bg-background p-3 text-sm outline-none focus:border-brand"
@@ -77,22 +74,13 @@ export function EditableText({
             <span>
               {draft.length}/{maxLength.toLocaleString()}
             </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-hover transition-colors cursor-pointer"
-              >
-                Save
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors cursor-pointer"
+            >
+              Done
+            </button>
           </div>
         </div>
       )}

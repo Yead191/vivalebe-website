@@ -2,19 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
+import { handleClientSubscriptionError } from "@/helpers/handleClientSubscriptionError";
+import type { Locale } from "@/i18n/config";
 import { getPrivateAlbum } from "../action";
 import { Loader2, Lock } from "lucide-react";
 import { getImageUrl } from "@/helpers/getImageUrl";
 
-export function PrivateAlbumBlock() {
+export function PrivateAlbumBlock({
+  lang,
+  refreshKey = 0,
+}: {
+  lang: Locale;
+  refreshKey?: number;
+}) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [albumData, setAlbumData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchAlbum = async () => {
+      setIsLoading(true);
       try {
         const res = await getPrivateAlbum();
+        if (handleClientSubscriptionError(res, lang)) return;
         if (res.success && res.data) {
           setAlbumData(res.data);
         }
@@ -25,7 +35,7 @@ export function PrivateAlbumBlock() {
       }
     };
     fetchAlbum();
-  }, []);
+  }, [lang, refreshKey]);
 
   if (isLoading) {
     return (
@@ -40,10 +50,10 @@ export function PrivateAlbumBlock() {
   }
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 rounded-2xl border border-border/70 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-2">
         <Lock className="w-5 h-5 text-brand" />
-        <h3 className="text-lg font-bold">My Private Album</h3>
+        <h3 className="text-base font-bold tracking-tight">My Private Album</h3>
       </div>
       <p className="text-sm text-muted-foreground">
         These photos and media are protected and only visible to members you
@@ -57,7 +67,7 @@ export function PrivateAlbumBlock() {
             {albumData.images.map((img: string, idx: number) => (
               <div
                 key={idx}
-                className="relative aspect-square overflow-hidden bg-muted rounded-md"
+                className="relative aspect-square overflow-hidden rounded-2xl bg-muted"
               >
                 <Image
                   src={getImageUrl(img) || ""}
@@ -79,7 +89,7 @@ export function PrivateAlbumBlock() {
             {albumData.protectedImages.map((img: string, idx: number) => (
               <div
                 key={idx}
-                className="relative aspect-square overflow-hidden bg-muted rounded-md"
+                className="relative aspect-square overflow-hidden rounded-2xl bg-muted"
               >
                 <Image
                   src={getImageUrl(img) || ""}

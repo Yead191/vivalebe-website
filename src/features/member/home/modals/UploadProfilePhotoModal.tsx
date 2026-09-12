@@ -15,7 +15,11 @@ import type { PhotoEntry } from "@/lib/types";
 interface UploadProfilePhotoModalProps {
   trigger: React.ReactNode;
   defaultVisibility?: PhotoEntry["visibility"];
-  onAdd: (photos: PhotoEntry[]) => void;
+  onAdd: (
+    photos: PhotoEntry[],
+    files: File[],
+  ) => boolean | void | Promise<boolean | void>;
+  submitting?: boolean;
 }
 
 const VISIBILITY_OPTIONS: { label: string; value: PhotoEntry["visibility"] }[] =
@@ -29,6 +33,7 @@ export function UploadProfilePhotoModal({
   trigger,
   defaultVisibility = "public",
   onAdd,
+  submitting = false,
 }: UploadProfilePhotoModalProps) {
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -79,16 +84,16 @@ export function UploadProfilePhotoModal({
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    if (files.length === 0) return;
+  const handleSubmit = async () => {
+    if (files.length === 0 || submitting) return;
     const additions: PhotoEntry[] = previews.map((url, i) => ({
       id: `p_${Date.now()}_${i}`,
       url,
       visibility,
       status: "pending",
     }));
-    onAdd(additions);
-    setOpen(false);
+    const ok = await onAdd(additions, files);
+    if (ok !== false) setOpen(false);
   };
 
   return (
@@ -171,11 +176,11 @@ export function UploadProfilePhotoModal({
 
           <button
             type="button"
-            disabled={files.length === 0}
+            disabled={files.length === 0 || submitting}
             onClick={handleSubmit}
             className="w-40 bg-brand py-3 text-xs font-bold uppercase tracking-[0.2em] text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
-            UPLOAD
+            {submitting ? "UPLOADING..." : "UPLOAD"}
           </button>
 
           <div className="space-y-2 border-t border-gray-100 pt-4">

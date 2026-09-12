@@ -93,68 +93,87 @@ export const EDUCATION = [
   "Other",
 ];
 
-export const SMOKING = ["Never", "Socially", "Regularly", "Trying to quit"];
-export const DRINKING = ["Never", "Socially", "Regularly", "Sober"];
+export type SelectOption = { value: string; label: string };
 
-export const HAVE_CHILDREN = [
-  "No",
-  "Yes — one",
-  "Yes — two",
-  "Yes — three or more",
+export const SMOKING: SelectOption[] = [
+  { value: "never", label: "Never" },
+  { value: "social", label: "Socially" },
+  { value: "tryToQuit", label: "Trying to quit" },
+  { value: "regularly", label: "Regularly" },
 ];
 
-export const WANT_CHILDREN = ["Yes", "No", "Maybe", "Already have"];
-
-export const ASTROLOGICAL_SIGN = [
-  "Aries",
-  "Taurus",
-  "Gemini",
-  "Cancer",
-  "Leo",
-  "Virgo",
-  "Libra",
-  "Scorpio",
-  "Sagittarius",
-  "Capricorn",
-  "Aquarius",
-  "Pisces",
+export const DRINKING: SelectOption[] = [
+  { value: "never", label: "Never" },
+  { value: "social", label: "Socially" },
+  { value: "tryToQuit", label: "Trying to quit" },
+  { value: "regularly", label: "Regularly" },
 ];
 
-export const ANNUAL_INCOME = [
-  "Prefer not to say",
-  "Less than $25k",
-  "$25k–$50k",
-  "$50k–$75k",
-  "$75k–$100k",
-  "$100k–$150k",
-  "$150k+",
+export const HAVE_CHILDREN: SelectOption[] = [
+  { value: "no", label: "No" },
+  { value: "yes-one", label: "Yes — one" },
+  { value: "yes-two", label: "Yes — two" },
+  { value: "yes-three-or-more", label: "Yes — three or more" },
 ];
 
-export const POLITICAL_VIEWS = [
-  "Liberal",
-  "Moderate",
-  "Conservative",
-  "Apolitical",
-  "Prefer not to say",
+export const WANT_CHILDREN: SelectOption[] = [
+  { value: "yes", label: "Yes" },
+  { value: "no", label: "No" },
+  { value: "maybe", label: "Maybe" },
+  { value: "have-already", label: "Already have" },
 ];
 
-export const RELIGION = [
-  "Christian",
-  "Catholic",
-  "Jewish",
-  "Muslim",
-  "Hindu",
-  "Buddhist",
-  "Atheist",
-  "Agnostic",
-  "Spiritual but not religious",
-  "Other",
+export const ASTROLOGICAL_SIGN: SelectOption[] = [
+  { value: "aries", label: "Aries" },
+  { value: "taurus", label: "Taurus" },
+  { value: "gemini", label: "Gemini" },
+  { value: "cancer", label: "Cancer" },
+  { value: "leo", label: "Leo" },
+  { value: "virgo", label: "Virgo" },
+  { value: "libra", label: "Libra" },
+  { value: "scorpio", label: "Scorpio" },
+  { value: "sagittarius", label: "Sagittarius" },
+  { value: "capricorn", label: "Capricorn" },
+  { value: "aquarius", label: "Aquarius" },
+  { value: "pisces", label: "Pisces" },
 ];
 
-export const HAVE_PETS = [
-  "No",
-  "Yes — dog",
-  "Yes — cat",
-  "Yes — both",
-  "Yes — other",
+export const ANNUAL_INCOME: SelectOption[] = [
+  { value: "preferNotToSay", label: "Prefer not to say" },
+  { value: "lessThan10000", label: "Less than $10k" },
+  { value: "10000-20000", label: "$10k–$20k" },
+  { value: "20000-30000", label: "$20k–$30k" },
+  { value: "30000-40000", label: "$30k–$40k" },
+  { value: "40000-50000", label: "$40k–$50k" },
+  { value: "50000-60000", label: "$50k–$60k" },
+  { value: "60000-70000", label: "$60k–$70k" },
+  { value: "70000-80000", label: "$70k–$80k" },
+  { value: "80000-90000", label: "$80k–$90k" },
+  { value: "90000-100000", label: "$90k–$100k" },
+  { value: "100000-150000", label: "$100k–$150k" },
+  { value: "150000-200000", label: "$150k–$200k" },
+  { value: "200000-250000", label: "$200k–$250k" },
+];
+
+export const POLITICAL_VIEWS: SelectOption[] = [
+  { value: "liberal", label: "Liberal" },
+  { value: "conservative", label: "Conservative" },
+  { value: "moderate", label: "Moderate" },
+  { value: "apolitical", label: "Apolitical" },
+  { value: "other", label: "Other" },
+];
+
+export const RELIGION: SelectOption[] = [
+  { value: "christian", label: "Christian" },
+  { value: "muslim", label: "Muslim" },
+  { value: "hindu", label: "Hindu" },
+  { value: "buddhist", label: "Buddhist" },
+  { value: "other", label: "Other" },
+];
+
+export const HAVE_PETS: SelectOption[] = [
+  { value: "no", label: "No" },
+  { value: "yes-dog", label: "Yes — dog" },
+  { value: "yes-cat", label: "Yes — cat" },
+  { value: "yes-other", label: "Yes — other" },
 ];
