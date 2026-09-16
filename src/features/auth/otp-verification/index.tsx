@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { toast } from "sonner";
 import { verifyEmailAction, resendOtpAction } from "./action";
+import { resetTokenFromOtpData, saveResetToken } from "../resetToken";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -97,6 +98,19 @@ export default function OTPVerificationFeature({ dict, lang }: Props) {
       const res = await verifyEmailAction({ email, oneTimeCode: Number(otpString) });
       
       if (res.success) {
+        const isPasswordReset = searchParams.get("purpose") === "reset";
+        if (isPasswordReset) {
+          const token = resetTokenFromOtpData(res.data);
+          if (!token) {
+            toast.error("Reset token missing. Please try again.");
+            return;
+          }
+          saveResetToken(token);
+          toast.success(res.message || "Code verified successfully!");
+          router.push(`/${lang}/auth/reset-password`);
+          return;
+        }
+
         toast.success(res.message || "Email verified successfully!");
         router.push(`/${lang}/auth/login`);
       } else {

@@ -33,6 +33,7 @@ const authRoutes = [
   "/auth/register",
   "/auth/otp-verification",
   "/auth/forgot-password",
+  "/auth/reset-password",
 ];
 
 function clearAuthCookies(response: NextResponse) {
