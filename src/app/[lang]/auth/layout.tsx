@@ -47,7 +47,7 @@ export default async function AuthSharedLayout({
                 </div>
 
                 <div className="text-xs text-white/50 font-medium tracking-wide uppercase relative z-10">
-                    © 2026 VIVALIVE
+                    © {new Date().getFullYear()} Sigaleve
                 </div>
             </div>
 
