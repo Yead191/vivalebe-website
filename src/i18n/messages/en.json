@@ -382,12 +382,14 @@
     "sendCodeButton": "Generate Verification Code",
     "resetPasswordTitle": "Setup New Password",
     "resetPasswordSubtitle": "Configure your modern security key configurations below.",
-    "resetPasswordButton": "Update Password Security Key",
+    "resetPasswordButton": "Update Password",
     "labels": {
       "fullName": "Full Name",
       "email": "Email address",
       "password": "Password",
+      "newPassword": "New Password",
       "confirmPassword": "Confirm Password",
+      "confirmNewPassword": "Confirm New Password",
       "rememberMe": "Keep me logged in"
     }
   },

@@ -380,6 +380,8 @@
       "fullName": "Nome completo",
       "email": "Endereço de e-mail",
       "password": "Senha",
+      "newPassword": "Nova Senha",
+      "confirmNewPassword": "Confirmar Nova Senha",
       "confirmPassword": "Confirmar Senha",
       "rememberMe": "Manter conectado neste dispositivo"
     }

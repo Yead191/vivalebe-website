@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getNotifications, markNotificationAsRead } from "./action";
+import { markNotificationAsRead } from "./action";
 
 function timeAgo(date: Date) {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
@@ -34,9 +34,11 @@ export function NotificationsBell() {
   useEffect(() => {
     async function fetchNotifs() {
       try {
-        const data = await getNotifications();
-        console.log("NOTIFICATIONS API RESPONSE:", data);
-        setItems(data || []);
+        const res = await fetch("/api/notifications", {
+          credentials: "same-origin",
+        });
+        const data = res.ok ? await res.json() : [];
+        setItems(Array.isArray(data) ? data : []);
       } catch (e) {
         console.error(e);
       } finally {

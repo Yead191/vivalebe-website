@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Video, Sparkles, Heart, Loader2 } from "lucide-react";
 import type { Locale } from "@/i18n/config";
@@ -19,7 +19,7 @@ import { ConnectionRow } from "./cards/ConnectionRow";
 import { SortDropdown } from "./SortDropdown";
 import { UploadVideoModal } from "./modals/UploadVideoModal";
 import { CreatePostModal } from "./modals/CreatePostModal";
-import { getFeed, type PostMeta } from "./action";
+import type { PostMeta } from "./action";
 import { parseHomeTab, type HomeTab } from "./tabs";
 
 export type { PostMeta, HomeTab };
@@ -70,6 +70,28 @@ function mergeById<T extends { id: string }>(
   return next;
 }
 
+async function fetchFeedPage(type: "VIDEO" | "IMAGE", page: number) {
+  const params = new URLSearchParams({
+    type,
+    page: String(page),
+    limit: String(PAGE_LIMIT),
+  });
+  const res = await fetch(`/api/feed?${params.toString()}`, {
+    credentials: "same-origin",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to load feed");
+  }
+  return res.json() as Promise<{
+    videos: VideoPost[];
+    moments: MomentPost[];
+    videoMeta: Record<string, PostMeta>;
+    momentMeta: Record<string, PostMeta>;
+    authors: Record<string, User>;
+    pagination: { page: number; hasNextPage: boolean };
+  }>;
+}
+
 export function HomeTabs({
   lang,
   dict,
@@ -85,8 +107,8 @@ export function HomeTabs({
   currentUserAvatarSeed,
   isPremium = false,
 }: HomeTabsProps) {
-  const router = useRouter();
   const pathname = usePathname();
+  const [tab, setTab] = useState<HomeTab>(activeTab);
   const [videoSort, setVideoSort] = useState<FeedSort>("newest");
   const [momentSort, setMomentSort] = useState<FeedSort>("popular");
 
@@ -136,12 +158,14 @@ export function HomeTabs({
     setLoadingVideos(true);
     try {
       const nextPage = videoPage + 1;
-      const res = await getFeed("VIDEO", nextPage, PAGE_LIMIT);
+      const res = await fetchFeedPage("VIDEO", nextPage);
       setVideos((prev) => mergeById(prev, res.videos));
       setVideoMeta((prev) => ({ ...prev, ...res.videoMeta }));
       setAuthors((prev) => ({ ...prev, ...res.authors }));
       setVideoPage(res.pagination.page);
       setVideoHasNext(res.pagination.hasNextPage);
+    } catch (error) {
+      console.error("Failed to load more videos", error);
     } finally {
       loadingVideosRef.current = false;
       setLoadingVideos(false);
@@ -154,12 +178,14 @@ export function HomeTabs({
     setLoadingMoments(true);
     try {
       const nextPage = momentPage + 1;
-      const res = await getFeed("IMAGE", nextPage, PAGE_LIMIT);
+      const res = await fetchFeedPage("IMAGE", nextPage);
       setMoments((prev) => mergeById(prev, res.moments));
       setMomentMeta((prev) => ({ ...prev, ...res.momentMeta }));
       setAuthors((prev) => ({ ...prev, ...res.authors }));
       setMomentPage(res.pagination.page);
       setMomentHasNext(res.pagination.hasNextPage);
+    } catch (error) {
+      console.error("Failed to load more moments", error);
     } finally {
       loadingMomentsRef.current = false;
       setLoadingMoments(false);
@@ -167,7 +193,7 @@ export function HomeTabs({
   }, [momentHasNext, momentPage]);
 
   useEffect(() => {
-    if (activeTab !== "videos" || !videoHasNext) return;
+    if (tab !== "videos" || !videoHasNext) return;
     const node = videoSentinelRef.current;
     if (!node) return;
 
@@ -179,10 +205,10 @@ export function HomeTabs({
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [activeTab, videoHasNext, loadMoreVideos]);
+  }, [tab, videoHasNext, loadMoreVideos]);
 
   useEffect(() => {
-    if (activeTab !== "moments" || !momentHasNext) return;
+    if (tab !== "moments" || !momentHasNext) return;
     const node = momentSentinelRef.current;
     if (!node) return;
 
@@ -194,7 +220,7 @@ export function HomeTabs({
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [activeTab, momentHasNext, loadMoreMoments]);
+  }, [tab, momentHasNext, loadMoreMoments]);
 
   const sortedVideos = useMemo(
     () =>
@@ -227,12 +253,15 @@ export function HomeTabs({
   );
 
   const onTabChange = (value: string) => {
-    const tab = parseHomeTab(value);
-    router.replace(`${pathname}?tab=${tab}`, { scroll: false });
+    const next = parseHomeTab(value);
+    if (next === tab) return;
+    setTab(next);
+    const href = next === "videos" ? pathname : `${pathname}?tab=${next}`;
+    window.history.replaceState(window.history.state, "", href);
   };
 
   return (
-    <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
+    <Tabs value={tab} onValueChange={onTabChange} className="w-full">
       <TabsList className="grid w-full grid-cols-3 gap-1 rounded-[20px] bg-muted/40 p-1.5">
         <TabsTrigger
           value="videos"

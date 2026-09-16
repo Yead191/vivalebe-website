@@ -350,21 +350,21 @@ export default function ForgotPasswordFeature({ dict, lang }: Props) {
               <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
                 {dict.auth?.resetPasswordTitle || "Update Password"}
               </h2>
-              <p className="text-sm text-neutral-500">
+              {/* <p className="text-sm text-neutral-500">
                 {dict.auth?.resetPasswordSubtitle ||
                   "Assign new protective passkey configuration keys."}
-              </p>
+              </p> */}
             </div>
             <FormPassword
               control={resetForm.control}
               name="password"
-              label={dict.auth?.labels?.password}
+              label={dict.auth?.labels?.newPassword || "New Password"}
               placeholder="••••••••"
             />
             <FormPassword
               control={resetForm.control}
               name="confirmPassword"
-              label={dict.auth?.labels?.confirmPassword || "Confirm Password"}
+              label={dict.auth?.labels?.confirmNewPassword || "Confirm New Password"}
               placeholder="••••••••"
             />
             <Button
