@@ -30,7 +30,6 @@ import {
   mergeProfileDetails,
 } from "./albumFormData";
 import { formatAlbumLabel, formatMeasure } from "./albumMap";
-import { handleClientSubscriptionError } from "@/helpers/handleClientSubscriptionError";
 import { toast } from "sonner";
 
 interface MyProfileFeatureProps {
@@ -88,7 +87,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) {
-  const profile = useMyProfile(user, lang);
+  const profile = useMyProfile(user);
   const [pendingUploads, setPendingUploads] = useState<
     { id: string; file: File }[]
   >([]);
@@ -111,7 +110,6 @@ export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) 
       const files = pendingUploadsRef.current.map((item) => item.file);
       const formData = buildPrivateAlbumFormData(detailsRef.current, files);
       const res = await savePrivateAlbum(formData);
-      if (handleClientSubscriptionError(res, lang)) return;
       if (!res.success) {
         toast.error(res.error || res.message || "Failed to update profile.");
         return;
@@ -127,7 +125,7 @@ export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) 
     } finally {
       setSaving(false);
     }
-  }, [lang, profile]);
+  }, [profile]);
 
   const handleLifestyleChange = (next: FieldValues) => {
     const extras: ProfileExtras = {

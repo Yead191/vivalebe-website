@@ -2,17 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
-import { handleClientSubscriptionError } from "@/helpers/handleClientSubscriptionError";
 import type { Locale } from "@/i18n/config";
 import { getPrivateAlbum } from "../action";
 import { Loader2, Lock } from "lucide-react";
 import { getImageUrl } from "@/helpers/getImageUrl";
 
 export function PrivateAlbumBlock({
-  lang,
   refreshKey = 0,
 }: {
-  lang: Locale;
+  lang?: Locale;
   refreshKey?: number;
 }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,7 +22,6 @@ export function PrivateAlbumBlock({
       setIsLoading(true);
       try {
         const res = await getPrivateAlbum();
-        if (handleClientSubscriptionError(res, lang)) return;
         if (res.success && res.data) {
           setAlbumData(res.data);
         }
@@ -35,7 +32,7 @@ export function PrivateAlbumBlock({
       }
     };
     fetchAlbum();
-  }, [lang, refreshKey]);
+  }, [refreshKey]);
 
   if (isLoading) {
     return (

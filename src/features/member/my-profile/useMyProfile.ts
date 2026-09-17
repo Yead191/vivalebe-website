@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { PhotoEntry, ProfileDetails, User, VideoEntry } from "@/lib/types";
 import { hasRealImageSrc } from "@/lib/image";
-import { handleClientSubscriptionError } from "@/helpers/handleClientSubscriptionError";
-import type { Locale } from "@/i18n/config";
 import { getPrivateAlbum } from "./action";
 import {
   albumAvatarUrl,
@@ -124,7 +122,7 @@ function buildInitial(user: User): PersistedState {
   };
 }
 
-export function useMyProfile(user: User, lang: Locale): MyProfileApi {
+export function useMyProfile(user: User): MyProfileApi {
   const [state, setState] = useState<PersistedState>(() => buildInitial(user));
   const [hydrated, setHydrated] = useState(false);
 
@@ -147,7 +145,6 @@ export function useMyProfile(user: User, lang: Locale): MyProfileApi {
     const fetchData = async () => {
       try {
         const res = await getPrivateAlbum();
-        if (handleClientSubscriptionError(res, lang)) return;
         if (res.success && res.data) applyAlbum(res.data);
       } catch (err) {
         console.error("Error fetching private albums data", err);
@@ -157,7 +154,7 @@ export function useMyProfile(user: User, lang: Locale): MyProfileApi {
     };
 
     fetchData();
-  }, [applyAlbum, lang, user.id]);
+  }, [applyAlbum, user.id]);
 
   const update = useCallback((updater: Updater) => {
     setState((prev) => ({ ...prev, details: updater(prev.details) }));

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { getUserById } from "@/features/member/profile/action";
+import { userFromProfilePayload } from "@/features/member/profile/mapUser";
 import { ProfileFeature } from "@/features/member/profile";
 import { ProfileNotFoundState } from "@/features/member/profile/ProfileNotFoundState";
 import { getProfileAction } from "@/features/member/settings/action";
@@ -39,10 +40,20 @@ export default async function MyListProfilePage({
 
   const localeLang = lang as Locale;
 
-  const user = await getUserById(id);
   const dict = await getDictionary(localeLang);
   const profileRes = await getProfileAction();
-  const isPremium = !!profileRes?.data?.premiumMembership;
+  const me = profileRes?.data;
+  const meId = String(me?._id || me?.id || "");
+  const isOwnProfile =
+    Boolean(meId) &&
+    (meId === id || String(me?.username || "") === id);
+  const isPremium =
+    isOwnProfile ||
+    !!(me?.premiumMembership ?? me?.premium);
+
+  const user =
+    (await getUserById(id, { skipSubscriptionRedirect: isOwnProfile })) ||
+    (isOwnProfile ? userFromProfilePayload(me) : null);
 
   if (!user) {
     return <ProfileNotFoundState lang={localeLang} dict={dict} username={id} />;

@@ -20,6 +20,16 @@ function isPublicAuthCall(url: string) {
   return publicAuthPaths.some((authPath) => path === authPath);
 }
 
+function isOwnProfileEndpoint(url: string) {
+  const path = url.split("?")[0];
+  return (
+    path === "/user/profile" ||
+    path === "/user" ||
+    path === "/private-albums" ||
+    /^\/private-albums\/[^/]+$/.test(path)
+  );
+}
+
 interface Pagination {
   limit: number;
   total?: number;
@@ -48,6 +58,7 @@ interface FetchOptions {
   cache?: RequestCache;
   tags?: string[];
   next?: NextFetchRequestConfig;
+  skipSubscriptionRedirect?: boolean;
 }
 
 function resolveErrorMessage(json: any): string {
@@ -69,6 +80,7 @@ export const myFetch = async <T = any>(
     headers = {},
     cache = "default",
     next = {},
+    skipSubscriptionRedirect = false,
   }: FetchOptions = {},
 ): Promise<FetchResponse<T>> => {
   const accessToken = await getAccessToken();
@@ -114,11 +126,13 @@ export const myFetch = async <T = any>(
       await forceLogoutAndRedirectToLogin();
     }
 
-    await redirectToSubscriptionIfNeeded({
-      message: json?.message,
-      error: json?.error,
-      errorMessages: json?.errorMessages,
-    });
+    if (!skipSubscriptionRedirect && !isOwnProfileEndpoint(url)) {
+      await redirectToSubscriptionIfNeeded({
+        message: json?.message,
+        error: json?.error,
+        errorMessages: json?.errorMessages,
+      });
+    }
 
     if (!res.ok || json?.success === false) {
       return {
