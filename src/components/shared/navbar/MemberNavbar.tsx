@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Filter, Lock, Menu, X } from "lucide-react";
+import { ChevronDown, Lock, Menu, SlidersHorizontal, X } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -176,7 +176,7 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
               aria-label={dict.myHome.quickSubmit}
               className="inline-flex size-9 shrink-0 items-center justify-center rounded-md text-neutral-700 hover:bg-black/5"
             >
-              <Filter className="size-5" />
+              <SlidersHorizontal className="size-5" />
             </SheetTrigger>
             <SheetContent
               side="right"
