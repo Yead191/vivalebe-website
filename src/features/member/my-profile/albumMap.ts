@@ -1,5 +1,5 @@
 import { getImageUrl } from "@/helpers/getImageUrl";
-import { hasRealImageSrc } from "@/lib/image";
+import { hasRealImageSrc, isLocalPreviewSrc } from "@/lib/image";
 import type { PhotoEntry, ProfileDetails, VideoEntry } from "@/lib/types";
 
 export type PrivateAlbumUser = {
@@ -152,10 +152,19 @@ export function applyAlbumToDetails(
   album: PrivateAlbumData,
 ): ProfileDetails {
   const userInfo = mapAlbumUserInfo(album.user);
+  const serverPhotos = mapAlbumPhotos(album);
+  const serverVideos = mapAlbumVideos(album);
+  const localPhotos = current.photos.filter(
+    (photo) => photo.status === "pending" || isLocalPreviewSrc(photo.url),
+  );
+  const localVideos = current.videos.filter((video) =>
+    isLocalPreviewSrc(video.url),
+  );
+
   return {
     ...current,
-    photos: mapAlbumPhotos(album),
-    videos: mapAlbumVideos(album),
+    photos: serverPhotos.length > 0 ? serverPhotos : localPhotos,
+    videos: serverVideos.length > 0 ? serverVideos : localVideos,
     aboutMe: asText(album.aboutMe),
     bodyShapeStory: asText(album.bodyShape),
     inspirationalQuotes: asText(album.motivateMe),

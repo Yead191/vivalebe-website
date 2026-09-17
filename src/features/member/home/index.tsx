@@ -106,7 +106,9 @@ export async function HomeFeature({
         </div>
 
         <div className="min-w-0 space-y-5">
-          <QuickSearch lang={lang} dict={dict} />
+          <div className="hidden lg:block">
+            <QuickSearch lang={lang} dict={dict} />
+          </div>
           <HomeTabs
             lang={lang}
             dict={dict}

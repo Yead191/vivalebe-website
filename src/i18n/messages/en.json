@@ -28,7 +28,9 @@
     "myListPrivateAlbumRequest": "Private Album Request",
     "notifications": "Notifications",
     "profileMenuSettings": "Settings",
-    "profileMenuSignOut": "Sign out"
+    "profileMenuSignOut": "Sign out",
+    "myProfile": "My Profile",
+    "sectionOther": "Other"
   },
   "footer": {
     "tagline1": "Connection that",

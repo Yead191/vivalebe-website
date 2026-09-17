@@ -28,7 +28,9 @@
     "myListPrivateAlbumRequest": "Pedidos de Álbum Privado",
     "notifications": "Notificações",
     "profileMenuSettings": "Configurações",
-    "profileMenuSignOut": "Sair"
+    "profileMenuSignOut": "Sair",
+    "myProfile": "Meu Perfil",
+    "sectionOther": "Outros"
   },
   "footer": {
     "tagline1": "Conexão que",

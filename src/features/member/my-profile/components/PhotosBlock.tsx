@@ -32,7 +32,9 @@ export function PhotosBlock({
   const [activeTab, setActiveTab] = useState<Tab>(defaultTab);
 
   const counts = useMemo(() => {
-    const real = photos.filter((p) => hasRealImageSrc(p.url));
+    const real = photos.filter(
+      (p) => hasRealImageSrc(p.url) || p.status === "pending",
+    );
     return TABS.reduce<Record<Tab, number>>(
       (acc, t) => {
         acc[t.key] = real.filter((p) => p.visibility === t.key).length;
@@ -43,7 +45,9 @@ export function PhotosBlock({
   }, [photos]);
 
   const visible = photos.filter(
-    (p) => p.visibility === activeTab && hasRealImageSrc(p.url),
+    (p) =>
+      p.visibility === activeTab &&
+      (hasRealImageSrc(p.url) || p.status === "pending"),
   );
 
   return (

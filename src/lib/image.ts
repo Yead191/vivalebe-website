@@ -10,18 +10,25 @@ export function hasRealImageSrc(seed: string | null | undefined): boolean {
   return (
     seed.startsWith("/") ||
     seed.startsWith("blob:") ||
+    seed.startsWith("data:") ||
     seed.startsWith("image/") ||
     seed.startsWith("protected/")
   );
 }
 
+export function isLocalPreviewSrc(seed: string | null | undefined): boolean {
+  if (!seed) return false;
+  return seed.startsWith("blob:") || seed.startsWith("data:");
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function avatarUrl(seed: string | null | undefined, size = 256): string {
   if (!hasRealImageSrc(seed)) return "/blank-image.png";
-  if (/^https?:\/\//i.test(seed!)) return seed!;
+  if (/^https?:\/\//i.test(seed!) || seed!.startsWith("blob:") || seed!.startsWith("data:")) {
+    return seed!;
+  }
   if (
     seed!.startsWith("/") ||
-    seed!.startsWith("blob:") ||
     seed!.startsWith("image/") ||
     seed!.startsWith("protected/")
   ) {

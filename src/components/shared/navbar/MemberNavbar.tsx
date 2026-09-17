@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { ImageWithFallback as Image } from "@/components/shared/ImageWithFallback";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ChevronRight, Lock, Menu, X } from "lucide-react";
+import { ChevronDown, Filter, Lock, Menu, X } from "lucide-react";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -19,6 +19,12 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { LangSwitcher } from "./LangSwitcher";
 import { NotificationsBell } from "./NotificationsBell";
 import { UserMenu } from "./UserMenu";
+import {
+  getMobileNavSections,
+  getMobileNavShortcuts,
+} from "./mobile-nav-sections";
+import { MobileNavCards } from "./MobileNavCards";
+import { QuickSearch } from "@/features/member/home/QuickSearch";
 
 interface MemberNavbarProps {
   lang: Locale;
@@ -37,6 +43,7 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
   const pathname = usePathname();
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const closeTimer = useRef<number | null>(null);
 
   useEffect(() => () => {
@@ -46,6 +53,7 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDrawerOpen(false);
+    setSearchOpen(false);
     setOpenKey(null);
   }, [pathname]);
 
@@ -66,8 +74,9 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-brand text-white">
-      <div className="container flex h-16 items-center gap-4">
+    <header className="sticky top-0 z-40">
+      <div className="bg-brand text-white">
+        <div className="container flex h-16 items-center gap-4">
         <Link
           href={`/${lang}/myHome`}
           className="shrink-0 select-none"
@@ -118,21 +127,68 @@ export function MemberNavbar({ lang, dict, currentUser }: MemberNavbarProps) {
             >
               <Menu className="size-5" />
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 p-0">
-              <SheetHeader className="border-b px-5 py-4">
-                <SheetTitle>{dict.nav.home}</SheetTitle>
-              </SheetHeader>
-              <div className="flex flex-col p-2">
-                {memberNav.map((item) => (
-                  <MobileNavItem
-                    key={item.labelKey}
-                    item={item}
+            <SheetContent
+              side="right"
+              showCloseButton={false}
+              className="h-dvh w-[70%] gap-0 overflow-y-auto border-0 bg-[#f4f5f7] p-0 data-[side=right]:w-[70%] data-[side=right]:sm:max-w-none"
+            >
+              <div className="sticky top-0 z-10 flex items-center justify-between bg-[#f4f5f7] px-4 py-3">
+                <span className="inline-flex size-9" />
+                <SheetTitle className="sr-only">{dict.nav.home}</SheetTitle>
+                <Image
+                  src="/logo.png"
+                  alt="Sigaleve"
+                  width={160}
+                  height={48}
+                  className="h-8 w-auto object-contain"
+                />
+                <SheetClose
+                  aria-label="Close menu"
+                  className="inline-flex size-9 items-center justify-center rounded-md text-neutral-700 hover:bg-black/5"
+                >
+                  <X className="size-5" />
+                </SheetClose>
+              </div>
+              <div className="px-4 pb-10 pt-2">
+                <Suspense fallback={null}>
+                  <MobileNavCards
                     lang={lang}
-                    dict={dict}
+                    sections={getMobileNavSections(dict)}
                     onNavigate={() => setDrawerOpen(false)}
                   />
-                ))}
+                </Suspense>
               </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+        </div>
+      </div>
+      <div className="bg-background lg:hidden">
+        <div className="container flex items-center justify-between gap-2">
+          <Suspense fallback={null}>
+            <MobileNavCards
+              lang={lang}
+              shortcuts={getMobileNavShortcuts(dict)}
+            />
+          </Suspense>
+          <Sheet open={searchOpen} onOpenChange={setSearchOpen}>
+            <SheetTrigger
+              aria-label={dict.myHome.quickSubmit}
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-md text-neutral-700 hover:bg-black/5"
+            >
+              <Filter className="size-5" />
+            </SheetTrigger>
+            <SheetContent
+              side="right"
+              className="w-[85%] gap-4 overflow-y-auto p-4 data-[side=right]:w-[85%] data-[side=right]:sm:max-w-none"
+            >
+              <SheetTitle>{dict.myHome.quickSubmit}</SheetTitle>
+              <QuickSearch
+                lang={lang}
+                dict={dict}
+                compact
+                onSearched={() => setSearchOpen(false)}
+              />
             </SheetContent>
           </Sheet>
         </div>
@@ -213,72 +269,6 @@ function DesktopNavItem({
               );
             })}
           </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-interface MobileNavItemProps {
-  item: MemberNavItem;
-  lang: Locale;
-  dict: Dictionary;
-  onNavigate: () => void;
-}
-
-function MobileNavItem({ item, lang, dict, onNavigate }: MobileNavItemProps) {
-  const [open, setOpen] = useState(false);
-  const label = dict.nav[item.labelKey];
-  const hasChildren = (item.children?.length ?? 0) > 0;
-
-  if (!hasChildren) {
-    return (
-      <Link
-        href={`/${lang}${item.href}`}
-        onClick={onNavigate}
-        className="rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
-      >
-        {label}
-      </Link>
-    );
-  }
-
-  return (
-    <div className="flex flex-col">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
-      >
-        <span>{label}</span>
-        {open ? <X className="size-4" /> : <ChevronRight className="size-4" />}
-      </button>
-      {open ? (
-        <div className="ml-3 flex flex-col border-l border-border pl-2">
-          {item.children!.map((child) => {
-            const childLabel = dict.nav[child.labelKey];
-            if (child.premiumLocked) {
-              return (
-                <span
-                  key={child.labelKey}
-                  className="flex items-center justify-between gap-2 px-3 py-2 text-sm text-muted-foreground"
-                >
-                  {childLabel}
-                  <Lock className="size-3.5" />
-                </span>
-              );
-            }
-            return (
-              <Link
-                key={child.labelKey}
-                href={`/${lang}${child.href}`}
-                onClick={onNavigate}
-                className="rounded-md px-3 py-2 text-sm hover:bg-muted"
-              >
-                {childLabel}
-              </Link>
-            );
-          })}
         </div>
       ) : null}
     </div>

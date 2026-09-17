@@ -43,25 +43,10 @@ export function UploadProfilePhotoModal({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    let active = true;
-    const processFiles = async () => {
-      const urls = await Promise.all(
-        files.map((file) => {
-          return new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target?.result as string);
-            reader.readAsDataURL(file);
-          });
-        })
-      );
-      if (active) {
-        setPreviews(urls);
-      }
-    };
-    processFiles();
-    
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setPreviews(urls);
     return () => {
-      active = false;
+      urls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [files]);
 
@@ -86,9 +71,9 @@ export function UploadProfilePhotoModal({
 
   const handleSubmit = async () => {
     if (files.length === 0 || submitting) return;
-    const additions: PhotoEntry[] = previews.map((url, i) => ({
-      id: `p_${Date.now()}_${i}`,
-      url,
+    const additions: PhotoEntry[] = files.map((file, i) => ({
+      id: `p_${Date.now()}_${i}_${file.name}`,
+      url: URL.createObjectURL(file),
       visibility,
       status: "pending",
     }));

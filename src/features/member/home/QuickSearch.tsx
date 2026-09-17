@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 
@@ -58,9 +59,18 @@ const LOOKING_FOR_MAP = {
 interface QuickSearchProps {
   lang: Locale;
   dict: Dictionary;
+  className?: string;
+  compact?: boolean;
+  onSearched?: () => void;
 }
 
-export function QuickSearch({ lang, dict }: QuickSearchProps) {
+export function QuickSearch({
+  lang,
+  dict,
+  className,
+  compact = false,
+  onSearched,
+}: QuickSearchProps) {
   const router = useRouter();
   const [interestedIn, setInterestedIn] = useState<Record<string, boolean>>({
     Man: false,
@@ -89,12 +99,19 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
     if (state) params.set("state", state);
 
     router.push(`/${lang}/discover?${params.toString()}`);
+    onSearched?.();
   };
 
   return (
     <form
       onSubmit={onSubmit}
-      className="rounded-xl border border-border bg-card p-5 space-y-4"
+      className={cn(
+        "space-y-4",
+        compact
+          ? "p-0"
+          : "rounded-xl border border-border bg-card p-5",
+        className,
+      )}
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <Label className="sm:w-32 text-xs text-foreground">
@@ -142,46 +159,48 @@ export function QuickSearch({ lang, dict }: QuickSearchProps) {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-        <Label className="sm:w-32 text-xs text-foreground">
-          {dict.myHome.quickCountry}
-        </Label>
-        <Select
-          value={country || undefined}
-          onValueChange={(v) => {
-            setCountry(v);
-            setState("");
-          }}
-        >
-          <SelectTrigger className="flex-1 cursor-pointer">
-            <SelectValue placeholder={dict.myHome.quickCountry} />
-          </SelectTrigger>
-          <SelectContent>
-            {countries.map((c) => (
-              <SelectItem key={c.value} value={c.value} className="cursor-pointer">
-                {c.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <div className="flex sm:flex-row sm:items-center gap-3">
+        <div className="flex  sm:flex-row sm:items-center gap-3">
+          <Label className="sm:w-32 text-xs text-foreground hidden sm:block">
+            {dict.myHome.quickCountry}
+          </Label>
+          <Select
+            value={country || undefined}
+            onValueChange={(v) => {
+              setCountry(v);
+              setState("");
+            }}
+          >
+            <SelectTrigger className="flex-1 cursor-pointer">
+              <SelectValue placeholder={dict.myHome.quickCountry} />
+            </SelectTrigger>
+            <SelectContent>
+              {countries.map((c) => (
+                <SelectItem key={c.value} value={c.value} className="cursor-pointer">
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-        <Label className="sm:w-32 text-xs text-foreground">
-          {dict.myHome.quickState}
-        </Label>
-        <Select value={state || undefined} onValueChange={setState}>
-          <SelectTrigger className="flex-1 cursor-pointer">
-            <SelectValue placeholder={dict.myHome.quickState} />
-          </SelectTrigger>
-          <SelectContent>
-            {states.map((s) => (
-              <SelectItem key={s} value={s} className="cursor-pointer">
-                {s}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex  sm:flex-row sm:items-center gap-3">
+          <Label className="sm:w-32 text-xs text-foreground hidden sm:block">
+            {dict.myHome.quickState}
+          </Label>
+          <Select value={state || undefined} onValueChange={setState}>
+            <SelectTrigger className="flex-1 cursor-pointer">
+              <SelectValue placeholder={dict.myHome.quickState} />
+            </SelectTrigger>
+            <SelectContent>
+              {states.map((s) => (
+                <SelectItem key={s} value={s} className="cursor-pointer">
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="flex justify-center pt-1">

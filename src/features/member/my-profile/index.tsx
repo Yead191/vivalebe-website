@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { ProfileDetails, ProfileExtras, User } from "@/lib/types";
@@ -89,8 +89,14 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) {
   const profile = useMyProfile(user, lang);
-  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingUploads, setPendingUploads] = useState<
+    { id: string; file: File }[]
+  >([]);
   const [saving, setSaving] = useState(false);
+  const detailsRef = useRef(profile.details);
+  const pendingUploadsRef = useRef(pendingUploads);
+  detailsRef.current = profile.details;
+  pendingUploadsRef.current = pendingUploads;
 
   const updateDetails = useCallback(
     (patch: Partial<ProfileDetails>) => {
@@ -102,7 +108,8 @@ export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) 
   const handleSaveAll = useCallback(async () => {
     setSaving(true);
     try {
-      const formData = buildPrivateAlbumFormData(profile.details, pendingFiles);
+      const files = pendingUploadsRef.current.map((item) => item.file);
+      const formData = buildPrivateAlbumFormData(detailsRef.current, files);
       const res = await savePrivateAlbum(formData);
       if (handleClientSubscriptionError(res, lang)) return;
       if (!res.success) {
@@ -111,17 +118,16 @@ export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) 
       }
       const albumId = res.data?._id || res.data?.id;
       if (albumId) profile.setAlbumId(albumId);
-      if (res.data) profile.applyAlbum(res.data);
+      setPendingUploads([]);
       const latest = await getPrivateAlbum();
       if (latest.success && latest.data) profile.applyAlbum(latest.data);
-      setPendingFiles([]);
       toast.success("Profile saved successfully!");
     } catch {
       toast.error("An error occurred");
     } finally {
       setSaving(false);
     }
-  }, [lang, pendingFiles, profile]);
+  }, [lang, profile]);
 
   const handleLifestyleChange = (next: FieldValues) => {
     const extras: ProfileExtras = {
@@ -140,15 +146,16 @@ export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) 
   };
 
   const handleAddMedia = (file: File) => {
+    const id = `pending_media_${Date.now()}`;
     const url = URL.createObjectURL(file);
     profile.addVideo({
-      id: `pending_media_${Date.now()}`,
+      id,
       url,
       thumbnail: url,
       durationSeconds: 0,
       visibility: "private",
     });
-    setPendingFiles((prev) => [...prev, file]);
+    setPendingUploads((prev) => [...prev, { id, file }]);
   };
 
   if (!profile.hydrated) {
@@ -191,10 +198,19 @@ export default function MyProfileFeature({ lang, user }: MyProfileFeatureProps) 
               photos={details.photos}
               defaultTab="private"
               onAdd={(arr, files) => {
-                arr.forEach((p) => profile.addPhoto(p));
-                setPendingFiles((prev) => [...prev, ...files]);
+                profile.addPhotos(arr);
+                setPendingUploads((prev) => [
+                  ...prev,
+                  ...arr.map((photo, index) => ({
+                    id: photo.id,
+                    file: files[index],
+                  })).filter((item): item is { id: string; file: File } => Boolean(item.file)),
+                ]);
               }}
-              onRemove={profile.removePhoto}
+              onRemove={(id) => {
+                profile.removePhoto(id);
+                setPendingUploads((prev) => prev.filter((item) => item.id !== id));
+              }}
             />
 
             <section className="space-y-3 rounded-2xl border border-border/70 bg-white p-5 shadow-sm">

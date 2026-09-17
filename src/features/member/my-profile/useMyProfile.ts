@@ -41,6 +41,7 @@ export interface MyProfileApi {
   applyAlbum: (data: unknown) => void;
   setAlbumId: (id: string) => void;
   addPhoto: (photo: PhotoEntry) => void;
+  addPhotos: (photos: PhotoEntry[]) => void;
   removePhoto: (id: string) => void;
   addVideo: (video: VideoEntry) => void;
   removeVideo: (id: string) => void;
@@ -181,6 +182,17 @@ export function useMyProfile(user: User, lang: Locale): MyProfileApi {
     }));
   }, []);
 
+  const addPhotos = useCallback((photos: PhotoEntry[]) => {
+    if (photos.length === 0) return;
+    setState((prev) => ({
+      ...prev,
+      details: {
+        ...prev.details,
+        photos: [...prev.details.photos, ...photos],
+      },
+    }));
+  }, []);
+
   const removePhoto = useCallback((id: string) => {
     setState((prev) => ({
       ...prev,
@@ -226,6 +238,7 @@ export function useMyProfile(user: User, lang: Locale): MyProfileApi {
     setAlbumId,
     update,
     addPhoto,
+    addPhotos,
     removePhoto,
     addVideo,
     removeVideo,
